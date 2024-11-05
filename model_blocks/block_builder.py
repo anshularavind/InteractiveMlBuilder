@@ -24,7 +24,7 @@ Block Params Format, Json:
 
 name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRNNLSTM}
 
-def load_model_(json_string):
+def load_model_from_json(json_string):
     model = nn.ModuleList()
     model_json = json.loads(json_string)
 

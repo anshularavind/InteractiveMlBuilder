@@ -22,23 +22,38 @@ Block Params Format, Json:
 }
 '''
 
-name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRNNLSTM}
+class BuiltModel(nn.Module):
+    name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm}
 
-def load_model_from_json(json_string):
-    model = nn.ModuleList()
-    model_json = json.loads(json_string)
+    def __init__(self, model_json: str):
+        super(BuiltModel, self).__init__()
+        self.model_blocks = BuiltModel.load_model_from_json(model_json)
 
-    input_size = model_json['input']
-    output_size = model_json['output']
-    blocks = model_json['blocks']
+    def forward(self, x):
+        for block in self.model_blocks:
+            x = block(x)
+        return x
 
-    for block in blocks:
-        block_class = name_to_block[block['block']]
-        block_params = block['params']
-        block = block_class(input_size=input_size, **block_params)
-        input_size = block.get_output_size()
-        model.append(block)
+    @staticmethod
+    def load_model_from_json(json_string: str):
+        model_blocks = nn.ModuleList()
+        model_json = json.loads(json_string)
 
-    assert input_size == output_size, 'Output size of last block does not match model output size'
+        input_size = model_json['input']
+        output_size = model_json['output']
+        blocks = model_json['blocks']
 
-    return model
+        for block in blocks:
+            block_class = BuiltModel.name_to_block[block['block']]
+            block_params = block['params']
+            block = block_class(input_size=input_size, **block_params)
+            input_size = block.get_output_size()
+            model_blocks.append(block)
+
+        assert input_size == output_size, 'Output size of last block does not match model output size'
+
+        return model_blocks
+
+if __name__ == '__main__':
+    json_str = '{"input": 10, "output": 10, "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
+    model = BuiltModel(json_str)

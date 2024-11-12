@@ -5,6 +5,7 @@ import torch.nn as nn
 '''
 Model Builder Input_output Format, Json:
 {
+    'model_type': <type>,
     'input': <input_shape>,
     'output': <output_shape>,
     'blocks':
@@ -23,25 +24,28 @@ Block Params Format, Json:
 '''
 
 class BuiltModel(nn.Module):
-    name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm}
+    name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
+                     'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
 
     def __init__(self, model_json: str):
         super(BuiltModel, self).__init__()
-        self.model_blocks = BuiltModel.load_model_from_json(model_json)
+        self.model_json = json.loads(model_json)
+        self.model_type = json.loads(model_json)['model_type']
+        self.model_blocks = BuiltModel.load_model_from_json(self.model_json)
 
     def forward(self, x):
         for block in self.model_blocks:
             x = block(x)
+        if self.model_type == 'text':
+            x = self.model_blocks[0].output_token(x)
         return x
 
-    @staticmethod
-    def load_model_from_json(json_string: str):
+    def load_model_from_json(self):
         model_blocks = nn.ModuleList()
-        model_json = json.loads(json_string)
 
-        input_size = model_json['input']
-        output_size = model_json['output']
-        blocks = model_json['blocks']
+        input_size = self.model_json['input']
+        output_size = self.model_json['output']
+        blocks = self.model_json['blocks']
 
         for block in blocks:
             block_class = BuiltModel.name_to_block[block['block']]

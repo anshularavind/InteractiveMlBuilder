@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-
+import torchtext
 
 class FcNN(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, num_hidden_layers):
@@ -69,3 +69,37 @@ class BasicRnnLstm(nn.Module):
 
     def get_output_size(self):
         return self.fc.out_features
+
+class TokenEmbedding(nn.Module):
+    def __init__(self, vocab_size, embedding_dim, padding_idx):
+        super(TokenEmbedding, self).__init__()
+        self.embedding = nn.Embedding(vocab_size, embedding_dim, padding_idx=padding_idx)
+
+    def forward(self, x):
+        return self.embedding(x)
+
+    def get_output_size(self):
+        return self.embedding.embedding_dim
+
+class Tokenizer(nn.Module):
+    tokenizer = torchtext.data.utils.get_tokenizer('basic_english')
+
+    @staticmethod
+    def yield_tokens(data):
+        for _, text in data:
+            yield Tokenizer.tokenizer(text)
+
+    def __init__(self, data, max_tokens=10000):
+        super(Tokenizer, self).__init__()
+        self.vocab = torchtext.vocab.build_vocab_from_iterator(
+            Tokenizer.yield_tokens(data), specials=['<unk>', '<pad>'], max_tokens=max_tokens
+        )
+
+    def __len__(self):
+        return len(self.vocab)
+
+    def forward(self, x):
+        return self.vocab(Tokenizer.tokenizer(x))
+
+    def output_token(self, token_id):
+        return self.vocab.lookup_token(token_id)

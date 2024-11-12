@@ -1,0 +1,21 @@
+# Black and White Image
+MNIST - quintessential dataset for image classification: https://yann.lecun.com/exdb/mnist/index.html
+CIFAR-10 - 60,000 32x32 color images in 10 classes, with 6,000 images per class: https://www.cs.toronto.edu/~kriz/cifar.html
+ImageNet-Sketch - 50,000 28x28 black and white images in 250 classes: https://paperswithcode.com/dataset/imagenet-sketch
+
+# Time Series
+Airline Passengers - 144 monthly observations from 1949 to 1960: https://www.kaggle.com/datasets/rakannimer/air-passengers
+Electricity: https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014
+Air Quality - https://archive.ics.uci.edu/dataset/360/air+quality
+
+# Tabular
+Iris - 150 samples of iris flowers, 4 features each: https://archive.ics.uci.edu/dataset/53/iris
+Adult - 48842 samples of US census data, 14 features each: https://archive.ics.uci.edu/dataset/2/adult
+Titanic - 891 samples of Titanic passenger data, 4 features each: https://www.kaggle.com/c/titanic/data
+Wine Quality - 4898 samples of wine data, 11 features each: https://archive.ics.uci.edu/dataset/186/wine+quality
+
+# Text
+IMDB reviews - 25,000 movie reviews from IMDB, labeled by sentiment (positive/negative): https://ai.stanford.edu/~amaas/data/sentiment/
+Newsgroups - 20 newsgroups, 60,000 newsgroup documents: https://scikit-learn.org/0.19/datasets/twenty_newsgroups.html
+Wikipedia - 4,000 Wikipedia documents, 4 categories: https://huggingface.co/datasets/legacy-datasets/wikipedia
+Twitter Sentiment Analysis - 1.6 million tweets, labeled by sentiment (positive/negative): https://www.kaggle.com/datasets/kazanova/sentiment140

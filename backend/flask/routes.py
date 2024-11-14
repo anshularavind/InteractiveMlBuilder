@@ -12,6 +12,10 @@ def define_model():
     # Process model parameters
     return jsonify({"status": "Model parameters set"}), 200
 
+@main_routes.route("/api/datasets", methods=["GET"])
+def datasets():
+    return jsonify({"datasets": ["MNIST", "CIFAR-10", "CIFAR-100"]}), 200
+
 @main_routes.route("/api/train", methods=["POST"])
 def train():
     action = request.json.get("action")

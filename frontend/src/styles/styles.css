@@ -1,0 +1,45 @@
+/* src/WelcomePage.css */
+
+.welcome-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: linear-gradient(to right, #ff7e5f, #feb47b); /* Adjust colors as needed */
+  color: #fff;
+  text-align: center;
+  transition: opacity 1s ease;
+}
+
+.welcome-content {
+  max-width: 400px;
+}
+
+.app-logo {
+  font-size: 2.5em;
+  margin-bottom: 0.5em;
+}
+
+.welcome-text {
+  font-size: 1.2em;
+  margin-bottom: 1em;
+}
+
+.get-started-btn {
+  padding: 0.8em 1.5em;
+  font-size: 1em;
+  color: #fff;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.get-started-btn:hover {
+  background-color: #555;
+}
+
+.fade-out {
+  opacity: 0;
+}

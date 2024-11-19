@@ -31,29 +31,30 @@ brew services start postgresql
 echo "Waiting for PostgreSQL to start..."
 sleep 2
 
-# Check if the PostgreSQL superuser exists
-echo "Checking if role '${POSTGRES_USER}' exists..."
-if ! psql -U "${POSTGRES_USER}" -c "\q" 2>/dev/null; then
-  echo "Role '${POSTGRES_USER}' does not exist. Attempting to create it using the current OS user..."
-
-  # Use the current OS user to create the superuser
-  CURRENT_USER=$(whoami)
-  if ! psql -U "${CURRENT_USER}" -c "\q" 2>/dev/null; then
-    echo "Could not connect as '${CURRENT_USER}'. Ensure a valid PostgreSQL role exists or check the configuration."
-    exit 1
-  fi
-
-  echo "Creating role '${POSTGRES_USER}'..."
-  psql -U "${CURRENT_USER}" <<-EOSQL
-    CREATE ROLE ${POSTGRES_USER} WITH SUPERUSER CREATEDB CREATEROLE LOGIN PASSWORD '${POSTGRES_PASSWORD}';
-EOSQL
-else
-  echo "Role '${POSTGRES_USER}' already exists."
-fi
-
-# Export environment variables for PostgreSQL
-export PGUSER=${POSTGRES_USER}
-export PGPASSWORD=${POSTGRES_PASSWORD}
+createuser -s $POSTGRES_USER
+## Check if the PostgreSQL superuser exists
+#echo "Checking if role '${POSTGRES_USER}' exists..."
+#if ! psql -U "${POSTGRES_USER}" -c "\q" 2>/dev/null; then
+#  echo "Role '${POSTGRES_USER}' does not exist. Attempting to create it using the current OS user..."
+#
+#  # Use the current OS user to create the superuser
+#  CURRENT_USER=$(whoami)
+#  if ! psql -U "${CURRENT_USER}" -c "\q" 2>/dev/null; then
+#    echo "Could not connect as '${CURRENT_USER}'. Ensure a valid PostgreSQL role exists or check the configuration."
+#    exit 1
+#  fi
+#
+#  echo "Creating role '${POSTGRES_USER}'..."
+#  psql -U "${CURRENT_USER}" <<-EOSQL
+#    CREATE ROLE ${POSTGRES_USER} WITH SUPERUSER CREATEDB CREATEROLE LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+#EOSQL
+#else
+#  echo "Role '${POSTGRES_USER}' already exists."
+#fi
+#
+## Export environment variables for PostgreSQL
+#export PGUSER=${POSTGRES_USER}
+#export PGPASSWORD=${POSTGRES_PASSWORD}
 
 # Configure PostgreSQL: Check and create the database
 echo "Configuring PostgreSQL..."

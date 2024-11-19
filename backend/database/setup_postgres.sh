@@ -15,9 +15,13 @@ if ! command -v brew &> /dev/null; then
   exit 1
 fi
 
-# Install PostgreSQL using Homebrew
-echo "Installing PostgreSQL..."
-brew install postgresql
+# Check if PostgreSQL is installed
+if ! command -v psql &> /dev/null; then
+  echo "PostgreSQL is not installed. Installing PostgreSQL..."
+  brew install postgresql
+else
+  echo "PostgreSQL is already installed. Skipping installation."
+fi
 
 # Start PostgreSQL service
 echo "Starting PostgreSQL service..."
@@ -27,28 +31,48 @@ brew services start postgresql
 echo "Waiting for PostgreSQL to start..."
 sleep 2
 
-# Ensure the correct superuser is used for the script
-export PGUSER=postgres
-export PGPASSWORD='1234' # Set this if password is required for postgres user
+# Check if the PostgreSQL superuser exists
+echo "Checking if role '${POSTGRES_USER}' exists..."
+if ! psql -U "${POSTGRES_USER}" -c "\q" 2>/dev/null; then
+  echo "Role '${POSTGRES_USER}' does not exist. Attempting to create it using the current OS user..."
 
-# Configure PostgreSQL
+  # Use the current OS user to create the superuser
+  CURRENT_USER=$(whoami)
+  if ! psql -U "${CURRENT_USER}" -c "\q" 2>/dev/null; then
+    echo "Could not connect as '${CURRENT_USER}'. Ensure a valid PostgreSQL role exists or check the configuration."
+    exit 1
+  fi
+
+  echo "Creating role '${POSTGRES_USER}'..."
+  psql -U "${CURRENT_USER}" <<-EOSQL
+    CREATE ROLE ${POSTGRES_USER} WITH SUPERUSER CREATEDB CREATEROLE LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+EOSQL
+else
+  echo "Role '${POSTGRES_USER}' already exists."
+fi
+
+# Export environment variables for PostgreSQL
+export PGUSER=${POSTGRES_USER}
+export PGPASSWORD=${POSTGRES_PASSWORD}
+
+# Configure PostgreSQL: Check and create the database
 echo "Configuring PostgreSQL..."
-psql -U postgres <<-EOSQL
-  -- Check if the user exists; if not, create the user
+psql -U "${POSTGRES_USER}" <<-EOSQL
+  -- Check if the database exists; if not, create it
   DO \$\$ BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
-      CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DB_NAME}') THEN
+      CREATE DATABASE ${DB_NAME} OWNER ${POSTGRES_USER};
     END IF;
   END \$\$;
-
-  -- Check if the database exists; if not, create it and assign ownership
-  CREATE DATABASE ${DB_NAME} OWNER ${POSTGRES_USER};
 EOSQL
+
+# Stop PostgreSQL service
+brew services stop postgresql
 
 # Confirm success
 echo "PostgreSQL setup complete."
-echo "User '${POSTGRES_USER}' created (if it did not exist) with password '${POSTGRES_PASSWORD}'."
-echo "Database '${DB_NAME}' created (if it did not exist) and assigned to '${POSTGRES_USER}'."
+echo "User '${POSTGRES_USER}' is configured with password '${POSTGRES_PASSWORD}'."
+echo "Database '${DB_NAME}' created or verified."
 
 # Display usage instructions
 echo "To connect to PostgreSQL:"

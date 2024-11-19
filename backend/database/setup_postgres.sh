@@ -60,11 +60,7 @@ createuser -s $POSTGRES_USER
 echo "Configuring PostgreSQL..."
 psql -U "${POSTGRES_USER}" <<-EOSQL
   -- Check if the database exists; if not, create it
-  DO \$\$ BEGIN
-    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${DB_NAME}') THEN
-      CREATE DATABASE ${DB_NAME} OWNER ${POSTGRES_USER};
-    END IF;
-  END \$\$;
+  CREATE DATABASE ${DB_NAME} OWNER ${POSTGRES_USER};
 EOSQL
 
 # Stop PostgreSQL service

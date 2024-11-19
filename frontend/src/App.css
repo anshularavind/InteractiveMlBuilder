@@ -1,0 +1,116 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+}
+
+.input-section {
+  width: 50%;
+  padding: 20px;
+  background-color: #fff;
+  border-right: 2px solid #ddd;
+  overflow-y: auto;
+}
+
+.visual-section {
+  width: 50%;
+  padding: 20px;
+  background-color: #f0f8ff;
+  overflow-y: auto;
+  position: relative;
+}
+
+h1,
+h2 {
+  color: #4a90e2;
+}
+
+.flowchart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.layer {
+  width: 200px;
+  padding: 20px;
+  background-color: #fff;
+  border: 2px solid #4a90e2;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.layer h3 {
+  text-align: center;
+  color: #4a90e2;
+  margin-bottom: 10px;
+}
+
+.layer div {
+  margin-bottom: 10px;
+}
+
+.layer label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.layer input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.add-layer {
+  width: 200px;
+  padding: 20px;
+  background-color: #e7f3ff;
+  border: 2px dashed #4a90e2;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #4a90e2;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.add-layer:hover {
+  background-color: #4a90e2;
+  color: #fff;
+}
+
+.visual-flowchart {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.visual-layer {
+  width: 150px;
+  height: auto;
+  background-color: #4a90e2;
+  color: white;
+  text-align: center;
+  line-height: 1.5;
+  padding: 10px;
+  border-radius: 5px;
+  position: absolute;
+  cursor: grab;
+}
+
+.visual-layer:active {
+  cursor: grabbing;
+}

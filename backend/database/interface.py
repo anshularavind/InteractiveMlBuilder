@@ -4,7 +4,7 @@ import time
 class UserDatabase():
     def __init__(self):
         self.conn = psycopg2.connect(host="localhost",
-                                     database="postgres",
+                                     database="ml_builder",
                                      user="postgres",
                                      password="1234",
                                      port=5432)
@@ -47,7 +47,7 @@ class UserDatabase():
             return False
         # hash the username as the unique id int
         user_uuid = self.hash(username)
-        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s, %s)", (user_uuid, username))
+        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, username))
         self.conn.commit()
         return True
 

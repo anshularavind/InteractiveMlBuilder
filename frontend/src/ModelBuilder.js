@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
 
-function FlowChartOrganizer({ goBack }) {
+function FlowChartOrganizer({ goBack, goToProfile }) {
   const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
   const [dropdownOpen, setDropdownOpen] = useState(false); // Track dropdown state
 
@@ -28,7 +28,9 @@ function FlowChartOrganizer({ goBack }) {
   });
 
   const handleInputChange = (field, value) => {
-    setBlockInputs({ ...blockInputs, [field]: value });
+    // Prevent negative values
+    const sanitizedValue = Math.max(0, parseInt(value) || 0);
+    setBlockInputs({ ...blockInputs, [field]: sanitizedValue });
   };
 
   const createLayers = () => {
@@ -55,40 +57,41 @@ function FlowChartOrganizer({ goBack }) {
 
   return (
     <div>
-      {/* Back to Home Button */}
+      {/* Header with Back to Home and Profile Buttons */}
       <div style={styles.headerContainer}>
-        <button style={styles.goBackButton} onClick={goBack}>
+        <button style={styles.headerButton} onClick={goBack}>
           Back to Home
         </button>
-      </div>
-
-      {/* Dropdown Menu */}
-      <div className="dropdown" style={styles.dropdown}>
-        <button
-          className="dropdown-button"
-          style={styles.dropdownButton}
-          onClick={toggleDropdown}
-        >
-          {selectedItem ? `Selected: ${selectedItem}` : "Select Dataset"}
+        <button style={styles.headerButton} onClick={goToProfile}>
+          Go to Profile
         </button>
-        {dropdownOpen && (
-          <div className="dropdown-content" style={styles.dropdownContent}>
-            {items.map((item) => (
-              <div
-                key={item.value}
-                style={styles.dropdownItem}
-                onClick={() => handleItemClick(item)}
-              >
-                {item.label}
-              </div>
-            ))}
-          </div>
-        )}
       </div>
 
       <div style={styles.container}>
         {/* Input Block */}
         <div style={styles.inputBlock}>
+          <div className="dropdown" style={styles.dropdown}>
+            <button
+              className="dropdown-button"
+              style={styles.dropdownButton}
+              onClick={toggleDropdown}
+            >
+              {selectedItem ? `Selected: ${selectedItem}` : "Select Dataset"}
+            </button>
+            {dropdownOpen && (
+              <div className="dropdown-content" style={styles.dropdownContent}>
+                {items.map((item) => (
+                  <div
+                    key={item.value}
+                    style={styles.dropdownItem}
+                    onClick={() => handleItemClick(item)}
+                  >
+                    {item.label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <h4>Configure Inputs</h4>
           <div>
             <label>Input Size: </label>
@@ -96,7 +99,7 @@ function FlowChartOrganizer({ goBack }) {
               type="number"
               value={blockInputs.inputSize}
               onChange={(e) =>
-                handleInputChange("inputSize", parseInt(e.target.value) || 0)
+                handleInputChange("inputSize", e.target.value)
               }
               style={styles.input}
             />
@@ -107,7 +110,7 @@ function FlowChartOrganizer({ goBack }) {
               type="number"
               value={blockInputs.outputSize}
               onChange={(e) =>
-                handleInputChange("outputSize", parseInt(e.target.value) || 0)
+                handleInputChange("outputSize", e.target.value)
               }
               style={styles.input}
             />
@@ -118,7 +121,7 @@ function FlowChartOrganizer({ goBack }) {
               type="number"
               value={blockInputs.hiddenSize}
               onChange={(e) =>
-                handleInputChange("hiddenSize", parseInt(e.target.value) || 0)
+                handleInputChange("hiddenSize", e.target.value)
               }
               style={styles.input}
             />
@@ -129,10 +132,7 @@ function FlowChartOrganizer({ goBack }) {
               type="number"
               value={blockInputs.numHiddenLayers}
               onChange={(e) =>
-                handleInputChange(
-                  "numHiddenLayers",
-                  Math.max(1, parseInt(e.target.value) || 1)
-                )
+                handleInputChange("numHiddenLayers", e.target.value)
               }
               style={styles.input}
             />
@@ -164,9 +164,10 @@ const styles = {
     padding: "10px 15px",
     backgroundColor: "#4a90e2",
     display: "flex",
+    justifyContent: "space-between",
     alignItems: "center",
   },
-  goBackButton: {
+  headerButton: {
     padding: "5px 15px",
     fontSize: "1rem",
     color: "#fff",
@@ -226,27 +227,29 @@ const styles = {
     position: "absolute",
   },
   dropdown: {
-    marginTop: "10px", // Below the header area
-    marginLeft: "15px", // Aligned with the back button
+    marginBottom: "10px",
     position: "relative",
+    width: "100%",
   },
   dropdownButton: {
-    padding: "10px 15px",
+    width: "100%",
+    padding: "10px",
     backgroundColor: "#357abd",
     color: "#fff",
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
+    textAlign: "center",
   },
   dropdownContent: {
     position: "absolute",
     backgroundColor: "#fff",
     border: "1px solid #ddd",
     borderRadius: "5px",
-    marginTop: "10px",
+    marginTop: "5px",
     zIndex: 100,
     padding: "10px",
-    width: "200px",
+    width: "100%",
     cursor: "pointer",
   },
   dropdownItem: {

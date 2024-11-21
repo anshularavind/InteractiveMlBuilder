@@ -1,13 +1,19 @@
 import json
 from basic_blocks import *
 import torch.nn as nn
+from mnist import Mnist
+from train import train_model
+
+# TODO: Add specific channel squeezing and unsqueezing before and after CNN layer for image data
+# TODO: Flatten Image data, then unflatten before cnn and re-flatten after cnn
 
 '''
 Model Builder Input_output Format, Json:
 {
-    'model_type': <type>,
     'input': <input_shape>,
     'output': <output_shape>,
+    'dataset': <dataset_name>,
+    'lr': <learning_rate>,
     'blocks':
     [
         {'block': <block_name>, 'params': <block_params>},
@@ -26,12 +32,14 @@ Block Params Format, Json:
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
+    name_to_dataset = {'MNIST': Mnist}
 
     def __init__(self, model_json: str):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
-        self.model_type = json.loads(model_json)['model_type']
-        self.model_blocks = BuiltModel.load_model_from_json(self.model_json)
+        self.dataset = BuiltModel.name_to_dataset[self.model_json['dataset']]()
+        self.model_blocks = self.load_model_from_json()
+        self.lr = float(self.model_json['LR'])
 
     def forward(self, x):
         for block in self.model_blocks:
@@ -58,6 +66,41 @@ class BuiltModel(nn.Module):
 
         return model_blocks
 
+
 if __name__ == '__main__':
-    json_str = '{"input": 10, "output": 10, "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
-    model = BuiltModel(json_str)
+    # json_str = '{"input": 10, "output": 10, "dataset": "MNIST", "LR": ".001", "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
+    mnist_model = '''{
+    "model_type": "image",
+    "input": 784,
+    "output": 10,
+    "dataset": "MNIST",
+    "LR": "0.001",
+    "blocks": [
+        {
+            "block": "FcNN",
+            "params": {
+                "output_size": 128,
+                "hidden_size": 256,
+                "num_hidden_layers": 2
+            }
+        },
+        {
+            "block": "FcNN",
+            "params": {
+                "output_size": 64,
+                "hidden_size": 128,
+                "num_hidden_layers": 2
+            }
+        },
+        {
+            "block": "FcNN",
+            "params": {
+                "output_size": 10,
+                "hidden_size": 64,
+                "num_hidden_layers": 1
+            }
+        }
+    ]
+}'''
+    model = BuiltModel(mnist_model)
+    train_model(model, 10)

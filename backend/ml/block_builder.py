@@ -31,7 +31,8 @@ Block Params Json Format:
 '''
 
 text_datasets = {'IMDB', 'Wikipedia', 'Twitter'}
-image_datasets = {'MNIST'}
+image_datasets = {'MNIST': 3}
+dataset_to_channels = {'MNIST': 1}
 channel_classes = {Conv, AdaptivePool}
 
 class BuiltModel(nn.Module):
@@ -43,8 +44,10 @@ class BuiltModel(nn.Module):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.batch_size = int(self.model_json.get('batch_size', 64))
-        self.dataset = BuiltModel.name_to_dataset[self.model_json['dataset']](batch_size=self.batch_size)
-        self.is_2d = self.model_json['dataset'] in image_datasets
+        self.dataset_name = self.model_json['dataset']
+        self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
+        self.is_2d = self.dataset_name in image_datasets
+        self.in_channels = dataset_to_channels.get(self.dataset_name, 1)
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_json['LR'])
 
@@ -60,8 +63,11 @@ class BuiltModel(nn.Module):
 
         input_size = self.model_json['input']
         output_size = self.model_json['output']
+        assert output_size == self.dataset.get_output_size(),\
+            f'Output size, {output_size}, does not match dataset output size, {self.dataset.get_output_size()}'
+
         blocks = self.model_json['blocks']
-        input_channels = 1
+        input_channels = self.in_channels
 
         for block in blocks:
             block_class = BuiltModel.name_to_block[block['block']]

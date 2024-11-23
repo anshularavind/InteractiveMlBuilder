@@ -38,6 +38,10 @@ class Mnist:
 
     def __init__(self, batch_size=64):
         self.train_loader, self.test_loader = Mnist.__get_mnist_data_loaders(batch_size=batch_size)
+        self.batch_size = batch_size
+
+    def get_output_size(self):
+        return len(self.dataset["train"].features["label"].names)
 
     @staticmethod
     def get_eval_numbers(output, target):

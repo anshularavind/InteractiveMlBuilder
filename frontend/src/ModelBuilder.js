@@ -27,6 +27,16 @@ function FlowChartOrganizer() {
     }
     setLayers([...layers, ...newLayers]);
   };
+   // Reset all layers and inputs
+   const resetLayers = () => {
+    setLayers([]); // Clear layers
+    setBlockInputs({
+      inputSize: 0,
+      outputSize: 0,
+      hiddenSize: 0,
+      numHiddenLayers: 1, // Reset to default value
+    }); // Reset inputs
+  };
 
   // Update layer position on drag
   const onLayerDragStop = (id, data) => {
@@ -94,6 +104,9 @@ function FlowChartOrganizer() {
         <button style={styles.addButton} onClick={createLayers}>
           Create Layers
         </button>
+        <button style={styles.resetButton} onClick={resetLayers}>
+        Reset
+        </button>
       </div>
 
       {/* Draggable Layers */}
@@ -111,7 +124,7 @@ function FlowChartOrganizer() {
     </div>
   );
 }
-
+//create a reset button for after you create layers it will clear the screen
 const styles = {
   container: {
     display: "flex",
@@ -151,6 +164,15 @@ const styles = {
     borderRadius: "5px",
     cursor: "pointer",
     marginTop: "10px",
+  },
+  resetButton: {
+    padding: "10px 20px",
+    fontSize: "1rem",
+    color: "#fff",
+    backgroundColor: "#f44336", // Red for reset
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
   layer: {
     width: "150px",

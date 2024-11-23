@@ -1,3 +1,4 @@
+import math
 import torch
 import torch.nn as nn
 import torchtext
@@ -29,31 +30,92 @@ class FcNN(nn.Module):
 
 
 class Conv(nn.Module):
-    def __init__(self, kernel_size, input_size):
+    def __init__(self, kernel_size, input_size, is_2d=False, in_channels=1, out_channels=1, stride=1, padding=0):
         super(Conv, self).__init__()
+        assert kernel_size % 2 == 1, "Kernel size must be odd"
+        assert stride < kernel_size, "Stride must be less than kernel size"
+        assert 2 * padding < kernel_size, "Padding must be less than half the kernel size"
+
         self.input_size = input_size
-        self.conv = nn.Conv2d(1, 1, kernel_size=kernel_size)
+        self.kernel_size = kernel_size
+        self.is_2d = is_2d
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.stride = stride
+        self.padding = padding
         self.activation = nn.ReLU()
+        self.output_size = self.__get_output_size()
+
+        if is_2d:
+            self.conv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding)
+        else:
+            self.conv = nn.Conv1d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding)
 
     def forward(self, x):
+        if self.is_2d:
+            assert x.size(-1) % self.in_channels == 0, "Input size must be divisible by number of channels"
+            side_squared = x.size(-1) // self.in_channels
+            side = math.floor(math.sqrt(side_squared))
+            assert side * side == side_squared, "Image must be square"
+            x = x.reshape(-1, self.in_channels, side, side)
+        else:
+            x = x.reshape(-1, self.in_channels, self.input_size)
+
         x = self.conv(x)
-        return self.activation(x)
+        x = self.activation(x)
+        x = x.reshape(-1, self.get_output_size())
+        return x
 
-    def get_output_size(self):
-        return self.input_size - self.conv.kernel_size + 1
+    # Private because only needed once, from there, output_size is stored and not recalculated
+    def __get_output_size(self):
+        def get_output_size_no_channels(input_size):
+            side_length = (input_size + 2 * self.padding - self.kernel_size) // self.stride + 1
+            return side_length
 
-
-class AdaptivePool(nn.Module):
-    def __init__(self, output_size):
-        super(AdaptivePool, self).__init__()
-        self.output_size = output_size
-        self.pool = nn.AdaptiveMaxPool2d(output_size=output_size)
-
-    def forward(self, x):
-        return self.pool(x)
+        input_no_ch = self.input_size // self.in_channels
+        if self.is_2d:
+            input_side_length = math.floor(math.sqrt(input_no_ch))
+            side_length = get_output_size_no_channels(input_side_length)
+            return side_length * side_length * self.out_channels
+        else:
+            side_length = get_output_size_no_channels(input_no_ch)
+            return side_length * self.out_channels
 
     def get_output_size(self):
         return self.output_size
+
+
+class AdaptivePool(nn.Module):
+    def __init__(self, output_size, in_channels = 1, is_2d=False, input_size=None):
+        super(AdaptivePool, self).__init__()
+        self.in_channels = in_channels
+        self.is_2d = is_2d
+        if is_2d:
+            output_size_sqrt = math.floor(math.sqrt(output_size))
+            assert output_size_sqrt * output_size_sqrt == output_size, "Output size must be square"
+
+            self.output_size = output_size_sqrt
+            self.pool = nn.AdaptiveMaxPool2d(output_size=self.output_size)
+        else:
+            self.output_size = output_size
+            self.pool = nn.AdaptiveMaxPool1d(output_size=output_size)
+
+    def forward(self, x):
+        if self.is_2d:
+            assert x.size(-1) % self.in_channels == 0, "Input size must be divisible by number of channels"
+            side_squared = x.size(-1) // self.in_channels
+            side = math.floor(math.sqrt(side_squared))
+            assert side * side == side_squared, "Image must be square"
+            x = x.reshape(-1, self.in_channels, side, side)
+        x = self.pool(x)
+        x = x.reshape(-1, self.get_output_size())
+        return x
+
+    def get_output_size(self):
+        if self.is_2d:
+            return self.output_size * self.output_size * self.in_channels
+        else:
+            return self.output_size * self.in_channels
 
 
 class BasicRnnLstm(nn.Module):

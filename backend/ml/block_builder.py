@@ -8,12 +8,13 @@ from train import train_model
 # TODO: Flatten Image data, then unflatten before cnn and re-flatten after cnn
 
 '''
-Model Builder Input_output Format, Json:
+Model Builder Input/Output Json Format:
 {
     'input': <input_shape>,
     'output': <output_shape>,
     'dataset': <dataset_name>,
     'lr': <learning_rate>,
+    'batch_size': <batch_size>,
     'blocks':
     [
         {'block': <block_name>, 'params': <block_params>},
@@ -21,13 +22,17 @@ Model Builder Input_output Format, Json:
     ]
 }
 
-Block Params Format, Json:
+Block Params Json Format:
 {
     'param1': <value1>,
     'param2': <value2>,
     ...
 }
 '''
+
+text_datasets = {'IMDB', 'Wikipedia', 'Twitter'}
+image_datasets = {'MNIST'}
+channel_classes = {Conv, AdaptivePool}
 
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
@@ -37,14 +42,16 @@ class BuiltModel(nn.Module):
     def __init__(self, model_json: str):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
-        self.dataset = BuiltModel.name_to_dataset[self.model_json['dataset']]()
+        self.batch_size = int(self.model_json.get('batch_size', 64))
+        self.dataset = BuiltModel.name_to_dataset[self.model_json['dataset']](batch_size=self.batch_size)
+        self.is_2d = self.model_json['dataset'] in image_datasets
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_json['LR'])
 
     def forward(self, x):
         for block in self.model_blocks:
             x = block(x)
-        if self.model_type == 'text':
+        if self.dataset in text_datasets:
             x = self.model_blocks[0].output_token(x)
         return x
 
@@ -54,12 +61,17 @@ class BuiltModel(nn.Module):
         input_size = self.model_json['input']
         output_size = self.model_json['output']
         blocks = self.model_json['blocks']
+        input_channels = 1
 
         for block in blocks:
             block_class = BuiltModel.name_to_block[block['block']]
             block_params = block['params']
+            if block_class in channel_classes:  # Adding input_channels to block_params if it's a channel class
+                block_params['in_channels'] = input_channels
+                block_params['is_2d'] = self.is_2d
             block = block_class(input_size=input_size, **block_params)
             input_size = block.get_output_size()
+            input_channels = block_params.get('out_channels', input_channels)  # Safely get out_channels if it exists
             model_blocks.append(block)
 
         assert input_size == output_size, 'Output size of last block does not match model output size'
@@ -69,38 +81,95 @@ class BuiltModel(nn.Module):
 
 if __name__ == '__main__':
     # json_str = '{"input": 10, "output": 10, "dataset": "MNIST", "LR": ".001", "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
-    mnist_model = '''{
-    "model_type": "image",
+    mnist_nn_model = '''{
+        "input": 784,
+        "output": 10,
+        "dataset": "MNIST",
+        "LR": "0.001",
+        "batch_size": 2048,
+        "blocks": [
+            {
+                "block": "FcNN",
+                "params": {
+                    "output_size": 128,
+                    "hidden_size": 256,
+                    "num_hidden_layers": 2
+                }
+            },
+            {
+                "block": "FcNN",
+                "params": {
+                    "output_size": 64,
+                    "hidden_size": 128,
+                    "num_hidden_layers": 2
+                }
+            },
+            {
+                "block": "FcNN",
+                "params": {
+                    "output_size": 10,
+                    "hidden_size": 64,
+                    "num_hidden_layers": 1
+                }
+            }
+        ]
+    }'''
+
+    mnist_cnn_model = '''{
     "input": 784,
     "output": 10,
     "dataset": "MNIST",
     "LR": "0.001",
     "blocks": [
         {
-            "block": "FcNN",
+            "block": "Conv",
             "params": {
-                "output_size": 128,
-                "hidden_size": 256,
-                "num_hidden_layers": 2
+                "out_channels": 32,
+                "kernel_size": 5,
+                "stride": 1,
+                "padding": 2
+            }
+        },
+        {
+            "block": "Pool",
+            "params": {
+                "output_size": 196
+            }
+        },
+        {
+            "block": "Conv",
+            "params": {
+                "out_channels": 64,
+                "kernel_size": 5,
+                "stride": 1,
+                "padding": 2
+            }
+        },
+        {
+            "block": "Pool",
+            "params": {
+                "output_size": 49
             }
         },
         {
             "block": "FcNN",
             "params": {
-                "output_size": 64,
-                "hidden_size": 128,
-                "num_hidden_layers": 2
+                "output_size": 128,
+                "hidden_size": 1024,
+                "num_hidden_layers": 1
             }
         },
         {
             "block": "FcNN",
             "params": {
                 "output_size": 10,
-                "hidden_size": 64,
+                "hidden_size": 128,
                 "num_hidden_layers": 1
             }
         }
     ]
 }'''
-    model = BuiltModel(mnist_model)
+
+    # model = BuiltModel(mnist_nn_model)
+    model = BuiltModel(mnist_cnn_model)
     train_model(model, 10)

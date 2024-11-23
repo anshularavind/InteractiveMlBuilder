@@ -9,6 +9,7 @@ def train_model(model, epochs=10):
 
     # Train the model
     model.train()
+    output_increment = len(dataset.train_loader) // 10
     for epoch in range(epochs):
         for i, (images, labels) in enumerate(dataset.train_loader):
             # Forward pass
@@ -20,9 +21,9 @@ def train_model(model, epochs=10):
             loss.backward()
             optimizer.step()
 
-            if (i+1) % 100 == 0:
+            if (i+1) % output_increment == 0:
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
-                       .format(epoch+1, 5, i+1, len(dataset.train_loader), loss.item()))
+                       .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
 
     # Test
     model.eval()

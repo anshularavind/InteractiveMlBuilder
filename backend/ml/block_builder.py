@@ -4,9 +4,6 @@ import torch.nn as nn
 from mnist import Mnist
 from train import train_model
 
-# TODO: Add specific channel squeezing and unsqueezing before and after CNN layer for image data
-# TODO: Flatten Image data, then unflatten before cnn and re-flatten after cnn
-
 '''
 Model Builder Input/Output Json Format:
 {
@@ -22,10 +19,15 @@ Model Builder Input/Output Json Format:
     ]
 }
 
+
+# Output Size Notes:
+    # Needed for all blocks except Tokenizer & TokenEmbedding
+    # Expected to be Channels x Height x Width for multi-channel & multi-dim data
 Block Params Json Format:
 {
     'param1': <value1>,
     'param2': <value2>,
+    'output_size': <output_size>,
     ...
 }
 '''

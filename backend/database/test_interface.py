@@ -8,3 +8,6 @@ def test_add_users():
     db.add_user("test4", "test4")
     print(db.get_users())
     db.close()
+
+if __name__ == "__main__":
+    test_add_users()

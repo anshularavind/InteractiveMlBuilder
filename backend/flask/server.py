@@ -2,6 +2,7 @@ import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 
+from celery import Celery
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, render_template, session, url_for, request
@@ -12,7 +13,42 @@ ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
+def make_celery(app):
+    celery = Celery(
+        app.name,
+        broker=app.config['CELERY_BROKER_URL'],
+        backend=app.config['CELERY_RESULT_BACKEND']
+    )
+    celery.conf.update(app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+# Initialize Flask
 app = Flask(__name__)
+
+# Celery configuration
+app.config.update(
+    CELERY_BROKER_URL='redis://localhost:6379/0',
+    CELERY_RESULT_BACKEND='redis://localhost:6379/0',
+    CELERY_TASK_TRACK_STARTED=True,
+    CELERY_TASK_TIME_LIMIT=3600,
+    CELERY_TASK_SERIALIZER='json',
+    CELERY_RESULT_SERIALIZER='json',
+    CELERY_ACCEPT_CONTENT=['json']
+)
+
+# Initialize Celery
+celery = make_celery(app)
+
+# ... (rest of your existing server.py code)
+
+
 app.secret_key = env.get("APP_SECRET_KEY")
 
 oauth = OAuth(app)

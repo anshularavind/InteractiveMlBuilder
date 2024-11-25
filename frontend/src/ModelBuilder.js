@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
+import './ModelBuilder.css'; // Import the CSS file
 
 function FlowChartOrganizer() {
   const [layers, setLayers] = useState([]);
@@ -16,15 +17,15 @@ function FlowChartOrganizer() {
 
   const createLayers = () => {
     const newLayers = [];
-    const layerHeight = 50; // Height of each layer
-    const overlapOffsetY = 10; // Vertical overlap amount
-    const overlapOffsetX = 15; // Horizontal overlap amount
+    const layerHeight = 50;
+    const overlapOffsetY = 10;
+    const overlapOffsetX = 15;
     const totalHeight =
       blockInputs.numHiddenLayers * (layerHeight - overlapOffsetY);
-    const areaHeight = 500; // Approximate height of Layers Area
-    const startY = (areaHeight - totalHeight) / 2; // Center layers vertically
-    const startX = -((blockInputs.numHiddenLayers - 1) * overlapOffsetX) / 2; // Center layers horizontally
-  
+    const areaHeight = 500;
+    const startY = (areaHeight - totalHeight) / 2;
+    const startX = -((blockInputs.numHiddenLayers - 1) * overlapOffsetX) / 2;
+
     for (let i = 0; i < blockInputs.numHiddenLayers; i++) {
       newLayers.push({
         id: layers.length + i,
@@ -37,10 +38,6 @@ function FlowChartOrganizer() {
     }
     setLayers([...layers, ...newLayers]);
   };
-  
-  
-  
-  
 
   const resetLayers = () => {
     setLayers([]);
@@ -63,50 +60,50 @@ function FlowChartOrganizer() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="container">
       {/* Input Section */}
-      <div style={styles.inputArea}>
-        <div style={styles.label}>Input</div>
-        <div style={styles.trapezoid}></div>
+      <div className="inputArea">
+        <div className="label">Input</div>
+        <div className="trapezoid"></div>
       </div>
 
       {/* Arrow from Input to Layers */}
       {layers.length > 0 && (
-        <div style={styles.arrowContainer}>
-          <div style={styles.arrowLine}></div>
-          <div style={styles.arrowHead}></div>
+        <div className="arrowContainer">
+          <div className="arrowLine"></div>
+          <div className="arrowHead"></div>
         </div>
       )}
 
-      {/* Middle Layers Area */}
-      <div style={styles.layersArea}>
+      {/* Layers Area */}
+      <div className="layersArea">
         {layers.map((layer) => (
           <Draggable
             key={layer.id}
             position={layer.position}
             onStop={(e, data) => onLayerDragStop(layer.id, data)}
           >
-            <div style={styles.layer}>{layer.name}</div>
+            <div className="layer">{layer.name}</div>
           </Draggable>
         ))}
       </div>
 
       {/* Arrow from Layers to Output */}
       {layers.length > 0 && (
-        <div style={styles.arrowContainer}>
-          <div style={styles.arrowLine}></div>
-          <div style={styles.arrowHead}></div>
+        <div className="arrowContainer">
+          <div className="arrowLine"></div>
+          <div className="arrowHead"></div>
         </div>
       )}
 
       {/* Output Section */}
-      <div style={styles.outputArea}>
-        <div style={styles.label}>Output</div>
-        <div style={styles.trapezoid}></div>
+      <div className="outputArea">
+        <div className="label">Output</div>
+        <div className="trapezoid"></div>
       </div>
 
       {/* Input Controls */}
-      <div style={styles.inputBlock}>
+      <div className="inputBlock">
         <h4>Configure Inputs</h4>
         <div>
           <label>Input Size: </label>
@@ -116,7 +113,7 @@ function FlowChartOrganizer() {
             onChange={(e) =>
               handleInputChange("inputSize", parseInt(e.target.value) || 0)
             }
-            style={styles.input}
+            className="input"
           />
         </div>
         <div>
@@ -127,7 +124,7 @@ function FlowChartOrganizer() {
             onChange={(e) =>
               handleInputChange("outputSize", parseInt(e.target.value) || 0)
             }
-            style={styles.input}
+            className="input"
           />
         </div>
         <div>
@@ -138,7 +135,7 @@ function FlowChartOrganizer() {
             onChange={(e) =>
               handleInputChange("hiddenSize", parseInt(e.target.value) || 0)
             }
-            style={styles.input}
+            className="input"
           />
         </div>
         <div>
@@ -152,141 +149,18 @@ function FlowChartOrganizer() {
                 Math.max(1, parseInt(e.target.value) || 1)
               )
             }
-            style={styles.input}
+            className="input"
           />
         </div>
-        <button style={styles.addButton} onClick={createLayers}>
+        <button className="addButton" onClick={createLayers}>
           Create Layers
         </button>
-        <button style={styles.resetButton} onClick={resetLayers}>
+        <button className="resetButton" onClick={resetLayers}>
           Reset
         </button>
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    display: "grid",
-    gridTemplateColumns: "1fr 0.15fr 6fr 0.15fr 1fr 1.5fr", // Input, Arrow1, Layers, Arrow2, Output, Controls
-    width: "95%",
-    height: "90vh",
-    margin: "auto",
-    fontFamily: "'Poppins', sans-serif",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    overflow: "hidden",
-    gap: "10px",
-  },
-  inputArea: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  outputArea: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  layersArea: {
-    backgroundColor: "#f9f9f9",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "column",
-    overflow: "hidden",
-    position: "relative",
-    height: "100%", // Ensure consistent height for centering
-  },
-  trapezoid: {
-    width: "300px",
-    height: "85vh",
-    backgroundColor: "#90caf9",
-    clipPath: "polygon(20% 0, 80% 0, 100% 100%, 0% 100%)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  arrowContainer: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  arrowLine: {
-    width: "50px",
-    height: "2px",
-    backgroundColor: "black",
-  },
-  arrowHead: {
-    width: "0",
-    height: "0",
-    borderLeft: "7px solid black",
-    borderTop: "4px solid transparent",
-    borderBottom: "4px solid transparent",
-  },
-  label: {
-    marginBottom: "10px",
-    fontWeight: "bold",
-    fontSize: "1rem",
-    textAlign: "center",
-    color: "#333",
-  },
-  inputBlock: {
-    backgroundColor: "#f0f8ff",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "10px",
-  },
-  input: {
-    width: "100%",
-    padding: "5px",
-    fontSize: "1rem",
-    marginTop: "5px",
-    boxSizing: "border-box",
-  },
-  addButton: {
-    width: "100%",
-    padding: "10px",
-    margin: "10px 0",
-    fontSize: "1rem",
-    backgroundColor: "#4a90e2",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  resetButton: {
-    width: "100%",
-    padding: "10px",
-    margin: "10px 0",
-    fontSize: "1rem",
-    backgroundColor: "#f44336",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  layer: {
-    width: "120px",
-    height: "50px",
-    backgroundColor: "#e3f2fd",
-    color: "#333",
-    textAlign: "center",
-    lineHeight: "50px",
-    border: "1px solid #90caf9",
-    borderRadius: "5px",
-    position: "absolute",
-  },
-};
 
 export default FlowChartOrganizer;

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Draggable from "react-draggable";
 
 function FlowChartOrganizer() {
-  const [layers, setLayers] = useState([]); // Store layers
+  const [layers, setLayers] = useState([]);
   const [blockInputs, setBlockInputs] = useState({
     inputSize: 0,
     outputSize: 0,
@@ -10,35 +10,48 @@ function FlowChartOrganizer() {
     numHiddenLayers: 1,
   });
 
-  // Update the block inputs
   const handleInputChange = (field, value) => {
     setBlockInputs({ ...blockInputs, [field]: value });
   };
 
-  // Create layers based on input
   const createLayers = () => {
     const newLayers = [];
+    const layerHeight = 50; // Height of each layer
+    const overlapOffsetY = 10; // Vertical overlap amount
+    const overlapOffsetX = 15; // Horizontal overlap amount
+    const totalHeight =
+      blockInputs.numHiddenLayers * (layerHeight - overlapOffsetY);
+    const areaHeight = 500; // Approximate height of Layers Area
+    const startY = (areaHeight - totalHeight) / 2; // Center layers vertically
+    const startX = -((blockInputs.numHiddenLayers - 1) * overlapOffsetX) / 2; // Center layers horizontally
+  
     for (let i = 0; i < blockInputs.numHiddenLayers; i++) {
       newLayers.push({
         id: layers.length + i,
         name: `Layer ${i + 1}`,
-        position: { x: 0, y: i * 60 }, // Staggered vertically
+        position: {
+          x: startX + i * overlapOffsetX,
+          y: startY + i * (layerHeight - overlapOffsetY),
+        },
       });
     }
     setLayers([...layers, ...newLayers]);
   };
-   // Reset all layers and inputs
-   const resetLayers = () => {
-    setLayers([]); // Clear layers
+  
+  
+  
+  
+
+  const resetLayers = () => {
+    setLayers([]);
     setBlockInputs({
       inputSize: 0,
       outputSize: 0,
       hiddenSize: 0,
-      numHiddenLayers: 1, // Reset to default value
-    }); // Reset inputs
+      numHiddenLayers: 1,
+    });
   };
 
-  // Update layer position on drag
   const onLayerDragStop = (id, data) => {
     setLayers((prevLayers) =>
       prevLayers.map((layer) =>
@@ -51,7 +64,48 @@ function FlowChartOrganizer() {
 
   return (
     <div style={styles.container}>
-      {/* Input Block */}
+      {/* Input Section */}
+      <div style={styles.inputArea}>
+        <div style={styles.label}>Input</div>
+        <div style={styles.trapezoid}></div>
+      </div>
+
+      {/* Arrow from Input to Layers */}
+      {layers.length > 0 && (
+        <div style={styles.arrowContainer}>
+          <div style={styles.arrowLine}></div>
+          <div style={styles.arrowHead}></div>
+        </div>
+      )}
+
+      {/* Middle Layers Area */}
+      <div style={styles.layersArea}>
+        {layers.map((layer) => (
+          <Draggable
+            key={layer.id}
+            position={layer.position}
+            onStop={(e, data) => onLayerDragStop(layer.id, data)}
+          >
+            <div style={styles.layer}>{layer.name}</div>
+          </Draggable>
+        ))}
+      </div>
+
+      {/* Arrow from Layers to Output */}
+      {layers.length > 0 && (
+        <div style={styles.arrowContainer}>
+          <div style={styles.arrowLine}></div>
+          <div style={styles.arrowHead}></div>
+        </div>
+      )}
+
+      {/* Output Section */}
+      <div style={styles.outputArea}>
+        <div style={styles.label}>Output</div>
+        <div style={styles.trapezoid}></div>
+      </div>
+
+      {/* Input Controls */}
       <div style={styles.inputBlock}>
         <h4>Configure Inputs</h4>
         <div>
@@ -105,48 +159,93 @@ function FlowChartOrganizer() {
           Create Layers
         </button>
         <button style={styles.resetButton} onClick={resetLayers}>
-        Reset
+          Reset
         </button>
-      </div>
-
-      {/* Draggable Layers */}
-      <div style={styles.layersArea}>
-        {layers.map((layer) => (
-          <Draggable
-            key={layer.id}
-            position={layer.position}
-            onStop={(e, data) => onLayerDragStop(layer.id, data)}
-          >
-            <div style={styles.layer}>{layer.name}</div>
-          </Draggable>
-        ))}
       </div>
     </div>
   );
 }
-//create a reset button for after you create layers it will clear the screen
+
 const styles = {
   container: {
-    display: "flex",
-    height: "100vh",
+    display: "grid",
+    gridTemplateColumns: "1fr 0.15fr 6fr 0.15fr 1fr 1.5fr", // Input, Arrow1, Layers, Arrow2, Output, Controls
+    width: "95%",
+    height: "90vh",
+    margin: "auto",
     fontFamily: "'Poppins', sans-serif",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    overflow: "hidden",
+    gap: "10px",
+  },
+  inputArea: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  outputArea: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  layersArea: {
+    backgroundColor: "#f9f9f9",
+    border: "1px solid #ddd",
+    borderRadius: "10px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "column",
+    overflow: "hidden",
+    position: "relative",
+    height: "100%", // Ensure consistent height for centering
+  },
+  trapezoid: {
+    width: "300px",
+    height: "85vh",
+    backgroundColor: "#90caf9",
+    clipPath: "polygon(20% 0, 80% 0, 100% 100%, 0% 100%)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  arrowContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  arrowLine: {
+    width: "50px",
+    height: "2px",
+    backgroundColor: "black",
+  },
+  arrowHead: {
+    width: "0",
+    height: "0",
+    borderLeft: "7px solid black",
+    borderTop: "4px solid transparent",
+    borderBottom: "4px solid transparent",
+  },
+  label: {
+    marginBottom: "10px",
+    fontWeight: "bold",
+    fontSize: "1rem",
+    textAlign: "center",
+    color: "#333",
   },
   inputBlock: {
-    width: "25%",
-    padding: "20px",
     backgroundColor: "#f0f8ff",
-    borderRight: "2px solid #ddd",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "5px",
     display: "flex",
     flexDirection: "column",
     alignItems: "flex-start",
     gap: "10px",
-  },
-  layersArea: {
-    width: "75%",
-    position: "relative",
-    backgroundColor: "#f9f9f9",
-    overflow: "hidden",
-    padding: "10px",
   },
   input: {
     width: "100%",
@@ -156,33 +255,36 @@ const styles = {
     boxSizing: "border-box",
   },
   addButton: {
-    padding: "10px 20px",
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
     fontSize: "1rem",
-    color: "#fff",
     backgroundColor: "#4a90e2",
+    color: "#fff",
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
-    marginTop: "10px",
   },
   resetButton: {
-    padding: "10px 20px",
+    width: "100%",
+    padding: "10px",
+    margin: "10px 0",
     fontSize: "1rem",
+    backgroundColor: "#f44336",
     color: "#fff",
-    backgroundColor: "#f44336", // Red for reset
     border: "none",
     borderRadius: "5px",
     cursor: "pointer",
   },
   layer: {
-    width: "150px",
-    padding: "10px",
-    textAlign: "center",
+    width: "120px",
+    height: "50px",
     backgroundColor: "#e3f2fd",
+    color: "#333",
+    textAlign: "center",
+    lineHeight: "50px",
     border: "1px solid #90caf9",
     borderRadius: "5px",
-    cursor: "grab",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
     position: "absolute",
   },
 };

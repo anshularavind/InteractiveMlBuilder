@@ -5,7 +5,6 @@ from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, session, url_for, request, jsonify
-from flask_cors import CORS
 from functools import wraps
 
 ENV_FILE = find_dotenv()
@@ -13,7 +12,6 @@ if ENV_FILE:
     load_dotenv(ENV_FILE)
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
 app.secret_key = env.get("APP_SECRET_KEY")
 
 oauth = OAuth(app)

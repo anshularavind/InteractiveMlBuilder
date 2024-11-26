@@ -6,6 +6,8 @@ from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, session, url_for, request, jsonify
 from functools import wraps
+import requests
+
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -25,6 +27,17 @@ oauth.register(
     },
     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
+
+
+def validate_token(token):
+    """Validates the token by calling the Auth0 /userinfo endpoint."""
+    url = f"https://{env.get('AUTH0_DOMAIN')}/userinfo"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()  # User info if the token is valid
+    return None
 
 
 @app.route("/login")

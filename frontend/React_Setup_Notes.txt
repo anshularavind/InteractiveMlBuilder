@@ -1,0 +1,3 @@
+npm install react-scripts
+# npm install react-router-dom
+npm install @auth0/auth0-react

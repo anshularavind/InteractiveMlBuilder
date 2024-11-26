@@ -54,6 +54,13 @@ class UserDatabase():
         self.conn.commit()
         return True
 
+    def add_user_uuid(self, user_uuid):
+        if self.get_user_name(user_uuid):
+            return False
+        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, user_uuid))
+        self.conn.commit()
+        return True
+
     def get_user_uuid(self, username):
         self.cur.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = self.cur.fetchone()

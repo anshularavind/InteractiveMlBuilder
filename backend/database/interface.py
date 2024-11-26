@@ -35,6 +35,7 @@ class UserDatabase():
         """)
 
         self.conn.commit()
+        os.makedirs('user_data', exist_ok=True)
 
     def hash(self, string):
         return abs(hash(string) % 1000000)
@@ -45,7 +46,7 @@ class UserDatabase():
 
     def add_user(self, username):
         # make sure username is unique
-        if self.get_user(username):
+        if self.get_user_uuid(username):
             return False
         # hash the username as the unique id int
         user_uuid = self.hash(username)
@@ -53,10 +54,15 @@ class UserDatabase():
         self.conn.commit()
         return True
 
-    def get_user(self, username):
+    def get_user_uuid(self, username):
         self.cur.execute("SELECT * FROM users WHERE username=%s", (username,))
         user = self.cur.fetchone()
         return user[0] if user else None
+
+    def get_user_name(self, user_uuid):
+        self.cur.execute("SELECT * FROM users WHERE uuid=%s", (user_uuid,))
+        user = self.cur.fetchone()
+        return user[1] if user else None
 
     def get_users(self):
         self.cur.execute("SELECT * FROM users")
@@ -64,7 +70,7 @@ class UserDatabase():
 
     def init_model(self, user_uuid, config_json):
         created_at = datetime.now()
-        model_uuid = self.hash(str(user_uuid) + config_json)  # add created_at if unique same config ids are needed
+        model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
         model_path = f'user_data/{user_uuid}/{model_uuid}'
 
         # save config
@@ -83,22 +89,19 @@ class UserDatabase():
         model = self.cur.fetchone()
         return model[2] if model else None
 
-    def get_models(self, username):
-        user_uuid = self.get_user(username)
+    def get_models(self, user_uuid):
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s", (user_uuid,))
         return self.cur.fetchall()
 
-    def add_dataset(self, username, dataset_name, dataset_path):
+    def add_dataset(self, user_uuid, dataset_name, dataset_path):
         # hashing
-        user_uuid = self.get_user(username)
-        dataset_uuid = self.hash(dataset_name + username)
+        dataset_uuid = self.hash(dataset_name) + user_uuid
         created_at = datetime.now()
         self.cur.execute("INSERT INTO datasets (uuid, user_uuid, dataset_path, created_at) VALUES (%s, %s, %s, %s)",
                          (dataset_uuid, user_uuid, dataset_path, created_at))
         self.conn.commit()
 
-    def get_dataset(self, username, dataset_path):
-        user_uuid = self.get_user(username)
+    def get_dataset(self, user_uuid, dataset_path):
         self.cur.execute("SELECT * FROM datasets WHERE user_uuid=%s AND dataset_path=%s", (user_uuid, dataset_path))
         return self.cur.fetchone()
 

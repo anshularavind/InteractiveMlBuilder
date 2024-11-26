@@ -178,6 +178,8 @@ if __name__ == '__main__':
     ]
 }'''
 
-    # model = BuiltModel(mnist_nn_model)
+    # training both models to test basic functionality
+    model = BuiltModel(mnist_nn_model)
+    train_model(model, 2)
     model = BuiltModel(mnist_cnn_model)
-    train_model(model, 10)
+    train_model(model, 2)

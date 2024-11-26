@@ -45,12 +45,12 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist}
 
-    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase):
+    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = ''):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
         self.model_uuid = user_db.init_model(user_uuid, model_json)
-        self.model_dir = user_db.get_model_dir(user_uuid, self.model_uuid)
+        self.model_dir = os.path.join(rel_path_to_backend_dir, 'database', user_db.get_model_dir(user_uuid, self.model_uuid))
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))
@@ -199,9 +199,13 @@ if __name__ == '__main__':
         }
     ]
 }'''
+    user_db = UserDatabase()
+    user_db.clear()
+    user_db.delete()
+    user_db = UserDatabase()
 
     # training both models to test basic functionality
-    model = BuiltModel(mnist_nn_model)
+    model = BuiltModel(mnist_nn_model, 'test_user', user_db, '..')
     train_model(model, 2)
-    model = BuiltModel(mnist_cnn_model)
+    model = BuiltModel(mnist_cnn_model, 'test_user', user_db)
     train_model(model, 2)

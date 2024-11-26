@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
 import Profile from "./Profile";
@@ -6,37 +7,54 @@ import TrainingControl from "./TrainingControl";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
+  // const token = await getAccessTokenSilently();  // ex for getting access token (needed for API calls)
+
+
+  if (error) {
+    console.log('error:', error);
+    return <div style={styles.container}>Oops... {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div style={styles.container}>Loading...</div>;
+  }
 
   const renderPage = () => {
+    if (!isAuthenticated) {
+      return (
+        <div style={styles.container}>
+          <h1 style={styles.header}>
+            Welcome to the Interactive ML Model Builder
+          </h1>
+          <p style={styles.subtitle}>Please log in to get started:</p>
+          <Button text="Login" onClick={() => loginWithRedirect()} />
+        </div>
+      );
+    }
+
     switch (currentPage) {
       case "modelBuilder":
         return <ModelBuilder goBack={() => setCurrentPage("start")} />;
       case "datasetSelection":
         return <DatasetSelection goBack={() => setCurrentPage("start")} />;
       case "profile":
-        return <Profile goBack={() => setCurrentPage("start")} />;
+        return <Profile goBack={() => setCurrentPage("start")} user={user} />;
       case "trainingControl":
         return <TrainingControl goBack={() => setCurrentPage("start")} />;
       default:
         return (
           <div style={styles.container}>
-            <h1 style={styles.header}>
-              Welcome to the Interactive ML Model Builder
-            </h1>
+            <p style={{ ...styles.subtitle, position: 'absolute', top: 0, right: 10 }}>
+              User: {user?.name}
+            </p>
+            <h1 style={styles.header}>Interactive ML Model Builder</h1>
             <p style={styles.subtitle}>Select a feature to get started:</p>
-            <Button
-              text="Model Builder"
-              onClick={() => setCurrentPage("modelBuilder")}
-            />
-            <Button
-              text="Dataset Selection"
-              onClick={() => setCurrentPage("datasetSelection")}
-            />
+            <Button text="Model Builder" onClick={() => setCurrentPage("modelBuilder")} />
+            <Button text="Dataset Selection" onClick={() => setCurrentPage("datasetSelection")} />
             <Button text="Profile" onClick={() => setCurrentPage("profile")} />
-            <Button
-              text="Training Control"
-              onClick={() => setCurrentPage("trainingControl")}
-            />
+            <Button text="Training Control" onClick={() => setCurrentPage("trainingControl")} />
+            <Button text="Logout" onClick={() => logout({ returnTo: window.location.origin })} />
           </div>
         );
     }

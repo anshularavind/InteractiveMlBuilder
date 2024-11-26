@@ -4,8 +4,9 @@ from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
-from flask import Flask, redirect, render_template, session, url_for, request
+from flask import Flask, redirect, session, url_for, request, jsonify
 from functools import wraps
+import requests
 
 
 ENV_FILE = find_dotenv()
@@ -28,6 +29,17 @@ oauth.register(
 )
 
 
+def validate_token(token):
+    """Validates the token by calling the Auth0 /userinfo endpoint."""
+    url = f"https://{env.get('AUTH0_DOMAIN')}/userinfo"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()  # User info if the token is valid
+    return None
+
+
 @app.route("/login")
 def login():
     return oauth.auth0.authorize_redirect(
@@ -48,9 +60,9 @@ def requires_auth(f):
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
     token = oauth.auth0.authorize_access_token()
-    session["user"] = token
-    next_url = session.pop('next_url', url_for('home'))
-    return redirect(next_url)
+    user_info = token.get("userinfo") or oauth.auth0.get("userinfo").json()
+    session["user"] = user_info  
+    return redirect(env.get("FRONTEND_REDIRECT_URI", "/"))
 
 
 @app.route("/logout")
@@ -69,9 +81,16 @@ def logout():
     )
 
 
+@app.route("/session")
+def session_info():
+    if "user" in session:
+        return jsonify({"user": session["user"]}), 200
+    return jsonify({"error": "Unauthorized"}), 401
+
+
 @app.route("/")
 def home():
-    return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
+    return jsonify({"message": "API is working"}), 200
 
 
 @app.route('/hello')
@@ -79,12 +98,13 @@ def home():
 def hello():
     return 'Hello, World!'
 
+
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=int(env.get("PORT", 3000)),
         ssl_context=(
-            env.get("SSL_CERT_PATH"),  # Path to your certificate
-            env.get("SSL_KEY_PATH")    # Path to your private key
+            env.get("SSL_CERT_PATH"),  
+            env.get("SSL_KEY_PATH")    
         )
     )

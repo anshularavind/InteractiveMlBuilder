@@ -3,6 +3,9 @@ from basic_blocks import *
 import torch.nn as nn
 from mnist import Mnist
 from train import train_model
+import os
+from ..database.interface import UserDatabase
+
 
 '''
 Model Builder Input/Output Json Format:
@@ -42,9 +45,14 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist}
 
-    def __init__(self, model_json: str):
+    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = '../'):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
+        self.user_uuid = user_uuid
+        self.model_uuid = user_db.init_model(user_uuid, model_json)
+        self.model_dir = os.path.join(rel_path_to_backend_dir, 'database', user_db.get_model_dir(user_uuid, self.model_uuid))
+        self.user_db = user_db
+
         self.batch_size = int(self.model_json.get('batch_size', 64))
         self.dataset_name = self.model_json['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
@@ -86,9 +94,23 @@ class BuiltModel(nn.Module):
 
         return model_blocks
 
+    def add_output_logs(self, output: str):
+        # add output to self.model_dir/output.logs
+        with open(os.path.join(self.model_dir, 'output.logs'), 'a') as f:
+            f.write(output + '\n')
+
+    def add_loss_logs(self, loss: float):
+        # add loss to self.model_dir/loss.logs
+        with open(os.path.join(self.model_dir, 'loss.logs'), 'a') as f:
+            f.write(str(loss) + ',')  # comma separated values
+
+    def add_error_logs(self, error: str):
+        # add error to self.model_dir/error.logs
+        with open(os.path.join(self.model_dir, 'error.logs'), 'a') as f:
+            f.write(error + '\n')
+
 
 if __name__ == '__main__':
-    # json_str = '{"input": 10, "output": 10, "dataset": "MNIST", "LR": ".001", "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
     mnist_nn_model = '''{
         "input": 784,
         "output": 10,
@@ -177,9 +199,13 @@ if __name__ == '__main__':
         }
     ]
 }'''
+    user_db = UserDatabase()
+    user_db.clear()
+    user_db.delete()
+    user_db = UserDatabase()
 
     # training both models to test basic functionality
-    model = BuiltModel(mnist_nn_model)
+    model = BuiltModel(mnist_nn_model, 'test_user', user_db, '..')
     train_model(model, 2)
-    model = BuiltModel(mnist_cnn_model)
+    model = BuiltModel(mnist_cnn_model, 'test_user', user_db)
     train_model(model, 2)

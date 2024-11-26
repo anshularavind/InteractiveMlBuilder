@@ -8,16 +8,8 @@ import TrainingControl from "./TrainingControl";
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
+  // const token = await getAccessTokenSilently();  // ex for getting access token (needed for API calls)
 
-  useEffect(() => {
-    const saveToken = async () => {
-      if (isAuthenticated) {
-        const token = await getAccessTokenSilently();
-        localStorage.setItem('access_token', token);
-      }
-    };
-    saveToken();
-  }, [isAuthenticated, getAccessTokenSilently]);
 
   if (error) {
     console.log('error:', error);

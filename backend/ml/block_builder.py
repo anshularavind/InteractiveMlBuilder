@@ -3,6 +3,7 @@ from basic_blocks import *
 import torch.nn as nn
 from mnist import Mnist
 from train import train_model
+from ..database.interface import UserDatabase
 
 '''
 Model Builder Input/Output Json Format:
@@ -42,9 +43,13 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist}
 
-    def __init__(self, model_json: str):
+    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
+        self.user_uuid = user_uuid
+        self.model_uuid = user_db.add_model(user_uuid, model_json)
+        self.user_db = user_db
+
         self.batch_size = int(self.model_json.get('batch_size', 64))
         self.dataset_name = self.model_json['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
@@ -88,7 +93,6 @@ class BuiltModel(nn.Module):
 
 
 if __name__ == '__main__':
-    # json_str = '{"input": 10, "output": 10, "dataset": "MNIST", "LR": ".001", "blocks": [{"block": "FcNN", "params": {"output_size": 10, "hidden_size": 10, "num_hidden_layers": 2}}]}'
     mnist_nn_model = '''{
         "input": 784,
         "output": 10,

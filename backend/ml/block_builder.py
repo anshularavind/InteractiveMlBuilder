@@ -3,7 +3,9 @@ from basic_blocks import *
 import torch.nn as nn
 from mnist import Mnist
 from train import train_model
+import os
 from ..database.interface import UserDatabase
+
 
 '''
 Model Builder Input/Output Json Format:
@@ -47,7 +49,8 @@ class BuiltModel(nn.Module):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
-        self.model_uuid = user_db.add_model(user_uuid, model_json)
+        self.model_uuid = user_db.init_model(user_uuid, model_json)
+        self.model_dir = user_db.get_model_dir(user_uuid, self.model_uuid)
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))
@@ -90,6 +93,21 @@ class BuiltModel(nn.Module):
         assert input_size == output_size, 'Output size of last block does not match model output size'
 
         return model_blocks
+
+    def add_output_logs(self, output: str):
+        # add output to self.model_dir/output.logs
+        with open(os.path.join(self.model_dir, 'output.logs'), 'a') as f:
+            f.write(output + '\n')
+
+    def add_loss_logs(self, loss: float):
+        # add loss to self.model_dir/loss.logs
+        with open(os.path.join(self.model_dir, 'loss.logs'), 'a') as f:
+            f.write(str(loss) + ',')  # comma separated values
+
+    def add_error_logs(self, error: str):
+        # add error to self.model_dir/error.logs
+        with open(os.path.join(self.model_dir, 'error.logs'), 'a') as f:
+            f.write(error + '\n')
 
 
 if __name__ == '__main__':

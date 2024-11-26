@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
@@ -9,13 +9,8 @@ function App() {
   const [currentPage, setCurrentPage] = useState("start");
   let { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
 
-  useEffect(() => {
-    console.log('isLoading:', isLoading);
-    console.log('isAuthenticated:', isAuthenticated);
-    console.log('user:', user);
-  }, [isLoading, isAuthenticated, user]);
-
   if (error) {
+    console.log('error:', error);
     return <div style={styles.container}>Oops... {error.message}</div>;
   }
 

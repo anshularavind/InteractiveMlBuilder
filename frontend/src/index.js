@@ -18,20 +18,18 @@ const onRedirectCallback = (appState) => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-      <Auth0Provider
-        domain={domain}
-        clientId={clientId}
-        authorizationParams={{
-          redirect_uri: window.location.origin
-        }}
-        useRefreshTokens={true}
-        cacheLocation="localstorage"
-        onRedirectCallback={onRedirectCallback}
-      >
-        <App />
-      </Auth0Provider>
-  </React.StrictMode>
+  <Auth0Provider
+    domain={domain}
+    clientId={clientId}
+    authorizationParams={{
+      redirect_uri: window.location.origin
+    }}
+    useRefreshTokens={true}
+    cacheLocation="localstorage"
+    onRedirectCallback={onRedirectCallback}
+  >
+    <App />
+  </Auth0Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

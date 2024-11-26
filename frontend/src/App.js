@@ -1,17 +1,29 @@
-import React, { useState } from "react";
-import { useAuth0 } from '@auth0/auth0-react'
+import React, { useState, useEffect } from "react";
+import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
 import Profile from "./Profile";
 import TrainingControl from "./TrainingControl";
 
-
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading} = useAuth0();
+  let { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
+
+  useEffect(() => {
+    console.log('isLoading:', isLoading);
+    console.log('isAuthenticated:', isAuthenticated);
+    console.log('user:', user);
+  }, [isLoading, isAuthenticated, user]);
+
+  if (error) {
+    return <div style={styles.container}>Oops... {error.message}</div>;
+  }
+
+  if (isLoading) {
+    return <div style={styles.container}>Loading...</div>;
+  }
 
   const renderPage = () => {
-
     if (!isAuthenticated) {
       return (
         <div style={styles.container}>

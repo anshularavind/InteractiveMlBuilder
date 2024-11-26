@@ -45,7 +45,7 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist}
 
-    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = ''):
+    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = '..'):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid

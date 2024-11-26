@@ -1,61 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { createRoot } from "react-dom/client"
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
 import Profile from "./Profile";
 import TrainingControl from "./TrainingControl";
 
+const domain = process.env.AUTH0_DOMAIN; 
+const clientId = process.env.AUTH0_CLIENT_ID;
+console.log("Domain:", domain);
+console.log("Client ID:", clientId);
+
+
+const root = createRoot(document.getElementById('root'));
+
+root.render(
+  <Auth0Provider
+    domain={domain}
+    clientId={clientId}
+    authorizationParams={{
+      redirect_uri: window.location.origin
+    }}
+  >
+    <App />
+  </Auth0Provider>,
+);
+
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const login = () => {
-    window.location.href = "http://localhost:3000/login";
-  };
-
-  const logout = () => {
-    window.location.href = "http://localhost:3000/logout";
-  };
-
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/session", {
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch session data");
-        }
-
-        const data = await response.json();
-        setUser(data.user || null);
-      } catch (error) {
-        console.error("Error fetching session:", error);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSession();
-  }, []);
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading} = useAuth0();
 
   const renderPage = () => {
-    if (isLoading) {
-      return (
-        <div style={styles.container}>
-          <h1 style={styles.header}>Loading...</h1>
-        </div>
-      );
-    }
 
-    if (!user) {
+    if (!isAuthenticated) {
       return (
         <div style={styles.container}>
-          <h1 style={styles.header}>Welcome to the Interactive ML Model Builder</h1>
+          <h1 style={styles.header}>
+            Welcome to the Interactive ML Model Builder
+          </h1>
           <p style={styles.subtitle}>Please log in to get started:</p>
-          <Button text="Login" onClick={login} />
+          <Button text="Login" onClick={() => loginWithRedirect()} />
         </div>
       );
     }
@@ -74,20 +58,11 @@ function App() {
           <div style={styles.container}>
             <h1 style={styles.header}>Welcome to the Interactive ML Model Builder</h1>
             <p style={styles.subtitle}>Select a feature to get started:</p>
-            <Button
-              text="Model Builder"
-              onClick={() => setCurrentPage("modelBuilder")}
-            />
-            <Button
-              text="Dataset Selection"
-              onClick={() => setCurrentPage("datasetSelection")}
-            />
+            <Button text="Model Builder" onClick={() => setCurrentPage("modelBuilder")} />
+            <Button text="Dataset Selection" onClick={() => setCurrentPage("datasetSelection")} />
             <Button text="Profile" onClick={() => setCurrentPage("profile")} />
-            <Button
-              text="Training Control"
-              onClick={() => setCurrentPage("trainingControl")}
-            />
-            <Button text="Logout" onClick={logout} />
+            <Button text="Training Control" onClick={() => setCurrentPage("trainingControl")} />
+            <Button text="Logout" onClick={() => logout({ returnTo: window.location.origin })} />
           </div>
         );
     }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
@@ -7,7 +7,17 @@ import TrainingControl from "./TrainingControl";
 
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
-  let { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    const saveToken = async () => {
+      if (isAuthenticated) {
+        const token = await getAccessTokenSilently();
+        localStorage.setItem('jwt_token', token);
+      }
+    };
+    saveToken();
+  }, [isAuthenticated, getAccessTokenSilently]);
 
   if (error) {
     console.log('error:', error);

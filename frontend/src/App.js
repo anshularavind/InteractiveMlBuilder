@@ -1,30 +1,10 @@
 import React, { useState } from "react";
-import { createRoot } from "react-dom/client"
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react'
+import { useAuth0 } from '@auth0/auth0-react'
 import ModelBuilder from "./ModelBuilder";
 import DatasetSelection from "./DatasetSelection";
 import Profile from "./Profile";
 import TrainingControl from "./TrainingControl";
 
-const domain = process.env.AUTH0_DOMAIN; 
-const clientId = process.env.AUTH0_CLIENT_ID;
-console.log("Domain:", domain);
-console.log("Client ID:", clientId);
-
-
-const root = createRoot(document.getElementById('root'));
-
-root.render(
-  <Auth0Provider
-    domain={domain}
-    clientId={clientId}
-    authorizationParams={{
-      redirect_uri: window.location.origin
-    }}
-  >
-    <App />
-  </Auth0Provider>,
-);
 
 function App() {
   const [currentPage, setCurrentPage] = useState("start");

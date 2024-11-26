@@ -13,7 +13,7 @@ function App() {
     const saveToken = async () => {
       if (isAuthenticated) {
         const token = await getAccessTokenSilently();
-        localStorage.setItem('jwt_token', token);
+        localStorage.setItem('access_token', token);
       }
     };
     saveToken();

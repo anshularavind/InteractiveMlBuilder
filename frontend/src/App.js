@@ -45,7 +45,10 @@ function App() {
       default:
         return (
           <div style={styles.container}>
-            <h1 style={styles.header}>Welcome to the Interactive ML Model Builder</h1>
+            <p style={{ ...styles.subtitle, position: 'absolute', top: 0, right: 10 }}>
+              User: {user?.name}
+            </p>
+            <h1 style={styles.header}>Interactive ML Model Builder</h1>
             <p style={styles.subtitle}>Select a feature to get started:</p>
             <Button text="Model Builder" onClick={() => setCurrentPage("modelBuilder")} />
             <Button text="Dataset Selection" onClick={() => setCurrentPage("datasetSelection")} />

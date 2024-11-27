@@ -63,20 +63,4 @@ function App() {
 }
 
 
-
-const Button = ({ text, onClick }) => {
-  const [hover, setHover] = React.useState(false);
-
-  return (
-    <button
-      className={hover ? "button buttonHover" : "button"}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      onClick={onClick}
-    >
-      {text}
-    </button>
-  );
-};
-
 export default App;

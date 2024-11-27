@@ -85,6 +85,11 @@ class UserDatabase():
         with open(os.path.join(model_path, 'config.json'), 'w') as f:
             f.write(config_json)
 
+        # touching output.logs, loss.logs, error.logs if they don't exist
+        open(os.path.join(model_path, 'output.logs'), 'a').close()
+        open(os.path.join(model_path, 'loss.logs'), 'a').close()
+        open(os.path.join(model_path, 'error.logs'), 'a').close()
+
         self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
                          (model_uuid, user_uuid, model_path, created_at))
         self.conn.commit()

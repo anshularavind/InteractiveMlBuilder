@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import torch
 from torch import nn
-import math
+from backend.datasets.base_dataset import BaseDataset
 
 
 class MNISTDataset(Dataset):
@@ -31,18 +31,22 @@ class MNISTDataset(Dataset):
 
         return image, label
 
-class Mnist:
+class Mnist(BaseDataset):
     dataset = load_dataset("ylecun/mnist")
     criterion = nn.CrossEntropyLoss()
     is_2d = True
     num_channels = 1
 
     def __init__(self, batch_size=64):
+        super().__init__(batch_size=batch_size)
         self.train_loader, self.test_loader = Mnist.__get_mnist_data_loaders(batch_size=batch_size)
         self.batch_size = batch_size
 
     def get_output_size(self):
         return len(self.dataset["train"].features["label"].names)
+
+    def get_data_loaders(self):
+        return self.train_loader, self.test_loader
 
     @staticmethod
     def get_eval_numbers(output, target):

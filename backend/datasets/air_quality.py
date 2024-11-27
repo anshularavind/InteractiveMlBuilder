@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import torch
 from torch import nn
+from backend.datasets.base_dataset import BaseDataset
 import numpy as np
 
 
@@ -21,17 +22,21 @@ class AirQualityDataset(Dataset):
         return torch.tensor(other_values, dtype=torch.float32), torch.tensor([co, no2], dtype=torch.float32)
 
 
-class AirQuality:
+class AirQuality(BaseDataset):
     criterion = nn.MSELoss()
     is_2d = False
     num_channels = 1
 
     def __init__(self, batch_size=64):
+        super().__init__(batch_size=batch_size)
         self.batch_size = batch_size
         self.train_loader, self.test_loader = AirQuality.__get_air_quality_data_loaders(batch_size=batch_size)
 
     def get_output_size(self):
         return 2
+
+    def get_data_loaders(self):
+        return self.train_loader, self.test_loader
 
     @staticmethod
     def get_eval_numbers(output, target):

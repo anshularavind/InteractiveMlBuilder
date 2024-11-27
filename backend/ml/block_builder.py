@@ -1,10 +1,10 @@
 import json
-from basic_blocks import *
+from ml.basic_blocks import *
 import torch.nn as nn
-from mnist import Mnist
-from train import train_model
+from ml.mnist import Mnist
+from ml.train import train_model
 import os
-from ..database.interface import UserDatabase
+from database.interface import UserDatabase
 
 
 '''

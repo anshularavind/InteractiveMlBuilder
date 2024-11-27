@@ -1,12 +1,10 @@
 import React from "react";
 
-function DatasetSelection({ goBack }) {
+function About({ goBack }) {
   return (
     <div style={styles.container}>
-      <button style={styles.goBackButton} onClick={goBack}>
-        Back to Home
-      </button>
-      <h2 style={styles.header}>Dataset Selection Page</h2>
+     
+      <h2 style={styles.header}>About Page</h2>
     </div>
   );
 }
@@ -41,4 +39,4 @@ const styles = {
   },
 };
 
-export default DatasetSelection;
+export default About;

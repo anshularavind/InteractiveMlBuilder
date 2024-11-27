@@ -38,8 +38,6 @@ Block Params Json Format:
 '''
 
 text_datasets = {'IMDB', 'Wikipedia', 'Twitter'}
-image_datasets = {'MNIST', 'CIFAR10'}
-dataset_to_channels = {'MNIST': 1, 'CIFAR10': 3}
 channel_classes = {Conv, AdaptivePool}
 
 class BuiltModel(nn.Module):
@@ -59,8 +57,8 @@ class BuiltModel(nn.Module):
         self.batch_size = int(self.model_json.get('batch_size', 64))
         self.dataset_name = self.model_json['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
-        self.is_2d = self.dataset_name in image_datasets
-        self.in_channels = dataset_to_channels.get(self.dataset_name, 1)
+        self.is_2d = getattr(self.dataset, 'is_2d', False)
+        self.in_channels = getattr(self.dataset, 'num_channels', 1)
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_json['LR'])
 

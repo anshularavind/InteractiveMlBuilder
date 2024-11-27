@@ -34,6 +34,7 @@ class MNISTDataset(Dataset):
 class Mnist:
     dataset = load_dataset("ylecun/mnist")
     criterion = nn.CrossEntropyLoss()
+    is_2d = True
     num_channels = 1
 
     def __init__(self, batch_size=64):
@@ -49,7 +50,6 @@ class Mnist:
         total = target.size(0)
         correct = (predicted == target).sum().item()
         return correct, total
-
 
     @staticmethod
     def __get_mnist_data_loaders(batch_size=64):

@@ -4,7 +4,7 @@ function About({ goBack }) {
   return (
     <div style={styles.container}>
      
-      <h2 style={styles.header}>About Page</h2>
+      <h2 style={styles.header}>Sooooo This Appp BLAH BLAh</h2>
     </div>
   );
 }

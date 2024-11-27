@@ -4,7 +4,7 @@ function Profile({ goBack }) {
   return (
     <div style={styles.container}>
      
-      <h2 style={styles.header}>Profile Page</h2>
+      <h2 style={styles.header}>SOOOO thisss person</h2>
     </div>
   );
 }

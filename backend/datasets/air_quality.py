@@ -23,6 +23,8 @@ class AirQualityDataset(Dataset):
 
 class AirQuality:
     criterion = nn.MSELoss()
+    is_2d = False
+    num_channels = 1
 
     def __init__(self, batch_size=64):
         self.batch_size = batch_size

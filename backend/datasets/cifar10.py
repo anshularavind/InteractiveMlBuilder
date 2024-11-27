@@ -33,6 +33,7 @@ class CIFAR10Dataset(Dataset):
 class Cifar10:
     dataset = load_dataset("cifar10")
     criterion = nn.CrossEntropyLoss()
+    is_2d = True
     num_channels = 3
 
     def __init__(self, batch_size=64):
@@ -60,45 +61,3 @@ class Cifar10:
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
         return train_loader, test_loader
-
-if __name__ == '__main__':
-    class Pre_Process(nn.Module):
-        def __init__(self, num_channels=3):
-            super(Pre_Process, self).__init__()
-            self.num_channels = num_channels
-
-        def forward(self, x):
-            side_squared = x.size(-1) / self.num_channels
-            side = math.floor(math.sqrt(side_squared))
-            assert side * side == side_squared, "Image must be square"
-            x = x.reshape(-1, 3, side, side)
-            return x
-
-    class ExampleModel(nn.Module):
-        def __init__(self):
-            super(ExampleModel, self).__init__()
-            self.dataset = Cifar10()
-            self.epochs = 5
-            self.lr = 0.001
-            self.model = nn.Sequential(
-                Pre_Process(),
-                nn.Conv2d(3, 32, kernel_size=5),
-                nn.ReLU(),
-                nn.MaxPool2d(2),
-                nn.Conv2d(32, 64, kernel_size=5),
-                nn.ReLU(),
-                nn.MaxPool2d(2),
-                nn.Flatten(),
-                nn.Linear(1600, 128),
-                nn.ReLU(),
-                nn.Linear(128, 10)
-            )
-
-        def forward(self, x):
-            return self.model(x)
-
-        def add_output_logs(self, log):
-            print(log)
-
-    model = ExampleModel()
-    train_model(model, epochs=5)

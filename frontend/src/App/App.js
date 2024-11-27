@@ -4,6 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "../ModelBuilder/ModelBuilder";
 import About from "../About/About";
 import Profile from "../Profile/Profile";
+import Profile from "../Home/Home";
 import './App.css'; 
 
 function App() {
@@ -61,12 +62,7 @@ function App() {
   );
 }
 
-const Home = () => (
-  <div className="fullScreenContent">
-    <h1 className="header">Home Page for Interactive ML Model Builder</h1>
-    <p className="subtitle">Select a feature to get started from the navigation bar above.</p>
-  </div>
-);
+
 
 const Button = ({ text, onClick }) => {
   const [hover, setHover] = React.useState(false);

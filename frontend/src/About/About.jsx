@@ -3,8 +3,8 @@ import './About.css'; // Import external CSS file
 
 function About() {
   return (
-    <div className="container"> 
-      <h2 className="header">SOOOO thisss person</h2> 
+    <div className="container"> {/* Use className instead of style */}
+      <h2 className="header">Soooo umm this appp Blah BLah</h2> {/* Use className instead of style */}
     </div>
   );
 }

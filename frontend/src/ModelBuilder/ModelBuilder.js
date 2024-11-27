@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
+import "./ModelBuilder.css"; // Import the external CSS file
 
 function ModelBuilder() {
-  const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
-  const [dropdownOpen, setDropdownOpen] = useState(false); // Track dropdown state
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const items = [
     { value: "MNIST", label: "MNIST" },
@@ -11,12 +12,12 @@ function ModelBuilder() {
   ];
 
   const handleItemClick = (item) => {
-    setSelectedItem(item.value); // Set the selected item
-    setDropdownOpen(false); // Close the dropdown after selection
+    setSelectedItem(item.value);
+    setDropdownOpen(false);
   };
 
   const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen); // Toggle the dropdown open/close
+    setDropdownOpen(!dropdownOpen);
   };
 
   const [layers, setLayers] = useState([]);
@@ -28,7 +29,6 @@ function ModelBuilder() {
   });
 
   const handleInputChange = (field, value) => {
-    // Prevent negative values
     const sanitizedValue = Math.max(0, parseInt(value) || 0);
     setBlockInputs({ ...blockInputs, [field]: sanitizedValue });
   };
@@ -39,7 +39,7 @@ function ModelBuilder() {
       newLayers.push({
         id: layers.length + i,
         name: `Layer ${i + 1}`,
-        position: { x: 0, y: i * 60 }, // Staggered vertically
+        position: { x: 0, y: i * 60 },
       });
     }
     setLayers([...layers, ...newLayers]);
@@ -57,29 +57,22 @@ function ModelBuilder() {
 
   return (
     <div>
-      {/* Header with Back to Home and Profile Buttons */}
-      <div style={styles.headerContainer}>
-       
-        
+      <div className="headerContainer">
+        {/* Add buttons or other header content here */}
       </div>
 
-      <div style={styles.container}>
-        {/* Input Block */}
-        <div style={styles.inputBlock}>
-          <div className="dropdown" style={styles.dropdown}>
-            <button
-              className="dropdown-button"
-              style={styles.dropdownButton}
-              onClick={toggleDropdown}
-            >
+      <div className="container">
+        <div className="inputBlock">
+          <div className="dropdown">
+            <button className="dropdownButton" onClick={toggleDropdown}>
               {selectedItem ? `Selected: ${selectedItem}` : "Select Dataset"}
             </button>
             {dropdownOpen && (
-              <div className="dropdown-content" style={styles.dropdownContent}>
+              <div className="dropdownContent">
                 {items.map((item) => (
                   <div
                     key={item.value}
-                    style={styles.dropdownItem}
+                    className="dropdownItem"
                     onClick={() => handleItemClick(item)}
                   >
                     {item.label}
@@ -94,10 +87,8 @@ function ModelBuilder() {
             <input
               type="number"
               value={blockInputs.inputSize}
-              onChange={(e) =>
-                handleInputChange("inputSize", e.target.value)
-              }
-              style={styles.input}
+              onChange={(e) => handleInputChange("inputSize", e.target.value)}
+              className="input"
             />
           </div>
           <div>
@@ -105,10 +96,8 @@ function ModelBuilder() {
             <input
               type="number"
               value={blockInputs.outputSize}
-              onChange={(e) =>
-                handleInputChange("outputSize", e.target.value)
-              }
-              style={styles.input}
+              onChange={(e) => handleInputChange("outputSize", e.target.value)}
+              className="input"
             />
           </div>
           <div>
@@ -116,10 +105,8 @@ function ModelBuilder() {
             <input
               type="number"
               value={blockInputs.hiddenSize}
-              onChange={(e) =>
-                handleInputChange("hiddenSize", e.target.value)
-              }
-              style={styles.input}
+              onChange={(e) => handleInputChange("hiddenSize", e.target.value)}
+              className="input"
             />
           </div>
           <div>
@@ -130,23 +117,22 @@ function ModelBuilder() {
               onChange={(e) =>
                 handleInputChange("numHiddenLayers", e.target.value)
               }
-              style={styles.input}
+              className="input"
             />
           </div>
-          <button style={styles.addButton} onClick={createLayers}>
+          <button className="addButton" onClick={createLayers}>
             Create Layers
           </button>
         </div>
 
-        {/* Draggable Layers */}
-        <div style={styles.layersArea}>
+        <div className="layersArea">
           {layers.map((layer) => (
             <Draggable
               key={layer.id}
               position={layer.position}
               onStop={(e, data) => onLayerDragStop(layer.id, data)}
             >
-              <div style={styles.layer}>{layer.name}</div>
+              <div className="layer">{layer.name}</div>
             </Draggable>
           ))}
         </div>
@@ -154,101 +140,5 @@ function ModelBuilder() {
     </div>
   );
 }
-
-const styles = {
-  
-  headerButton: {
-    padding: "5px 15px",
-    fontSize: "1rem",
-    color: "#fff",
-    backgroundColor: "#357abd",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  container: {
-    display: "flex",
-    height: "100vh",
-    fontFamily: "'Poppins', sans-serif",
-  },
-  inputBlock: {
-    width: "25%",
-    padding: "20px",
-    backgroundColor: "#f0f8ff",
-    borderRight: "2px solid #ddd",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "10px",
-  },
-  layersArea: {
-    width: "75%",
-    position: "relative",
-    backgroundColor: "#f9f9f9",
-    overflow: "hidden",
-    padding: "10px",
-  },
-  input: {
-    width: "100%",
-    padding: "5px",
-    fontSize: "1rem",
-    marginTop: "5px",
-    boxSizing: "border-box",
-  },
-  addButton: {
-    padding: "10px 20px",
-    fontSize: "1rem",
-    color: "#fff",
-    backgroundColor: "#4a90e2",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    marginTop: "10px",
-  },
-  layer: {
-    width: "150px",
-    padding: "10px",
-    textAlign: "center",
-    backgroundColor: "#e3f2fd",
-    border: "1px solid #90caf9",
-    borderRadius: "5px",
-    cursor: "grab",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-    position: "absolute",
-  },
-  dropdown: {
-    marginBottom: "10px",
-    position: "relative",
-    width: "100%",
-  },
-  dropdownButton: {
-    width: "100%",
-    padding: "10px",
-    backgroundColor: "#357abd",
-    color: "#fff",
-    border: "none",
-    borderRadius: "5px",
-    cursor: "pointer",
-    textAlign: "center",
-  },
-  dropdownContent: {
-    position: "absolute",
-    backgroundColor: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-    marginTop: "5px",
-    zIndex: 100,
-    padding: "10px",
-    width: "100%",
-    cursor: "pointer",
-  },
-  dropdownItem: {
-    padding: "5px 10px",
-    fontSize: "1rem",
-    color: "#333",
-    cursor: "pointer",
-    borderBottom: "1px solid #ddd",
-  },
-};
 
 export default ModelBuilder;

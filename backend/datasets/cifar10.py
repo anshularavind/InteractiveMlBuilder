@@ -5,7 +5,9 @@ from torchvision import transforms
 import torch
 from torch import nn
 from backend.ml.train import train_model
+from backend.datasets.base_dataset import BaseDataset
 import math
+
 
 class CIFAR10Dataset(Dataset):
     def __init__(self, data, transform=None):
@@ -30,18 +32,22 @@ class CIFAR10Dataset(Dataset):
 
         return image, label
 
-class Cifar10:
+class Cifar10(BaseDataset):
     dataset = load_dataset("cifar10")
     criterion = nn.CrossEntropyLoss()
     is_2d = True
     num_channels = 3
 
     def __init__(self, batch_size=64):
+        super().__init__(batch_size=batch_size)
         self.train_loader, self.test_loader = Cifar10.__get_cifar10_data_loaders(batch_size=batch_size)
         self.batch_size = batch_size
 
     def get_output_size(self):
         return len(self.dataset["train"].features["label"].names)
+
+    def get_data_loaders(self):
+        return self.train_loader, self.test_loader
 
     @staticmethod
     def get_eval_numbers(output, target):

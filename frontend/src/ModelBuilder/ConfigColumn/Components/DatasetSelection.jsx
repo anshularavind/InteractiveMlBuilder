@@ -1,20 +1,21 @@
+import "../../ModelBuilder.css";
+
 function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, items, handleItemClick }) {
   return (
     <div>
-      <div className="dropdown" style={styles.dropdown}>
+      <div className="dropdown">
         <button
-          className="dropdown-button"
-          style={styles.dropdownButton}
+          className="dropdownButton"
           onClick={toggleDropdown}
         >
           {selectedItem ? `Selected: ${selectedItem}` : "Select Dataset"}
         </button>
         {dropdownOpen && (
-          <div className="dropdown-content" style={styles.dropdownContent}>
+          <div className="dropdownContent">
             {items.map((item) => (
               <div
                 key={item.value}
-                style={styles.dropdownItem}
+                className="dropdownItem"
                 onClick={() => handleItemClick(item)}
               >
                 {item.label}
@@ -26,3 +27,5 @@ function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, items, h
     </div>
   );
 }
+
+export default DatasetSelection;

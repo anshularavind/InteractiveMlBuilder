@@ -1,7 +1,7 @@
-import React, { useState } from "react";
 import DatasetSelection from "./Components/DatasetSelection";
 import ModelConfig from "./Components/ModelConfig";
 import Train from "./Components/Train";
+import "../ModelBuilder.css";
 
 function ConfigColumn({
   selectedItem,
@@ -14,7 +14,7 @@ function ConfigColumn({
   createLayers,
 }) {
   return (
-    <div style={styles.inputBlock}>
+    <div className="inputBlock">
       <DatasetSelection
         selectedItem={selectedItem}
         dropdownOpen={dropdownOpen}
@@ -31,3 +31,5 @@ function ConfigColumn({
     </div>
   );
 }
+
+export default ConfigColumn;

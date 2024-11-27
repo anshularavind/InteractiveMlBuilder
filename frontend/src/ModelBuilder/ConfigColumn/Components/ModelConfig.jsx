@@ -1,3 +1,5 @@
+import "../../ModelBuilder.css";
+
 function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>
@@ -9,13 +11,15 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
             type="number"
             value={blockInputs[field]}
             onChange={(e) => handleInputChange(field, e.target.value)}
-            style={styles.input}
+            className="input"
           />
         </div>
       ))}
-      <button style={styles.addButton} onClick={createLayers}>
+      <button className="addButton" onClick={createLayers}>
         Create Layers
       </button>
     </div>
   );
 }
+
+export default ModelConfig;

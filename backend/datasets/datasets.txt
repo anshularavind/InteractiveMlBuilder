@@ -5,7 +5,7 @@ ImageNet-Sketch - 50,000 28x28 black and white images in 250 classes: https://pa
 
 # Time Series
 Airline Passengers - 144 monthly observations from 1949 to 1960: https://www.kaggle.com/datasets/rakannimer/air-passengers
-Electricity: https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014
+Electricity - https://archive.ics.uci.edu/dataset/321/electricityloaddiagrams20112014
 Air Quality - https://archive.ics.uci.edu/dataset/360/air+quality
 
 # Tabular
@@ -26,3 +26,5 @@ DATASET CLASS REQUIREMENTS (refer to Mnist class not MNISTDataset class)
 3. self.train_loader, self.test_loader attributes
     A. probably need a standard torch datasets class as well
 4. static get_eval_numbers, gets the results
+5. get_output_size
+https://dev-yaqhhig1025kpyz0.us.auth0.com/authorize?client_id=T5Of81QxcTqPcx3kBlEDCD0NuUryexiP&scope=openid+profile+email+offline_access&redirect_uri=https%3A%2F%2Flocalhost%3A3008&response_type=code&response_mode=query&state=czhZUnR6eGVsZFk4R0wwUklHOWtxRGQ5cFozZVdqc3dBR19CcTJ0dWdXfg%3D%3D&nonce=eVJXTTFCZEV1UFlyR2RueU9Kb29ZbU81ZGJXMmZQcG1ibmEzb0xQYVI0Yw%3D%3D&code_challenge=f5BaQpMNy07lSiBSY2BFwJdq80v7vJEAMK2vcGxAtvU&code_challenge_method=S256&auth0Client=eyJuYW1lIjoiYXV0aDAtcmVhY3QiLCJ2ZXJzaW9uIjoiMi4yLjQifQ%3D%3D

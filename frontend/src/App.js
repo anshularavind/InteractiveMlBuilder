@@ -8,6 +8,8 @@ import TrainingControl from "./TrainingControl";
 function App() {
   const [currentPage, setCurrentPage] = useState("start");
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
+  // ex for getting access token (needed for API calls)
+  // use flask route 
 
 
   if (error) {

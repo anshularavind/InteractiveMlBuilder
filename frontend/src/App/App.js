@@ -1,10 +1,10 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
-import ModelBuilder from "./ModelBuilder";
-import About from "./About";
-import Profile from "./Profile";
-import './App.css'; // Import the CSS file
+import ModelBuilder from "../ModelBuilder/ModelBuilder";
+import About from "../About/About";
+import Profile from "../Profile/Profile";
+import './App.css'; 
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();

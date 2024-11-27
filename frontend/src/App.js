@@ -4,42 +4,43 @@ import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import About from "./About";
 import Profile from "./Profile";
+import './App.css'; // Import the CSS file
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
 
   if (error) {
     console.log('error:', error);
-    return <div style={styles.container}>Oops... {error.message}</div>;
+    return <div className="container">Oops... {error.message}</div>;
   }
 
   if (isLoading) {
-    return <div style={styles.container}>Loading...</div>;
+    return <div className="container">Loading...</div>;
   }
 
   return (
     <Router>
-      <div style={styles.fullScreen}>
+      <div className="fullScreen">
         {!isAuthenticated ? (
-          <div style={styles.container}>
-            <h1 style={styles.header}>Welcome to the Interactive ML Model Builder</h1>
-            <p style={styles.subtitle}>Please log in to get started:</p>
+          <div className="container">
+            <h1 className="header">Welcome to the Interactive ML Model Builder</h1>
+            <p className="subtitle">Please log in to get started:</p>
             <Button text="Login" onClick={() => loginWithRedirect()} />
           </div>
         ) : (
           <>
-            <nav style={styles.nav}>
+            <nav className="nav">
               <div>
-                <Link style={styles.navLink} to="/home">Home</Link>
-                <Link style={styles.navLink} to="/model-builder">Model Builder</Link>
-                <Link style={styles.navLink} to="/about">About</Link>
+                <Link className="navLink" to="/home">Home</Link>
+                <Link className="navLink" to="/model-builder">Model Builder</Link>
+                <Link className="navLink" to="/about">About</Link>
               </div>
-              <div style={styles.userInfo}>
-                <Link to="/profile" style={styles.userLink}>
+              <div className="userInfo">
+                <Link to="/profile" className="userLink">
                   User: {user?.name}
                 </Link>
                 <button
-                  style={styles.logoutButton}
+                  className="logoutButton"
                   onClick={() => logout({ returnTo: window.location.origin })}
                 >
                   Logout
@@ -61,9 +62,9 @@ function App() {
 }
 
 const Home = () => (
-  <div style={styles.fullScreenContent}>
-    <h1 style={styles.header}>Home Page for Interactive ML Model Builder</h1>
-    <p style={styles.subtitle}>Select a feature to get started from the navigation bar above.</p>
+  <div className="fullScreenContent">
+    <h1 className="header">Home Page for Interactive ML Model Builder</h1>
+    <p className="subtitle">Select a feature to get started from the navigation bar above.</p>
   </div>
 );
 
@@ -72,9 +73,7 @@ const Button = ({ text, onClick }) => {
 
   return (
     <button
-      style={
-        hover ? { ...styles.button, ...styles.buttonHover } : styles.button
-      }
+      className={hover ? "button buttonHover" : "button"}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={onClick}
@@ -82,98 +81,6 @@ const Button = ({ text, onClick }) => {
       {text}
     </button>
   );
-};
-
-const styles = {
-  fullScreen: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100vh",
-    margin: 0,
-  },
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#f0f8ff",
-    padding: "10px 20px",
-    borderBottom: "1px solid #ccc",
-  },
-  navLink: {
-    margin: "0 10px",
-    textDecoration: "none",
-    color: "#4a90e2",
-    fontSize: "1.1rem",
-    fontWeight: "bold",
-  },
-  userInfo: {
-    display: "flex",
-    alignItems: "center",
-    fontSize: "1rem",
-    color: "#555",
-  },
-  userLink: {
-    textDecoration: "none",
-    color: "#4a90e2",
-    marginRight: "10px",
-    fontSize: "1rem",
-    fontWeight: "bold",
-    cursor: "pointer",
-  },
-  logoutButton: {
-    padding: "5px 10px",
-    fontSize: "0.9rem",
-    backgroundColor: "#4a90e2",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer",
-  },
-  fullScreenContent: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f0f8ff",
-  },
-  container: {
-    textAlign: "center",
-    padding: "20px",
-    fontFamily: "'Poppins', sans-serif",
-    backgroundColor: "#f0f8ff",
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
-  },
-  header: {
-    fontSize: "2.5rem",
-    color: "#4a90e2",
-    marginBottom: "10px",
-    fontWeight: 600,
-  },
-  subtitle: {
-    fontSize: "1.2rem",
-    color: "#555",
-    marginBottom: "20px",
-  },
-  button: {
-    fontSize: "1rem",
-    margin: "10px",
-    padding: "10px 20px",
-    color: "#fff",
-    backgroundColor: "#4a90e2",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    transition: "background-color 0.3s",
-  },
-  buttonHover: {
-    backgroundColor: "#357abd",
-  },
 };
 
 export default App;

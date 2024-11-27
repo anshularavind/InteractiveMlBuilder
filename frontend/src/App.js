@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
-import DatasetSelection from "./DatasetSelection";
+import About from "./About";
 import Profile from "./Profile";
 import TrainingControl from "./TrainingControl";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState("start");
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
-  // const token = await getAccessTokenSilently();  // ex for getting access token (needed for API calls)
-
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
 
   if (error) {
     console.log('error:', error);
@@ -20,51 +18,61 @@ function App() {
     return <div style={styles.container}>Loading...</div>;
   }
 
-  const renderPage = () => {
-    if (!isAuthenticated) {
-      return (
-        <div style={styles.container}>
-          <h1 style={styles.header}>
-            Welcome to the Interactive ML Model Builder
-          </h1>
-          <p style={styles.subtitle}>Please log in to get started:</p>
-          <Button text="Login" onClick={() => loginWithRedirect()} />
-        </div>
-      );
-    }
-
-    switch (currentPage) {
-      case "modelBuilder":
-        return <ModelBuilder goBack={() => setCurrentPage("start")} />;
-      case "datasetSelection":
-        return <DatasetSelection goBack={() => setCurrentPage("start")} />;
-      case "profile":
-        return <Profile goBack={() => setCurrentPage("start")} user={user} />;
-      case "trainingControl":
-        return <TrainingControl goBack={() => setCurrentPage("start")} />;
-      default:
-        return (
+  return (
+    <Router>
+      <div style={styles.fullScreen}>
+        {!isAuthenticated ? (
           <div style={styles.container}>
-            <p style={{ ...styles.subtitle, position: 'absolute', top: 0, right: 10 }}>
-              User: {user?.name}
-            </p>
-            <h1 style={styles.header}>Interactive ML Model Builder</h1>
-            <p style={styles.subtitle}>Select a feature to get started:</p>
-            <Button text="Model Builder" onClick={() => setCurrentPage("modelBuilder")} />
-            <Button text="Dataset Selection" onClick={() => setCurrentPage("datasetSelection")} />
-            <Button text="Profile" onClick={() => setCurrentPage("profile")} />
-            <Button text="Training Control" onClick={() => setCurrentPage("trainingControl")} />
-            <Button text="Logout" onClick={() => logout({ returnTo: window.location.origin })} />
+            <h1 style={styles.header}>
+              Welcome to the Interactive ML Model Builder
+            </h1>
+            <p style={styles.subtitle}>Please log in to get started:</p>
+            <Button text="Login" onClick={() => loginWithRedirect()} />
           </div>
-        );
-    }
-  };
-
-  return <div>{renderPage()}</div>;
+        ) : (
+          <>
+            <nav style={styles.nav}>
+              <div>
+                <Link style={styles.navLink} to="/home">Home</Link>
+                <Link style={styles.navLink} to="/model-builder">Model Builder</Link>
+                <Link style={styles.navLink} to="/About">About </Link>
+                <Link style={styles.navLink} to="/profile">Profile</Link>
+               {/*<Link style={styles.navLink} to="/training-control">Training Control</Link>*/}
+              </div>
+              <div style={styles.userInfo}>
+                User: {user?.name}
+                <button
+                  style={styles.logoutButton}
+                  onClick={() => logout({ returnTo: window.location.origin })}
+                >
+                  Logout
+                </button>
+              </div>
+            </nav>
+            <Routes>
+              <Route path="/" element={<Navigate to="/home" />} />
+              <Route path="/home" element={<Home />} />
+              <Route path="/model-builder" element={<ModelBuilder />} />
+              <Route path="/About" element={<About />} />
+              <Route path="/profile" element={<Profile user={user} />} />
+              {/*<Route path="/training-control" element={<TrainingControl />} />*/}
+            </Routes>
+          </>
+        )}
+      </div>
+    </Router>
+  );
 }
 
+const Home = () => (
+  <div style={styles.fullScreenContent}>
+    <h1 style={styles.header}>Home Page for Interactive ML Model Builder</h1>
+    <p style={styles.subtitle}>Select a feature to get started from the navigation bar above.</p>
+  </div>
+);
+
 const Button = ({ text, onClick }) => {
-  const [hover, setHover] = useState(false);
+  const [hover, setHover] = React.useState(false);
 
   return (
     <button
@@ -81,6 +89,51 @@ const Button = ({ text, onClick }) => {
 };
 
 const styles = {
+  fullScreen: {
+    display: "flex",
+    flexDirection: "column",
+    height: "100vh",
+    margin: 0,
+  },
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#f0f8ff",
+    padding: "10px 20px",
+    borderBottom: "1px solid #ccc",
+  },
+  navLink: {
+    margin: "0 10px",
+    textDecoration: "none",
+    color: "#4a90e2",
+    fontSize: "1.1rem",
+    fontWeight: "bold",
+  },
+  userInfo: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "1rem",
+    color: "#555",
+  },
+  logoutButton: {
+    marginLeft: "10px",
+    padding: "5px 10px",
+    fontSize: "0.9rem",
+    backgroundColor: "#4a90e2",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  fullScreenContent: {
+    flex: 1,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f8ff",
+  },
   container: {
     textAlign: "center",
     padding: "20px",

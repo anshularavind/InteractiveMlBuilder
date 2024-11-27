@@ -3,9 +3,7 @@ import React from "react";
 function Profile({ goBack }) {
   return (
     <div style={styles.container}>
-      <button style={styles.goBackButton} onClick={goBack}>
-        Back to Home
-      </button>
+     
       <h2 style={styles.header}>Profile Page</h2>
     </div>
   );

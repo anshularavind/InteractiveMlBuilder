@@ -4,7 +4,6 @@ import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "./ModelBuilder";
 import About from "./About";
 import Profile from "./Profile";
-import TrainingControl from "./TrainingControl";
 
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
@@ -23,9 +22,7 @@ function App() {
       <div style={styles.fullScreen}>
         {!isAuthenticated ? (
           <div style={styles.container}>
-            <h1 style={styles.header}>
-              Welcome to the Interactive ML Model Builder
-            </h1>
+            <h1 style={styles.header}>Welcome to the Interactive ML Model Builder</h1>
             <p style={styles.subtitle}>Please log in to get started:</p>
             <Button text="Login" onClick={() => loginWithRedirect()} />
           </div>
@@ -35,12 +32,13 @@ function App() {
               <div>
                 <Link style={styles.navLink} to="/home">Home</Link>
                 <Link style={styles.navLink} to="/model-builder">Model Builder</Link>
-                <Link style={styles.navLink} to="/About">About </Link>
+                <Link style={styles.navLink} to="/about">About</Link>
                 <Link style={styles.navLink} to="/profile">Profile</Link>
-               {/*<Link style={styles.navLink} to="/training-control">Training Control</Link>*/}
               </div>
               <div style={styles.userInfo}>
-                User: {user?.name}
+                <Link to="/profile" style={styles.userLink}>
+                  User: {user?.name}
+                </Link>
                 <button
                   style={styles.logoutButton}
                   onClick={() => logout({ returnTo: window.location.origin })}
@@ -53,9 +51,8 @@ function App() {
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
               <Route path="/model-builder" element={<ModelBuilder />} />
-              <Route path="/About" element={<About />} />
+              <Route path="/about" element={<About />} />
               <Route path="/profile" element={<Profile user={user} />} />
-              {/*<Route path="/training-control" element={<TrainingControl />} />*/}
             </Routes>
           </>
         )}
@@ -116,8 +113,15 @@ const styles = {
     fontSize: "1rem",
     color: "#555",
   },
+  userLink: {
+    textDecoration: "none",
+    color: "#4a90e2",
+    marginRight: "10px",
+    fontSize: "1rem",
+    fontWeight: "bold",
+    cursor: "pointer",
+  },
   logoutButton: {
-    marginLeft: "10px",
     padding: "5px 10px",
     fontSize: "0.9rem",
     backgroundColor: "#4a90e2",

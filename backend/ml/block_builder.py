@@ -1,8 +1,10 @@
 import json
-from basic_blocks import *
 import torch.nn as nn
 from backend.datasets.mnist import Mnist
-from train import train_model
+from backend.datasets.air_quality import AirQuality
+from backend.datasets.cifar10 import Cifar10
+from backend.ml.basic_blocks import *
+from backend.ml.train import train_model
 import os
 from backend.database.interface import UserDatabase
 
@@ -36,21 +38,22 @@ Block Params Json Format:
 '''
 
 text_datasets = {'IMDB', 'Wikipedia', 'Twitter'}
-image_datasets = {'MNIST': 3}
-dataset_to_channels = {'MNIST': 1}
+image_datasets = {'MNIST', 'CIFAR10'}
+dataset_to_channels = {'MNIST': 1, 'CIFAR10': 3}
 channel_classes = {Conv, AdaptivePool}
 
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
-    name_to_dataset = {'MNIST': Mnist}
+    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality}
 
     def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = '../'):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
-        self.model_uuid = user_db.init_model(user_uuid, model_json)
-        self.model_dir = os.path.join(rel_path_to_backend_dir, 'database', user_db.get_model_dir(user_uuid, self.model_uuid))
+        self.model_uuid = user_db.init_model(user_uuid, model_json) if user_db else None
+        self.model_dir = os.path.join(rel_path_to_backend_dir, 'database', user_db.get_model_dir(user_uuid, self.model_uuid)) \
+            if user_db else None
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))
@@ -95,117 +98,31 @@ class BuiltModel(nn.Module):
         return model_blocks
 
     def add_output_logs(self, output: str):
+        if not self.model_dir:
+            return
         # add output to self.model_dir/output.logs
         with open(os.path.join(self.model_dir, 'output.logs'), 'a') as f:
             f.write(output + '\n')
 
     def add_loss_logs(self, loss: float):
+        if not self.model_dir:
+            return
         # add loss to self.model_dir/loss.logs
         with open(os.path.join(self.model_dir, 'loss.logs'), 'a') as f:
             f.write(str(loss) + ',')  # comma separated values
 
     def add_error_logs(self, error: str):
+        if not self.model_dir:
+            return
         # add error to self.model_dir/error.logs
         with open(os.path.join(self.model_dir, 'error.logs'), 'a') as f:
             f.write(error + '\n')
 
 
 if __name__ == '__main__':
-    mnist_nn_model = '''{
-        "input": 784,
-        "output": 10,
-        "dataset": "MNIST",
-        "LR": "0.001",
-        "batch_size": 2048,
-        "blocks": [
-            {
-                "block": "FcNN",
-                "params": {
-                    "output_size": 128,
-                    "hidden_size": 256,
-                    "num_hidden_layers": 2
-                }
-            },
-            {
-                "block": "FcNN",
-                "params": {
-                    "output_size": 64,
-                    "hidden_size": 128,
-                    "num_hidden_layers": 2
-                }
-            },
-            {
-                "block": "FcNN",
-                "params": {
-                    "output_size": 10,
-                    "hidden_size": 64,
-                    "num_hidden_layers": 1
-                }
-            }
-        ]
-    }'''
 
-    mnist_cnn_model = '''{
-    "input": 784,
-    "output": 10,
-    "dataset": "MNIST",
-    "LR": "0.001",
-    "blocks": [
-        {
-            "block": "Conv",
-            "params": {
-                "out_channels": 32,
-                "kernel_size": 5,
-                "stride": 1,
-                "padding": 2
-            }
-        },
-        {
-            "block": "Pool",
-            "params": {
-                "output_size": 196
-            }
-        },
-        {
-            "block": "Conv",
-            "params": {
-                "out_channels": 64,
-                "kernel_size": 5,
-                "stride": 1,
-                "padding": 2
-            }
-        },
-        {
-            "block": "Pool",
-            "params": {
-                "output_size": 49
-            }
-        },
-        {
-            "block": "FcNN",
-            "params": {
-                "output_size": 128,
-                "hidden_size": 1024,
-                "num_hidden_layers": 1
-            }
-        },
-        {
-            "block": "FcNN",
-            "params": {
-                "output_size": 10,
-                "hidden_size": 128,
-                "num_hidden_layers": 1
-            }
-        }
-    ]
-}'''
-    user_db = UserDatabase()
-    user_db.clear()
-    user_db.delete()
-    user_db = UserDatabase()
-
-    # training both models to test basic functionality
-    model = BuiltModel(mnist_nn_model, 'test_user', user_db, '..')
-    train_model(model, 2)
-    model = BuiltModel(mnist_cnn_model, 'test_user', user_db)
-    train_model(model, 2)
+    # user_db = UserDatabase()
+    # user_db.clear()
+    # user_db.delete()
+    # user_db = UserDatabase()
+    user_db = None

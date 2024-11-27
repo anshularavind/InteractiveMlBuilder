@@ -41,22 +41,28 @@ class AirQuality:
     def __get_air_quality_data_loaders(batch_size=64):
         # Fetch the dataset
         air_quality = fetch_ucirepo(id=360)
-        X = air_quality.data.features
+        X = air_quality.data.features.drop(['Date', 'Time'], axis=1)
 
         # shuffling the data
         X = X.sample(frac=1, random_state=42).reset_index(drop=True)
+        X = X[(X['CO(GT)'] != -200) & (X['NO2(GT)'] != -200)]  # Dropping values with missing CO or NO2 values, == -200
+        X = X[(X['CO(GT)'] != np.nan) & (X['NO2(GT)'] != np.nan)]  # Dropping nan values
+
         # Split the dataset
         test_ratio = 0.2
-        train_data, test_data = X[:int((1 - test_ratio) * len(X))], X[int(test_ratio * len(X)):]
+        cutoff = int((1 - test_ratio) * len(X))
+        train_data, test_data = X[:cutoff], X[cutoff:]
 
         # Normalize the data
-        train_data = train_data.replace(-200, np.nan)
-        mean = train_data.iloc[:, :-1].mean()
-        std = train_data.iloc[:, :-1].std()
-        train_data = train_data.fillna(mean)
+        train_data = train_data.replace(-200, np.nan)  # Replace -200 with nan to calculate mean and std
+        mean = train_data.mean()
+        std = train_data.std()
 
-        train_data.iloc[:, :-1] = (train_data.iloc[:, :-1] - mean) / std
-        test_data.iloc[:, :-1] = (test_data.iloc[:, :-1] - mean) / std
+        train_data = train_data.fillna(mean).copy()  # Fill nan with mean
+        test_data = test_data.replace(-200, mean).copy()  # Replace missing values, -200, with mean
+
+        train_data = (train_data - mean) / std
+        test_data = (test_data - mean) / std
 
         # Create datasets
         train_dataset = AirQualityDataset(train_data)

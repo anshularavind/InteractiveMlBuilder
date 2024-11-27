@@ -1,3 +1,5 @@
+import "../../ModelBuilder.css";
+
 function Train() {
   return (
     <div>
@@ -6,3 +8,5 @@ function Train() {
     </div>
   );
 }
+
+export default Train;

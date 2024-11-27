@@ -3,6 +3,7 @@
 
 ## Installation Instructions
 ```bash
-brew install postgresql  # Install PostgreSQL
+bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
 pip install -r requirements.txt  # Install Python dependencies
+cd frontend && npm install && cd..  # Install Node.js dependencies
 ```

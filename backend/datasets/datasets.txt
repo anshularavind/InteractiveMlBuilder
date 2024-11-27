@@ -19,3 +19,9 @@ IMDB reviews - 25,000 movie reviews from IMDB, labeled by sentiment (positive/ne
 Newsgroups - 20 newsgroups, 60,000 newsgroup documents: https://scikit-learn.org/0.19/datasets/twenty_newsgroups.html
 Wikipedia - 4,000 Wikipedia documents, 4 categories: https://huggingface.co/datasets/legacy-datasets/wikipedia
 Twitter Sentiment Analysis - 1.6 million tweets, labeled by sentiment (positive/negative): https://www.kaggle.com/datasets/kazanova/sentiment140
+
+DATASET CLASS REQUIREMENTS (refer to Mnist class not MNISTDataset class)
+1. __init__
+2. criterion
+3. self.train_loader, self.test_loader attributes
+4. static get_eval_numbers, gets the results

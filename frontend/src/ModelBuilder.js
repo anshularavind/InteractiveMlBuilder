@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
 
-function FlowChartOrganizer({ goBack, goToProfile }) {
+function FlowChartOrganizer() {
   const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
   const [dropdownOpen, setDropdownOpen] = useState(false); // Track dropdown state
 
@@ -59,12 +59,8 @@ function FlowChartOrganizer({ goBack, goToProfile }) {
     <div>
       {/* Header with Back to Home and Profile Buttons */}
       <div style={styles.headerContainer}>
-        <button style={styles.headerButton} onClick={goBack}>
-          Back to Home
-        </button>
-        <button style={styles.headerButton} onClick={goToProfile}>
-          Go to Profile
-        </button>
+       
+        
       </div>
 
       <div style={styles.container}>

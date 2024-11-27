@@ -6,3 +6,5 @@ const Home = () => (
       <p className="subtitle">Select a feature to get started from the navigation bar above.</p>
     </div>
   );
+
+export default Home;

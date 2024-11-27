@@ -4,7 +4,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import ModelBuilder from "../ModelBuilder/ModelBuilder";
 import About from "../About/About";
 import Profile from "../Profile/Profile";
-import Profile from "../Home/Home";
+import Home from "../Home/Home";
 import './App.css'; 
 
 function App() {

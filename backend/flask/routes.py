@@ -69,12 +69,6 @@ def define_model():
             "details": str(e)
         }), 500
 
-@main_routes.route("/api/task-status/<task_id>", methods=["GET"])
-@helper.token_required
-def task_status(task_id):
-    return jsonify(helper.get_task_progress(task_id))
-
-# define a route for training the model and return true if any errors 
 @main_routes.route("/api/train", methods=["POST"])
 @helper.token_required
 def train():
@@ -99,35 +93,31 @@ def train():
             return jsonify({"error": "Model not found"}), 404
 
         # Read model config from saved file
-        with open(os.path.join(model_dir, 'config.json'), 'r') as f:
-            model_config = json.dumps(f.read())
+        with open(os.path.join(model_dir, "config.json"), "r") as f:
+            model_config = json.load(f)
 
         # Get dataset information
         dataset = db.get_dataset(user_uuid, f"datasets/{model_config['dataset']}")
         if not dataset:
             return jsonify({"error": "Dataset not found"}), 404
 
-        # Synchronous training
         try:
-            # Build the model
-            logger.info("Model built successfully")
-            model = BuiltModel(model_config, user_uuid, db)
-            logger.info("Model built successfully")
-
-            # Train the model
-            logger.info("Training model..." + str(dataset[2]))
-            training_result = train_model(model, dataset[2])  # dataset[2] is dataset_path
-            logger.info("Training completed")
-
-            # Save the model
-            db.add_model(username, model, json.dumps(model_config))
-            logger.info("Model saved")
+            # Convert model_config to proper JSON string
+            model_config_str = json.dumps(model_config) if isinstance(model_config, dict) else model_config
+            
+            # Start the Celery task
+            task = helper.train_model_task.delay(
+                model_config_str,
+                user_uuid,
+                model_uuid,
+                dataset[2]  # dataset path
+            )
 
             return jsonify({
-                "status": "Training completed",
-                "result": training_result,
+                "status": "Training started",
+                "task_id": task.id,
                 "model_uuid": model_uuid
-            }), 200
+            }), 202
 
         except Exception as train_error:
             logger.error(f"Training error: {str(train_error)}")
@@ -142,6 +132,21 @@ def train():
             "error": "Failed to process training request",
             "details": str(e)
         }), 500
+
+@main_routes.route("/api/train/status/<task_id>")
+@helper.token_required
+def get_train_status(task_id):
+    task = helper.train_model_task.AsyncResult(task_id)
+    if task.state == 'PENDING':
+        return jsonify({'status': 'Pending', 'task_id': task_id})
+    elif task.state == 'PROGRESS':
+        return jsonify({'status': 'In progress', 'progress': task.info.get('progress', 0), 'task_id': task_id})
+    elif task.state == 'SUCCESS':
+        return jsonify({'status': 'Completed', 'result': task.result, 'task_id': task_id})
+    elif task.state == 'FAILURE':
+        return jsonify({'status': 'Failed', 'reason': str(task.info), 'task_id': task_id})
+    else:
+        return jsonify({'status': 'Unknown', 'task_id': task_id})
 
 #route for getting the logs of the task using the getmodeldir and then reading the logs
 @main_routes.route("/api/train_logs", methods=["GET"])

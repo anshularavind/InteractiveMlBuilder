@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import torch
 from torch import nn
+import numpy as np
 
 
 class AirQualityDataset(Dataset):
@@ -14,11 +15,10 @@ class AirQualityDataset(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
-        sample = self.data.iloc[idx]
-        features = sample.drop('label').values.astype(float)
-        label = sample['label'].astype(float)  # Ensure label is a float for regression
-
-        return torch.tensor(features, dtype=torch.float32), torch.tensor(label, dtype=torch.float32)
+        sample = self.data.iloc[idx].copy()
+        co, no2 = sample['CO(GT)'], sample['NO2(GT)']
+        other_values = sample.drop(['CO(GT)', 'NO2(GT)']).values
+        return torch.tensor(other_values, dtype=torch.float32), torch.tensor([co, no2], dtype=torch.float32)
 
 
 class AirQuality:
@@ -27,6 +27,9 @@ class AirQuality:
     def __init__(self, batch_size=64):
         self.batch_size = batch_size
         self.train_loader, self.test_loader = AirQuality.__get_air_quality_data_loaders(batch_size=batch_size)
+
+    def get_output_size(self):
+        return 2
 
     @staticmethod
     def get_eval_numbers(output, target):
@@ -40,13 +43,18 @@ class AirQuality:
         air_quality = fetch_ucirepo(id=360)
         X = air_quality.data.features
 
+        # shuffling the data
+        X = X.sample(frac=1, random_state=42).reset_index(drop=True)
         # Split the dataset
         test_ratio = 0.2
         train_data, test_data = X[:int((1 - test_ratio) * len(X))], X[int(test_ratio * len(X)):]
 
         # Normalize the data
+        train_data = train_data.replace(-200, np.nan)
         mean = train_data.iloc[:, :-1].mean()
         std = train_data.iloc[:, :-1].std()
+        train_data = train_data.fillna(mean)
+
         train_data.iloc[:, :-1] = (train_data.iloc[:, :-1] - mean) / std
         test_data.iloc[:, :-1] = (test_data.iloc[:, :-1] - mean) / std
 

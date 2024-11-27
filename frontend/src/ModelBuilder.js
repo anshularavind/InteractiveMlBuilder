@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Draggable from "react-draggable";
 
-function FlowChartOrganizer() {
+function ModelBuilder() {
   const [selectedItem, setSelectedItem] = useState(null); // Track the selected item
   const [dropdownOpen, setDropdownOpen] = useState(false); // Track dropdown state
 
@@ -156,13 +156,7 @@ function FlowChartOrganizer() {
 }
 
 const styles = {
-  headerContainer: {
-    padding: "10px 15px",
-    backgroundColor: "#4a90e2",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+  
   headerButton: {
     padding: "5px 15px",
     fontSize: "1rem",
@@ -257,4 +251,4 @@ const styles = {
   },
 };
 
-export default FlowChartOrganizer;
+export default ModelBuilder;

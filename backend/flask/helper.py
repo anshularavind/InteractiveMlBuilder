@@ -63,8 +63,7 @@ def token_required(f):
             max_retries=3, 
             soft_time_limit=3300,
             time_limit=3600)
-@token_required
-def train_model_task(self, username, model_config, dataset):
+def train_model_task(self, model_config_str, user_uuid, model_uuid, dataset_path):
     try:
         # Initialize progress tracking
         total_steps = 100
@@ -76,43 +75,21 @@ def train_model_task(self, username, model_config, dataset):
                          })
 
         # Build the model
-        model = BuiltModel(model_config)
-        self.update_state(state='PROGRESS', 
-                         meta={
-                             'current': 10,
-                             'total': total_steps,
-                             'status': 'Model built successfully'
-                         })
-
-        # Train the model with progress updates
-        training_result = train_model(model, dataset, 
-                                    progress_callback=lambda p: self.update_state(
-                                        state='PROGRESS',
-                                        meta={
-                                            'current': 10 + int(p * 80),
-                                            'total': total_steps,
-                                            'status': f'Training progress: {p*100:.2f}%'
-                                        }
-                                    ))
-
-        # Save the model
-        self.update_state(state='PROGRESS', 
-                         meta={
-                             'current': 90,
-                             'total': total_steps,
-                             'status': 'Saving model...'
-                         })
-        db.add_model(username, model, model_config)
+        model = BuiltModel(model_config_str, user_uuid, db)
+        
+        # Train the model
+        training_result = train_model(model, epochs=10)
 
         return {
             'current': 100,
             'total': total_steps,
             'status': 'Training completed successfully!',
-            'result': training_result
+            'result': training_result,
+            'model_uuid': model_uuid
         }
 
     except Exception as e:
-        self.retry(exc=e, countdown=60)
+        raise self.retry(exc=e, countdown=60)
 
 @task_failure.connect
 def handle_task_failure(task_id=None, exception=None, **kwargs):

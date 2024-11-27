@@ -10,22 +10,27 @@ def train_model(model, epochs=10):
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)
 
     print('Training model...')
-    model.add_output_logs('Training model...')
+    #model.add_output_logs('Training model...')
 
     start = time.time()
 
     # Train the model
     model.train()
     output_increment = len(dataset.train_loader) // 10
+    print(f'Output increment: {output_increment}')
     for epoch in range(epochs):
         epoch_loss = 0
+        print(f'Epoch {epoch + 1}/{epochs}')
         for i, (images, labels) in enumerate(dataset.train_loader):
+            print(f'Step {i+1}/{len(dataset.train_loader)}')
             # Forward pass
             outputs = model(images)
             loss = criterion(outputs, labels)
             epoch_loss += loss.item()
 
-            # Backward and optimize
+            print(f'Loss: {loss.item()}')
+
+            # Backward and optimize 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -34,7 +39,7 @@ def train_model(model, epochs=10):
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                        .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
         epoch_loss /= len(dataset.train_loader)
-        model.add_loss_logs(epoch_loss)
+        #model.add_loss_logs(epoch_loss)
 
         # Test
         model.eval()
@@ -56,10 +61,10 @@ def train_model(model, epochs=10):
             if epoch + 1 != epochs:
                 output_str = time_elapsed_str + f'\n{epoch + 1} accuracy: {100 * accuracy}%'
                 print(output_str)
-                model.add_output_logs(output_str)
+                #model.add_output_logs(output_str)
             else:
                 output_str = time_elapsed_str + '\nFinal accuracy: {} %'.format(100 * accuracy)
                 print(output_str)
-                model.add_output_logs(output_str)
+                #model.add_output_logs(output_str)
 
     return accuracy

@@ -1,0 +1,1 @@
+{"input": 784, "output": 10, "dataset": "MNIST", "LR": "0.001", "batch_size": 32, "blocks": [{"block": "Conv", "params": {"out_channels": 32, "kernel_size": 5, "stride": 1, "padding": 2, "output_size": 196}}, {"block": "Pool", "params": {"output_size": 49}}, {"block": "FcNN", "params": {"output_size": 10, "hidden_size": 128, "num_hidden_layers": 1}}]}

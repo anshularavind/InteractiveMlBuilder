@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import Draggable from "react-draggable";
-import './ModelBuilder.css'; // Import the CSS file
+import "./ModelBuilder.css";
 
 function FlowChartOrganizer() {
   const [layers, setLayers] = useState([]);
   const [blockInputs, setBlockInputs] = useState({
-    inputSize: 0,
-    outputSize: 0,
     hiddenSize: 0,
     numHiddenLayers: 1,
   });
+  const [isLayersCreated, setIsLayersCreated] = useState(false); // Tracks if layers are created
 
   const handleInputChange = (field, value) => {
     setBlockInputs({ ...blockInputs, [field]: value });
@@ -18,13 +16,20 @@ function FlowChartOrganizer() {
   const createLayers = () => {
     const newLayers = [];
     const layerHeight = 50;
+    const layerWidth = 120;
     const overlapOffsetY = 10;
     const overlapOffsetX = 15;
+
     const totalHeight =
       blockInputs.numHiddenLayers * (layerHeight - overlapOffsetY);
+    const totalWidth =
+      blockInputs.numHiddenLayers * (layerWidth - overlapOffsetX);
+
     const areaHeight = 500;
-    const startY = (areaHeight - totalHeight) / 2;
-    const startX = -((blockInputs.numHiddenLayers - 1) * overlapOffsetX) / 2;
+    const areaWidth = 600;
+
+    const startY = Math.max((areaHeight - totalHeight) / 2, 0);
+    const startX = Math.max((areaWidth - totalWidth) / 2, 0);
 
     for (let i = 0; i < blockInputs.numHiddenLayers; i++) {
       newLayers.push({
@@ -37,34 +42,30 @@ function FlowChartOrganizer() {
       });
     }
     setLayers([...layers, ...newLayers]);
+    setIsLayersCreated(true); // Mark layers as created
   };
 
   const resetLayers = () => {
     setLayers([]);
     setBlockInputs({
-      inputSize: 0,
-      outputSize: 0,
       hiddenSize: 0,
       numHiddenLayers: 1,
     });
-  };
-
-  const onLayerDragStop = (id, data) => {
-    setLayers((prevLayers) =>
-      prevLayers.map((layer) =>
-        layer.id === id
-          ? { ...layer, position: { x: data.x, y: data.y } }
-          : layer
-      )
-    );
+    setIsLayersCreated(false); // Reset the state
   };
 
   return (
     <div className="container">
       {/* Input Section */}
       <div className="inputArea">
-        <div className="label">Input</div>
-        <div className="trapezoid"></div>
+        <div
+          className="trapezoid"
+          style={{
+            width: isLayersCreated ? "200px" : "300px",
+            height: isLayersCreated ? "30vh" : "40vh",
+          }}
+        ></div>
+        <div className="trapezoidLabel">Input Layer</div>
       </div>
 
       {/* Arrow from Input to Layers */}
@@ -77,14 +78,19 @@ function FlowChartOrganizer() {
 
       {/* Layers Area */}
       <div className="layersArea">
+        <div className="hiddenLayersLabel">Hidden Layers</div>
         {layers.map((layer) => (
-          <Draggable
+          <div
             key={layer.id}
-            position={layer.position}
-            onStop={(e, data) => onLayerDragStop(layer.id, data)}
+            className="layer"
+            style={{
+              top: `${layer.position.y}px`,
+              left: `${layer.position.x}px`,
+              position: "absolute",
+            }}
           >
-            <div className="layer">{layer.name}</div>
-          </Draggable>
+            {layer.name}
+          </div>
         ))}
       </div>
 
@@ -98,35 +104,24 @@ function FlowChartOrganizer() {
 
       {/* Output Section */}
       <div className="outputArea">
-        <div className="label">Output</div>
-        <div className="trapezoid"></div>
+        <div
+          className="trapezoid"
+          style={{
+            width: isLayersCreated ? "200px" : "300px",
+            height: isLayersCreated ? "30vh" : "40vh",
+          }}
+        ></div>
+        <div className="trapezoidLabel">Output Layer</div>
+      </div>
+
+      {/* Predictions Box */}
+      <div className="predictionsBox">
+        <div className="predictionsLabel">Predictions</div>
       </div>
 
       {/* Input Controls */}
       <div className="inputBlock">
         <h4>Configure Inputs</h4>
-        <div>
-          <label>Input Size: </label>
-          <input
-            type="number"
-            value={blockInputs.inputSize}
-            onChange={(e) =>
-              handleInputChange("inputSize", parseInt(e.target.value) || 0)
-            }
-            className="input"
-          />
-        </div>
-        <div>
-          <label>Output Size: </label>
-          <input
-            type="number"
-            value={blockInputs.outputSize}
-            onChange={(e) =>
-              handleInputChange("outputSize", parseInt(e.target.value) || 0)
-            }
-            className="input"
-          />
-        </div>
         <div>
           <label>Hidden Size: </label>
           <input

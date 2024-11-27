@@ -75,9 +75,24 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM users")
         return self.cur.fetchall()
 
+    # def init_model(self, user_uuid, config_json):
+    #     created_at = datetime.now()
+    #     model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
+    #     model_path = f'user_data/{user_uuid}/{model_uuid}'
+
+    #     # save config
+    #     os.makedirs(model_path, exist_ok=True)
+    #     with open(os.path.join(model_path, 'config.json'), 'w') as f:
+    #         f.write(config_json)
+
+    #     self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
+    #                      (model_uuid, user_uuid, model_path, created_at))
+    #     self.conn.commit()
+
+    #     return model_uuid
     def init_model(self, user_uuid, config_json):
         created_at = datetime.now()
-        model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
+        model_uuid = user_uuid + self.hash(config_json)
         model_path = f'user_data/{user_uuid}/{model_uuid}'
 
         # save config
@@ -85,13 +100,8 @@ class UserDatabase():
         with open(os.path.join(model_path, 'config.json'), 'w') as f:
             f.write(config_json)
 
-        # touching output.logs, loss.logs, error.logs if they don't exist
-        open(os.path.join(model_path, 'output.logs'), 'a').close()
-        open(os.path.join(model_path, 'loss.logs'), 'a').close()
-        open(os.path.join(model_path, 'error.logs'), 'a').close()
-
-        self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
-                         (model_uuid, user_uuid, model_path, created_at))
+        self.cur.execute("INSERT INTO models (uuid, user_uuid, model_path, created_at) VALUES (%s, %s, %s, %s)",
+                        (model_uuid, user_uuid, model_path, created_at))
         self.conn.commit()
 
         return model_uuid

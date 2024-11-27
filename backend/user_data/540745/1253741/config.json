@@ -1,0 +1,1 @@
+{"input": [3, 224, 224], "output": [10], "dataset": "cifar10", "lr": 0.001, "batch_size": 32, "blocks": [{"block": "Conv2D", "params": {"channels": 64, "kernel_size": 3, "output_size": [64, 222, 222]}}]}

@@ -33,7 +33,6 @@ function App() {
                 <Link style={styles.navLink} to="/home">Home</Link>
                 <Link style={styles.navLink} to="/model-builder">Model Builder</Link>
                 <Link style={styles.navLink} to="/about">About</Link>
-                <Link style={styles.navLink} to="/profile">Profile</Link>
               </div>
               <div style={styles.userInfo}>
                 <Link to="/profile" style={styles.userLink}>

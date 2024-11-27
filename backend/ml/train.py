@@ -62,4 +62,4 @@ def train_model(model, epochs=10):
                 print(output_str)
                 model.add_output_logs(output_str)
 
-    return model, accuracy
+    return accuracy

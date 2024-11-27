@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 from torchvision import transforms
 import torch
 from torch import nn
-from train import train_model
+from ml.train import train_model
 import math
 
 

@@ -24,4 +24,5 @@ DATASET CLASS REQUIREMENTS (refer to Mnist class not MNISTDataset class)
 1. __init__
 2. criterion
 3. self.train_loader, self.test_loader attributes
+    A. probably need a standard torch datasets class as well
 4. static get_eval_numbers, gets the results

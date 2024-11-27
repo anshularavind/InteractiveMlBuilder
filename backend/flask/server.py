@@ -1,3 +1,9 @@
+import sys
+import os
+
+# Add the backend directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
@@ -10,10 +16,11 @@ from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, session, url_for, request, jsonify
 from functools import wraps
 import requests
+import sys
 import os
 from flask import g
 from jwtValidation import auth0_service
-
+from routes import main_routes
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -50,6 +57,8 @@ app.config.update(
     CELERY_RESULT_SERIALIZER='json',
     CELERY_ACCEPT_CONTENT=['json']
 )
+
+app.register_blueprint(main_routes)
 
 # Initialize Celery
 celery = make_celery(app)

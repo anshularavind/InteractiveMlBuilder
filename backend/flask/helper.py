@@ -1,12 +1,69 @@
 from celery import shared_task
 from celery.signals import task_failure
-from ..model_blocks import BuiltModel, train_model
-from ..database import interface as db
+from ml.block_builder import BuiltModel
+from ml.train import train_model
+from database import interface as db
+from jwcrypto import jwe, jwk
+from os import environ as env
+import json
+from urllib.request import urlopen
+
+from authlib.oauth2.rfc7523 import JWTBearerTokenValidator
+from authlib.jose.rfc7517.jwk import JsonWebKey
+
+from functools import wraps
+from http import HTTPStatus
+from types import SimpleNamespace
+
+from flask import request, g, jsonify
+
+from jwtValidation import auth0_service, json_abort
+import requests
+
+
+def validate_token(token):
+    auth0_domain = env.get("AUTH0_DOMAIN")
+    """Validates the token by calling the Auth0 /userinfo endpoint."""
+    url = f"https://{auth0_domain}/userinfo"
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()  # User info if the token is valid
+    return None
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get('Authorization', None)
+        if not auth_header:
+            return jsonify({"error": "No authorization header"}), 401
+        
+        try:
+            # Extract token from Bearer scheme
+            token = auth_header.split()[1]
+            
+            # Validate token with Auth0
+            user_info = validate_token(token)
+            if not user_info:
+                return jsonify({"error": "Invalid token"}), 401
+            
+            # Store user info in flask g object
+            g.user_info = user_info
+            return f(*args, **kwargs)
+            
+        except Exception as e:
+            return jsonify({"error": str(e)}), 401
+            
+    return decorated
+
+
 
 @shared_task(bind=True, 
             max_retries=3, 
             soft_time_limit=3300,
             time_limit=3600)
+@token_required
 def train_model_task(self, username, model_config, dataset):
     try:
         # Initialize progress tracking
@@ -97,3 +154,4 @@ def get_task_progress(task_id):
             'status': str(task.info)
         }
     return response
+

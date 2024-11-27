@@ -8,7 +8,6 @@ from backend.ml.train import train_model
 import os
 from backend.database.interface import UserDatabase
 
-
 '''
 Model Builder Input/Output Json Format:
 {

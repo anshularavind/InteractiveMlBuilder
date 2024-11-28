@@ -1,61 +1,72 @@
+import sys
+import os
+import time
+# Add the backend directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
-
+import helper
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, redirect, session, url_for, request, jsonify
 from functools import wraps
 import requests
+import sys
+import os
+from flask import g
+from jwtValidation import auth0_service
+from routes import main_routes, logger 
+from celeryApp import flask_app as app, celery
+from helper import train_model_task  # Now this won't cause circular import
 
+app.register_blueprint(main_routes)
+
+base_dir = os.path.dirname(os.path.abspath(__file__))
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
-app = Flask(__name__)
+logger.info(celery.tasks.keys())
+
+
+@celery.task()
+def square_number(number):
+    time.sleep(5)  # Simulate a long-running task
+    return number ** 2
+# ... (rest of your existing server.py code)
+
+
 app.secret_key = env.get("APP_SECRET_KEY")
 
 oauth = OAuth(app)
 
+auth0_service.initialize(
+    auth0_domain="dev-yaqhhig1025kpyz0.us.auth0.com",
+    auth0_audience="https://InteractiveMlApi"
+)
+
+cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
+key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
+client_id = env.get("AUTH0_CLIENT_ID")
+client_secret = env.get("AUTH0_CLIENT_SECRET")
+auth0_domain = env.get("AUTH0_DOMAIN")
+
+url = f"https://{env.get('AUTH0_DOMAIN')}/.well-known/openid-configuration"
+response = requests.get(url)
+print(response.json())
+
 oauth.register(
     "auth0",
-    client_id=env.get("AUTH0_CLIENT_ID"),
-    client_secret=env.get("AUTH0_CLIENT_SECRET"),
+    client_id=client_id,
+    client_secret=client_secret,
     client_kwargs={
         "scope": "openid profile email",
     },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+    server_metadata_url=f'https://{auth0_domain}/.well-known/openid-configuration'
 )
-
-
-def validate_token(token):
-    """Validates the token by calling the Auth0 /userinfo endpoint."""
-    url = f"https://{env.get('AUTH0_DOMAIN')}/userinfo"
-    headers = {"Authorization": f"Bearer {token}"}
-
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()  # User info if the token is valid
-    return None
-
-
-@app.route("/login")
-def login():
-    return oauth.auth0.authorize_redirect(
-        redirect_uri=url_for("callback", _external=True)
-    )
-
-
-def requires_auth(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
-            session['next_url'] = request.url
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-
 
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
@@ -64,47 +75,59 @@ def callback():
     session["user"] = user_info  
     return redirect(env.get("FRONTEND_REDIRECT_URI", "/"))
 
-
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect(
-        "https://" + env.get("AUTH0_DOMAIN")
-        + "/v2/logout?"
-        + urlencode(
-            {
-                "returnTo": url_for("home", _external=True),
-                "client_id": env.get("AUTH0_CLIENT_ID"),
-            },
-            quote_via=quote_plus,
-        )
-    )
-
-
-@app.route("/session")
+@app.route("/session", methods=["GET"])
 def session_info():
     if "user" in session:
         return jsonify({"user": session["user"]}), 200
     return jsonify({"error": "Unauthorized"}), 401
 
 
-@app.route("/")
-def home():
-    return jsonify({"message": "API is working"}), 200
+# @app.route("/api/private")
+# @helper.token_required
+# def private():
+#     """A valid access token is required."""
+#     try:
+#         return jsonify(
+#             message="Hello from private endpoint",
+#         )
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 401
+    
 
+@app.route('/api/square', methods=['POST'])
+def test_celery():
+    """
+    Test route to square a number using Celery.
+    Expects JSON input: {"number": <int>}
+    """
+    data = request.get_json()
 
-@app.route('/hello')
-@requires_auth
-def hello():
-    return 'Hello, World!'
+    # Get the number from the request
+    number = data.get('number', None)
+    if number is None:
+        return jsonify({'error': 'Please provide a number!'}), 400
+
+    # Call the Celery task
+    task = square_number.delay(number)
+
+    # Return the task ID for tracking
+    return jsonify({'task_id': task.id}), 202
 
 
 if __name__ == "__main__":
+    import os
+    # Get the absolute path to the directory containing server.py
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Convert relative paths to absolute paths
+    cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
+    key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
+
     app.run(
         host="0.0.0.0",
-        port=int(env.get("PORT", 3000)),
+        port=int(env.get("PORT", 4000)),
         ssl_context=(
-            env.get("SSL_CERT_PATH"),  
-            env.get("SSL_KEY_PATH")    
+            cert_path,
+            key_path 
         )
     )

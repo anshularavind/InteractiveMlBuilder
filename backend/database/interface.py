@@ -108,6 +108,17 @@ class UserDatabase():
         torch.save(model.state_dict(), os.path.join(model_dir, 'model.pt'))
         return True
 
+    def save_model_logs(self, user_uuid, model_uuid, logs, log_type):
+        if log_type not in ['output', 'loss', 'error']:
+            raise ValueError('log_type must be one of "output", "loss", "error"')
+
+        model_dir = self.get_model_dir(user_uuid, model_uuid)
+        if not model_dir:
+            return False
+        with open(os.path.join(model_dir, f'{log_type}.logs'), 'a') as f:
+            f.write(logs + '\n')
+        return True
+
     def get_models(self, user_uuid):
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s", (user_uuid,))
         return self.cur.fetchall()

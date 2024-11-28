@@ -6,7 +6,6 @@ import torch
 from torch import nn
 from backend.datasets.base_dataset import BaseDataset
 
-
 class MNISTDataset(Dataset):
     def __init__(self, data, transform=None):
         self.data = data

@@ -10,13 +10,14 @@ def train_model(model, epochs=10):
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)
 
     print('Training model...')
-    model.add_output_logs('Training model...')
+    model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Training model...', 'output')
 
     start = time.time()
 
     # Train the model
     model.train()
     output_increment = len(dataset.train_loader) // 10
+    print(f'Output increment: {output_increment}')
     for epoch in range(epochs):
         epoch_loss = 0
         for i, (x, y) in enumerate(dataset.train_loader):
@@ -25,7 +26,9 @@ def train_model(model, epochs=10):
             loss = criterion(outputs, y)
             epoch_loss += loss.item()
 
-            # Backward and optimize
+            print(f'Loss: {loss.item()}')
+
+            # Backward and optimize 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -34,7 +37,7 @@ def train_model(model, epochs=10):
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                        .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
         epoch_loss /= len(dataset.train_loader)
-        model.add_loss_logs(epoch_loss)
+        model.user_db.save_model_logs(model.user_uuid, model.model_uuid, f'Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss}', 'loss')
 
         # Test
         model.eval()
@@ -56,10 +59,10 @@ def train_model(model, epochs=10):
             if epoch + 1 != epochs:
                 output_str = time_elapsed_str + f'\nEpoch #{epoch + 1} {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
-                model.add_output_logs(output_str)
+                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
             else:
                 output_str = time_elapsed_str + f'\nFinal {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
-                model.add_output_logs(output_str)
+                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
 
     return accuracy

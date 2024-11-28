@@ -77,7 +77,7 @@ class UserDatabase():
 
     # def init_model(self, user_uuid, config_json):
     #     created_at = datetime.now()
-    #     model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
+     #   model_uuid = user_uuid + self.hash(config_json)
     #     model_path = f'user_data/{user_uuid}/{model_uuid}'
 
     #     # save config
@@ -85,8 +85,8 @@ class UserDatabase():
     #     with open(os.path.join(model_path, 'config.json'), 'w') as f:
     #         f.write(config_json)
 
-    #     self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
-    #                      (model_uuid, user_uuid, model_path, created_at))
+        # self.cur.execute("INSERT INTO models (uuid, user_uuid, model_path, created_at) VALUES (%s, %s, %s, %s)",
+        #                 (model_uuid, user_uuid, model_path, created_at))
     #     self.conn.commit()
 
     #     return model_uuid
@@ -100,7 +100,7 @@ class UserDatabase():
         with open(os.path.join(model_path, 'config.json'), 'w') as f:
             f.write(config_json)
 
-        self.cur.execute("INSERT INTO models (uuid, user_uuid, model_path, created_at) VALUES (%s, %s, %s, %s)",
+        self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
                         (model_uuid, user_uuid, model_path, created_at))
         self.conn.commit()
 

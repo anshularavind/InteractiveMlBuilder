@@ -161,3 +161,54 @@
   cursor: pointer;
   margin-top: 10px;
 }
+
+/* Input and Output Layers (Horizontal Trapezoids) */
+.input-layer,
+.output-layer {
+  fill: #4a90e2; /* Blue fill color */
+  stroke: #333; /* Dark border */
+  stroke-width: 2;
+}
+
+
+
+/* Arrowhead Marker */
+.visual-container marker#arrow {
+  markerWidth: 10;
+  markerHeight: 10;
+  refX: 6;
+  refY: 3;
+  orient: auto;
+  fill: #333;
+}
+
+* Input and Output Layers (Horizontal Trapezoids) */
+.input-layer,
+.output-layer {
+  fill: #4a90e2; /* Blue fill color */
+  stroke: #333; /* Dark border */
+  stroke-width: 2;
+}
+
+/* Hidden Layers (Rectangles) */
+.hidden-layer {
+  fill: #90caf9; /* Light blue fill color */
+  stroke: #333; /* Dark border */
+  stroke-width: 2;
+}
+
+/* Layer Labels */
+.layer-label,
+.hidden-layer-label {
+  fill: #000; /* Black text */
+  font-size: 14px;
+  text-anchor: middle; /* Center-align text */
+  dominant-baseline: middle;
+}
+
+/* Straight Arrow Lines */
+.connection-line {
+  stroke: #333; /* Dark gray color */
+  stroke-width: 2;
+  marker-end: url(#arrow); /* Arrowhead at the end of the line */
+}

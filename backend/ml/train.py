@@ -10,7 +10,7 @@ def train_model(model, epochs=10):
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)
 
     print('Training model...')
-    model.add_output_logs('Training model...')
+    model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Training model...', 'output')
 
     start = time.time()
 
@@ -39,7 +39,7 @@ def train_model(model, epochs=10):
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                        .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
         epoch_loss /= len(dataset.train_loader)
-        model.add_loss_logs(epoch_loss)
+        model.user_db.save_model_logs(model.user_uuid, model.model_uuid, f'Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss}', 'loss')
 
         # Test
         model.eval()
@@ -61,10 +61,10 @@ def train_model(model, epochs=10):
             if epoch + 1 != epochs:
                 output_str = time_elapsed_str + f'\n{epoch + 1} accuracy: {100 * accuracy}%'
                 print(output_str)
-                model.add_output_logs(output_str)
+                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
             else:
                 output_str = time_elapsed_str + '\nFinal accuracy: {} %'.format(100 * accuracy)
                 print(output_str)
-                model.add_output_logs(output_str)
+                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
 
     return accuracy

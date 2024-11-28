@@ -57,13 +57,11 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality}
 
-    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase, rel_path_to_backend_dir: str = '../'):
+    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
         self.model_uuid = user_db.init_model(user_uuid, model_json) if user_db else None
-        self.model_dir = os.path.join(rel_path_to_backend_dir, 'database', user_db.get_model_dir(user_uuid, self.model_uuid)) \
-            if user_db else None
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))
@@ -106,27 +104,6 @@ class BuiltModel(nn.Module):
         assert input_size == output_size, 'Output size of last block does not match model output size'
 
         return model_blocks
-
-    def add_output_logs(self, output: str):
-        if not self.model_dir:
-            return
-        # add output to self.model_dir/output.logs
-        with open(os.path.join(self.model_dir, 'output.logs'), 'a') as f:
-            f.write(output + '\n')
-
-    def add_loss_logs(self, loss: float):
-        if not self.model_dir:
-            return
-        # add loss to self.model_dir/loss.logs
-        with open(os.path.join(self.model_dir, 'loss.logs'), 'a') as f:
-            f.write(str(loss) + ',')  # comma separated values
-
-    def add_error_logs(self, error: str):
-        if not self.model_dir:
-            return
-        # add error to self.model_dir/error.logs
-        with open(os.path.join(self.model_dir, 'error.logs'), 'a') as f:
-            f.write(error + '\n')
 
 
 if __name__ == '__main__':

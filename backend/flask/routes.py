@@ -154,6 +154,7 @@ def get_train_status(task_id):
 @main_routes.route("/api/train_logs", methods=["GET"])
 @helper.token_required
 def train_logs(task_id):
+    data = request.json
     username = data.get("username")
     model_dir = db.get_model_dir(username, task_id)
     if not model_dir:

@@ -37,6 +37,7 @@ class Cifar10(BaseDataset):
     criterion = nn.CrossEntropyLoss()
     is_2d = True
     num_channels = 3
+    accuracy_descriptor = 'accuracy (%)'
 
     def __init__(self, batch_size=64):
         super().__init__(batch_size=batch_size)
@@ -54,7 +55,7 @@ class Cifar10(BaseDataset):
         _, predicted = torch.max(output.data, 1)
         total = target.size(0)
         correct = (predicted == target).sum().item()
-        return correct, total
+        return 100 * correct, total  # return percentage
 
     @staticmethod
     def __get_cifar10_data_loaders(batch_size=64):

@@ -36,6 +36,7 @@ class Mnist(BaseDataset):
     criterion = nn.CrossEntropyLoss()
     is_2d = True
     num_channels = 1
+    accuracy_descriptor = 'accuracy (%)'
 
     def __init__(self, batch_size=64):
         super().__init__(batch_size=batch_size)
@@ -53,7 +54,7 @@ class Mnist(BaseDataset):
         _, predicted = torch.max(output.data, 1)
         total = target.size(0)
         correct = (predicted == target).sum().item()
-        return correct, total
+        return 100 * correct, total  # return percentage
 
     @staticmethod
     def __get_mnist_data_loaders(batch_size=64):

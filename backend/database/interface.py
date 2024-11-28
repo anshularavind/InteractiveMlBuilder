@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import shutil
 import torch
+import sys
 
 class UserDatabase():
     def __init__(self):
@@ -35,7 +36,14 @@ class UserDatabase():
         """)
 
         self.conn.commit()
-        os.makedirs('user_data', exist_ok=True)
+        sys_path = sys.path[0]
+        while 'backend' not in os.listdir(sys_path) and 'InteractiveMlBuilder' in sys_path:
+            if "InteractiveMlBuilder" not in sys_path:
+                raise FileNotFoundError("Not in InteractiveMlBuilder directory?!! Noah I know this is going to be ur fault")
+            sys_path = os.path.dirname(sys_path)
+            
+        self.user_data_root = os.path.join(sys_path, 'backend/database/user_data')
+        os.makedirs(self.user_data_root, exist_ok=True)
 
     def hash(self, string):
         return abs(hash(string) % 1000000)
@@ -78,20 +86,20 @@ class UserDatabase():
     def init_model(self, user_uuid, config_json):
         created_at = datetime.now()
         model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
-        model_path = f'user_data/{user_uuid}/{model_uuid}'
+        model_dir = os.path.join(self.user_data_root, str(user_uuid), str(model_uuid))
 
         # save config
-        os.makedirs(model_path, exist_ok=True)
-        with open(os.path.join(model_path, 'config.json'), 'w') as f:
+        os.makedirs(model_dir, exist_ok=True)
+        with open(os.path.join(model_dir, 'config.json'), 'w') as f:
             f.write(config_json)
 
         # touching output.logs, loss.logs, error.logs if they don't exist
-        open(os.path.join(model_path, 'output.logs'), 'a').close()
-        open(os.path.join(model_path, 'loss.logs'), 'a').close()
-        open(os.path.join(model_path, 'error.logs'), 'a').close()
+        open(os.path.join(model_dir, 'output.logs'), 'a').close()
+        open(os.path.join(model_dir, 'loss.logs'), 'a').close()
+        open(os.path.join(model_dir, 'error.logs'), 'a').close()
 
         self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
-                         (model_uuid, user_uuid, model_path, created_at))
+                         (model_uuid, user_uuid, model_dir, created_at))
         self.conn.commit()
 
         return model_uuid
@@ -137,8 +145,8 @@ class UserDatabase():
 
     def clear(self):
         # DO NOT RUN THIS IN PRODUCTION
-        shutil.rmtree('user_data', ignore_errors=True)
-        os.makedirs('user_data', exist_ok=True)
+        shutil.rmtree(self.user_data_root, ignore_errors=True)
+        os.makedirs(self.user_data_root, exist_ok=True)
         self.cur.execute("DELETE FROM models")
         self.cur.execute("DELETE FROM datasets")
         self.cur.execute("DELETE FROM users")

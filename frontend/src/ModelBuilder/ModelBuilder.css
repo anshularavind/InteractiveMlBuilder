@@ -1,30 +1,126 @@
-.headerButton {
-    padding: 5px 15px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #357abd;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .container {
-    display: flex;
-    align-items: flex-start; /* Align items at the top */
-    margin: 0; /* Remove any outer spacing */
-    padding: 0; /* Remove any inner spacing */
-  }
-  
-  
-  
+.container {
+  display: grid;
+  grid-template-columns: 1fr 0.15fr 3fr 0.15fr 1fr 1.5fr; /* Adjusted the middle section (3fr) for smaller layers area */
+  width: 95%;
+  height: 90vh;
+  margin: auto;
+  font-family: 'Poppins', sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  gap: 10px;
+}
 
+/* Input and Output Areas */
+.inputArea,
+.outputArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.label {
+  margin-top: 10px; /* Add space between trapezoid and label */
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center;
+  color: #333;
+}
+/* Trapezoid for Input */
+.inputArea .trapezoid {
+  width: 300px;
+  height: 40vh;
+  background-color: #90caf9;
+  clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(90deg); /* Rotate for Input */
+}
+
+/* Trapezoid for Output */
+.outputArea .trapezoid {
+  width: 300px;
+  height: 40vh;
+  background-color: #90caf9;
+  clip-path: polygon(20% 0, 80% 0, 100% 100%, 0% 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: rotate(-90deg); /* Flipped rotation for Output */
+}
+
+/* Label (Inside Trapezoids) */
+/* Label for Input */
+.inputArea .label {
+  transform: rotate(-90deg); /* Ensure the text is horizontal */
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center;
+  color: #fff;
+}
+
+/* Label for Output */
+.outputArea .label {
+  transform: rotate(90deg); /* Adjust text to match flipped orientation */
+  font-weight: bold;
+  font-size: 1rem;
+  text-align: center;
+  color: #fff;
+}
+
+
+
+
+/* Layers Area */
+.layersArea {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+/* Placeholder Message */
+.emptyMessage {
+  color: #888;
+  font-style: italic;
+  font-size: 1.2rem;
+  text-align: center;
+}
+/* Arrow Styling */
+.arrowContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.arrowLine {
+  width: 40px; /* Reduce width for smaller sections */
+  height: 2px;
+  background-color: black;
+}
+
+.arrowHead {
+  width: 0;
+  height: 0;
+  border-left: 5px solid black;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+
+/* Input Block */
 .inputBlock {
-    margin-top: 0; /* Ensure no extra margin at the top */
-    padding: 0;
-  width: 25%;
-  padding: 20px;
   background-color: #f0f8ff;
-  border-right: 2px solid #ddd;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -34,15 +130,7 @@
   gap: 10px;
 }
 
-.layersArea {
-  width: 75%;
-  position: relative;
-  background-color: #f9f9f9;
-  overflow: hidden;
-  padding: 10px;
-  direction: ltr;
-}
-
+/* Input Fields */
 .input {
   width: 100%;
   padding: 5px;
@@ -51,28 +139,54 @@
   box-sizing: border-box;
 }
 
+/* Buttons */
 .addButton {
-  padding: 10px 20px;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
   font-size: 1rem;
   color: #fff;
-  background-color: #4a90e2;
+  background-color: #007bff; /* Blue for Create Layers */
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  margin-top: 10px;
 }
 
-.layer {
-  width: 150px;
+.resetButton {
+  width: 100%;
   padding: 10px;
-  text-align: center;
-  background-color: #e3f2fd;
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #dc3545; /* Red for Reset */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Add hover effects for better interactivity */
+.addButton:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.resetButton:hover {
+  background-color: #a71d2a; /* Darker red on hover */
+}
+.layer {
+  width: 150px; /* Adjusted width */
+  height: 100px; /* Adjusted height */
+  background-color: #e3f2fd; /* Light blue color for layers */
+  color: #333;
+  display: flex; /* Enable Flexbox */
+  justify-content: center; /* Horizontally center content */
+  align-items: center; /* Vertically center content */
+  text-align: center; /* Text alignment fallback */
+  font-size: 1rem; /* Font size for better readability */
   border: 1px solid #90caf9;
   border-radius: 5px;
-  cursor: grab;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  position: absolute;
+  position: absolute; /* Keep absolute positioning for placement */
 }
+
 
 .dropdown {
   margin-bottom: 100px;
@@ -114,101 +228,40 @@
   padding: 5px 10px;
   font-size: 1rem;
   color: #333;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-}
-
-
-.visual-flowchart {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.visual-layer {
-  width: 150px;
-  height: auto;
-  background-color: #4a90e2;
-  color: white;
-  text-align: center;
-  line-height: 1.5;
-  padding: 10px;
-  border-radius: 5px;
   position: absolute;
-  cursor: grab;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  top: 10px; /* Adjust the position based on your layout */
+  width: 100%;
 }
 
-.visual-layer:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.visual-layer:active {
-  cursor: grabbing;
-  transform: scale(0.95);
-}
-
-.removeButton {
-  padding: 10px 20px;
+.trapezoidLabel {
+  margin-top: 10px; /* Adds spacing between trapezoid and label */
+  font-weight: bold;
   font-size: 1rem;
-  color: #fff;
-  background-color: #e74c3c; /* Red color for delete action */
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 10px;
+  text-align: center;
+  color: #333;
+}
+/* Predictions Box Styling */
+.predictionsBox {
+  width: 100px; /* Width of the box */
+  height: 550px; /* Height of the box */
+  background-color: #f9f9f9; /* Light gray background */
+  border: 2px solid #90caf9; /* Same color as trapezoids */
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 20px; /* Space between output trapezoid and predictions box */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for aesthetics */
 }
 
-/* Input and Output Layers (Horizontal Trapezoids) */
-.input-layer,
-.output-layer {
-  fill: #4a90e2; /* Blue fill color */
-  stroke: #333; /* Dark border */
-  stroke-width: 2;
+/* Predictions Label */
+.predictionsLabel {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
 }
 
 
 
-/* Arrowhead Marker */
-.visual-container marker#arrow {
-  markerWidth: 10;
-  markerHeight: 10;
-  refX: 6;
-  refY: 3;
-  orient: auto;
-  fill: #333;
-}
-
-* Input and Output Layers (Horizontal Trapezoids) */
-.input-layer,
-.output-layer {
-  fill: #4a90e2; /* Blue fill color */
-  stroke: #333; /* Dark border */
-  stroke-width: 2;
-}
-
-/* Hidden Layers (Rectangles) */
-.hidden-layer {
-  fill: #90caf9; /* Light blue fill color */
-  stroke: #333; /* Dark border */
-  stroke-width: 2;
-}
-
-/* Layer Labels */
-.layer-label,
-.hidden-layer-label {
-  fill: #000; /* Black text */
-  font-size: 14px;
-  text-anchor: middle; /* Center-align text */
-  dominant-baseline: middle;
-}
-
-/* Straight Arrow Lines */
-.connection-line {
-  stroke: #333; /* Dark gray color */
-  stroke-width: 2;
-  marker-end: url(#arrow); /* Arrowhead at the end of the line */
-}

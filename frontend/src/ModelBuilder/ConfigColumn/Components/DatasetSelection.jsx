@@ -3,7 +3,7 @@ import "../../ModelBuilder.css";
 function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, datasetItems, handleItemClick }) {
   return (
     <div>
-      <div className="dropdown">
+      <div className="dropdownDatasets">
         <button
           className="dropdownButton"
           onClick={toggleDropdown}

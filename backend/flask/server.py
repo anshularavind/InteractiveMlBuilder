@@ -1,6 +1,6 @@
 import sys
 import os
-
+import time
 # Add the backend directory to the Python path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -8,8 +8,6 @@ import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
 from authlib.integrations.flask_oauth2 import ResourceProtector
-
-from celery import Celery
 import helper
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
@@ -20,7 +18,11 @@ import sys
 import os
 from flask import g
 from jwtValidation import auth0_service
-from routes import main_routes
+from routes import main_routes, logger 
+from celeryApp import flask_app as app, celery
+from helper import train_model_task  # Now this won't cause circular import
+
+app.register_blueprint(main_routes)
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,41 +30,13 @@ ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
-def make_celery(app):
-    celery = Celery(
-        app.name,
-        broker=app.config['CELERY_BROKER_URL'],
-        backend=app.config['CELERY_RESULT_BACKEND']
-    )
-    celery.conf.update(app.config)
+logger.info(celery.tasks.keys())
 
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
 
-    celery.Task = ContextTask
-    return celery
-
-# Initialize Flask
-app = Flask(__name__)
-
-# Celery configuration
-app.config.update(
-    CELERY_BROKER_URL='redis://localhost:6379/0',
-    CELERY_RESULT_BACKEND='redis://localhost:6379/0',
-    CELERY_TASK_TRACK_STARTED=True,
-    CELERY_TASK_TIME_LIMIT=3600,
-    CELERY_TASK_SERIALIZER='json',
-    CELERY_RESULT_SERIALIZER='json',
-    CELERY_ACCEPT_CONTENT=['json']
-)
-
-app.register_blueprint(main_routes)
-
-# Initialize Celery
-celery = make_celery(app)
-
+@celery.task()
+def square_number(number):
+    time.sleep(5)  # Simulate a long-running task
+    return number ** 2
 # ... (rest of your existing server.py code)
 
 
@@ -109,16 +83,36 @@ def session_info():
     return jsonify({"error": "Unauthorized"}), 401
 
 
-@app.route("/api/private")
-@helper.token_required
-def private():
-    """A valid access token is required."""
-    try:
-        return jsonify(
-            message="Hello from private endpoint",
-        )
-    except Exception as e:
-        return jsonify({"error": str(e)}), 401
+# @app.route("/api/private")
+# @helper.token_required
+# def private():
+#     """A valid access token is required."""
+#     try:
+#         return jsonify(
+#             message="Hello from private endpoint",
+#         )
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 401
+    
+
+@app.route('/api/square', methods=['POST'])
+def test_celery():
+    """
+    Test route to square a number using Celery.
+    Expects JSON input: {"number": <int>}
+    """
+    data = request.get_json()
+
+    # Get the number from the request
+    number = data.get('number', None)
+    if number is None:
+        return jsonify({'error': 'Please provide a number!'}), 400
+
+    # Call the Celery task
+    task = square_number.delay(number)
+
+    # Return the task ID for tracking
+    return jsonify({'task_id': task.id}), 202
 
 
 if __name__ == "__main__":

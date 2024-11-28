@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import DatasetSelection from "./Components/DatasetSelection";
 import LayerSelection from "./Components/LayerSelection";
 import ModelConfig from "./Components/ModelConfig";
@@ -10,42 +11,135 @@ function ConfigColumn({
   toggleDatasetDropdown,
   datasetItems,
   handleDatasetClick,
-  selectedLayer,
-  layerDropdownOpen,
-  toggleLayerDropdown,
   layerItems,
-  handleLayerClick,
-  blockInputs,
   handleInputChange,
   createLayers,
 }) {
+  const [modules, setModules] = useState([]);
+
+  const addModelModule = () => {
+    setModules((prevModules) => [
+      ...prevModules,
+      {
+        id: prevModules.length,
+        selectedLayer: null,
+        layerDropdownOpen: false,
+        blockInputs: { hiddenSize: 0, numHiddenLayers: 0 },
+        isOpen: false, // To track if module content is open or closed
+      },
+    ]);
+  };
+
+  const toggleLayerDropdown = (id) => {
+    setModules((prevModules) =>
+      prevModules.map((module) =>
+        module.id === id
+          ? { ...module, layerDropdownOpen: !module.layerDropdownOpen }
+          : module
+      )
+    );
+  };
+
+  const handleLayerClick = (id, item) => {
+    setModules((prevModules) =>
+      prevModules.map((module) =>
+        module.id === id ? { ...module, selectedLayer: item.value } : module
+      )
+    );
+  };
+
+  const handleModuleInputChange = (id, field, value) => {
+    setModules((prevModules) =>
+      prevModules.map((module) =>
+        module.id === id
+          ? {
+              ...module,
+              blockInputs: {
+                ...module.blockInputs,
+                [field]: Math.max(0, parseInt(value) || 0),
+              },
+            }
+          : module
+      )
+    );
+  };
+
+  const createModuleLayers = (id) => {
+    const module = modules.find((mod) => mod.id === id);
+    if (!module) return;
+
+    const newLayers = [];
+    for (let i = 0; i < module.blockInputs.numHiddenLayers; i++) {
+      newLayers.push({
+        id: `${id}-${i}`,
+        name: `Layer ${id} Layer ${i + 1}`,
+      });
+    }
+    createLayers(newLayers);
+  };
+
+  // Function to toggle the visibility of a module's content
+  const toggleModuleVisibility = (id) => {
+    setModules((prevModules) =>
+      prevModules.map((module) =>
+        module.id === id
+          ? { ...module, isOpen: !module.isOpen }
+          : module
+      )
+    );
+  };
+
   return (
     <div className="inputBlock">
-      {/* Heading for Dataset Selection */}
-      <h2>Select Dataset:</h2>
-      <DatasetSelection
-        selectedItem={selectedDataset}
-        dropdownOpen={datasetDropdownOpen}
-        toggleDropdown={toggleDatasetDropdown}
-        datasetItems={datasetItems}
-        handleItemClick={handleDatasetClick}
-      />
+      {/* Frozen Header Section */}
+      <div className="inputBlockHeader">
+        <h1><b>Model Configuration</b></h1>
+        <h2><u>Select Dataset</u></h2>
+        <DatasetSelection
+          selectedItem={selectedDataset}
+          dropdownOpen={datasetDropdownOpen}
+          toggleDropdown={toggleDatasetDropdown}
+          datasetItems={datasetItems}
+          handleItemClick={handleDatasetClick}
+        />
 
-      {/* Heading for Layer Selection */}
-      <h2>Add Layers:</h2>
-      <LayerSelection
-        selectedItem={selectedLayer}
-        dropdownOpen={layerDropdownOpen}
-        toggleDropdown={toggleLayerDropdown}
-        layerItems={layerItems}
-        handleItemClick={handleLayerClick}
-      />
+        <h2><u>Add Layers</u></h2>
+        <button className="addButton" onClick={addModelModule}>
+          +
+        </button>
+      </div>
 
-      <ModelConfig
-        blockInputs={blockInputs}
-        handleInputChange={handleInputChange}
-        createLayers={createLayers}
-      />
+      <div className="inputBlockContent">
+        {modules.map((module) => (
+          <div key={module.id} className="module">
+            <h3
+              className="moduleHeader"
+              onClick={() => toggleModuleVisibility(module.id)}
+            >
+              Layer {module.id + 1}
+            </h3>
+            {module.isOpen && (
+              <div className="moduleContent">
+                <LayerSelection
+                  selectedItem={module.selectedLayer}
+                  dropdownOpen={module.layerDropdownOpen}
+                  toggleDropdown={() => toggleLayerDropdown(module.id)}
+                  layerItems={layerItems}
+                  handleItemClick={(item) => handleLayerClick(module.id, item)}
+                />
+                <ModelConfig
+                  blockInputs={module.blockInputs}
+                  handleInputChange={(field, value) =>
+                    handleModuleInputChange(module.id, field, value)
+                  }
+                  createLayers={() => createModuleLayers(module.id)}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
       <Train />
     </div>
   );

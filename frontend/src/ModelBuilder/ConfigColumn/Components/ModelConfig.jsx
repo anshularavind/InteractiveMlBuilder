@@ -16,7 +16,7 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
         </div>
       ))}
       <button className="addButton" onClick={createLayers}>
-        Create Layers
+        Done
       </button>
     </div>
   );

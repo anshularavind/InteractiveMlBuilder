@@ -15,17 +15,76 @@
 }
 
 .inputBlock {
-  width: 25%;
+  width: 20%;
   padding: 20px;
   background-color: #f0f8ff;
   border-right: 2px solid #ddd;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column; /* Ensures header and content stack vertically */
+  align-items: center; /* Centers items horizontally */
+  justify-content: center; /* Centers items vertically */
   text-align: center;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+  height: 80vh; /* Adjust as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+}
+
+.inputBlockHeader {
+  position: sticky;
+  top: 0;
+  background-color: #f0f8ff; /* Match the background color */
+  z-index: 10;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  width: 100%; /* Ensures header takes full width */
+  text-align: center; /* Center the text in the header */
+}
+
+.inputBlockContent {
+  flex-grow: 1;
+  overflow-y: auto; /* Enables vertical scrolling */
+  margin-top: 10px;
+  background-color: #f0f8ff
+}
+
+.module {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 200px;
+  margin-bottom: 10px;
+  background-color: #fff;
+}
+
+.moduleHeader {
+  background-color: #e0e0e0;
+  padding: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.moduleContent {
+  padding: 5px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.addButton {
+  font-size: 1.5rem;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.addButton:hover {
+  background-color: #4a90e2;
 }
 
 .layersArea {
@@ -68,22 +127,24 @@
   position: absolute;
 }
 
+/* Centering the dropdown container */
 .dropdown {
-  margin-bottom: 100px;
+  margin-bottom: 15px;
   position: relative;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  width: 100px;
+  display: flex;
+  flex-direction: column; /* Ensure vertical stacking */
+  align-items: center; /* Centers items horizontally */
+  width: 100%; /* Ensures it takes up the full width of the parent */
 }
 
+/* Centering the dropdown button */
 .dropdownButton {
-  width: 150px;
+  width: 100%; /* Make the button take full width of its container */
+  max-width: 150px; /* Optionally, set a max-width for the button */
   padding: 10px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: center; /* Centers the content inside button horizontally */
+  justify-content: center; /* Centers the content inside button vertically */
   background-color: #357abd;
   color: #fff;
   border: none;
@@ -92,6 +153,7 @@
   text-align: center;
 }
 
+/* Dropdown content style */
 .dropdownContent {
   position: absolute;
   background-color: #fff;
@@ -104,6 +166,7 @@
   cursor: pointer;
 }
 
+/* Dropdown item styling */
 .dropdownItem {
   padding: 5px 10px;
   font-size: 1rem;

@@ -25,7 +25,7 @@ function ConfigColumn({
         selectedLayer: null,
         layerDropdownOpen: false,
         blockInputs: { hiddenSize: 0, numHiddenLayers: 0 },
-        isOpen: false, // To track if module content is open or closed
+        isOpen: false, 
       },
     ]);
   };
@@ -78,7 +78,6 @@ function ConfigColumn({
     createLayers(newLayers);
   };
 
-  // Function to toggle the visibility of a module's content
   const toggleModuleVisibility = (id) => {
     setModules((prevModules) =>
       prevModules.map((module) =>
@@ -91,7 +90,6 @@ function ConfigColumn({
 
   return (
     <div className="inputBlock">
-      {/* Frozen Header Section */}
       <div className="inputBlockHeader">
         <h1><b>Model Configuration</b></h1>
         <h2><u>Select Dataset</u></h2>

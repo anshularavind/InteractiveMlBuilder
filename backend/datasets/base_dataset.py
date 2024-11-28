@@ -31,3 +31,8 @@ class BaseDataset(ABC):
     @abstractmethod
     def num_channels(self):
         pass
+
+    @property
+    @abstractmethod
+    def accuracy_descriptor(self):
+        pass

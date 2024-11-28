@@ -28,10 +28,10 @@ function Visualizer({ layers }) {
         <polygon
           className="input-layer"
           points={`
-            ${inputLayerX},${centerY - trapezoidWidthBottom} 
-      ${inputLayerX + trapezoidHeight},${centerY - trapezoidWidthBottom} 
-      ${inputLayerX + trapezoidWidthBottom},${centerY + trapezoidWidthBottom / 2} 
-      ${inputLayerX},${centerY + trapezoidHeight / 2}
+          ${inputLayerX},${centerY - trapezoidHeight / 2} 
+          ${inputLayerX + trapezoidWidthBottom},${centerY - trapezoidHeight / 2} 
+          ${inputLayerX + trapezoidWidthTop},${centerY + trapezoidHeight / 2} 
+          ${inputLayerX},${centerY + trapezoidHeight / 2}
         `}
         />
         <text className="layer-label" x={inputLayerX + trapezoidWidthBottom / 2} y={centerY + trapezoidHeight + 10}>

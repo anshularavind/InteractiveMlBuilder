@@ -2,7 +2,7 @@ import psycopg2
 from datetime import datetime
 import os
 import shutil
-
+import torch
 
 class UserDatabase():
     def __init__(self):
@@ -75,21 +75,6 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM users")
         return self.cur.fetchall()
 
-    # def init_model(self, user_uuid, config_json):
-    #     created_at = datetime.now()
-     #   model_uuid = user_uuid + self.hash(config_json)
-    #     model_path = f'user_data/{user_uuid}/{model_uuid}'
-
-    #     # save config
-    #     os.makedirs(model_path, exist_ok=True)
-    #     with open(os.path.join(model_path, 'config.json'), 'w') as f:
-    #         f.write(config_json)
-
-        # self.cur.execute("INSERT INTO models (uuid, user_uuid, model_path, created_at) VALUES (%s, %s, %s, %s)",
-        #                 (model_uuid, user_uuid, model_path, created_at))
-    #     self.conn.commit()
-
-    #     return model_uuid
     def init_model(self, user_uuid, config_json):
         created_at = datetime.now()
         model_uuid = user_uuid + self.hash(config_json)
@@ -110,6 +95,13 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s AND uuid=%s", (user_uuid, model_uuid))
         model = self.cur.fetchone()
         return model[2] if model else None
+
+    def save_model_pt(self, user_uuid, model_uuid, model):
+        model_dir = self.get_model_dir(user_uuid, model_uuid)
+        if not model_dir:
+            return False
+        torch.save(model.state_dict(), os.path.join(model_dir, 'model.pt'))
+        return True
 
     def get_models(self, user_uuid):
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s", (user_uuid,))

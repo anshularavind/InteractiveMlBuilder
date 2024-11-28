@@ -4,7 +4,7 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>
       <h4>Configure Inputs</h4>
-      {["inputSize", "outputSize", "hiddenSize", "numHiddenLayers"].map((field) => (
+      {["hiddenSize", "numHiddenLayers"].map((field) => (
         <div key={field}>
           <label>{field.replace(/([A-Z])/g, " $1")}: </label>
           <input

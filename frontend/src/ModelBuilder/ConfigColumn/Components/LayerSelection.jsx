@@ -1,6 +1,6 @@
 import "../../ModelBuilder.css";
 
-function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, datasetItems, handleItemClick }) {
+function LayerSelection({ selectedItem, dropdownOpen, toggleDropdown, layerItems, handleItemClick }) {
   return (
     <div>
       <div className="dropdown">
@@ -8,11 +8,11 @@ function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, datasetI
           className="dropdownButton"
           onClick={toggleDropdown}
         >
-          {selectedItem ? `Selected: ${selectedItem}` : "Select Dataset"}
+          {selectedItem ? `Selected: ${selectedItem}` : "+"}
         </button>
         {dropdownOpen && (
           <div className="dropdownContent">
-            {datasetItems.map((item) => (
+            {layerItems.map((item) => (
               <div
                 key={item.value}
                 className="dropdownItem"
@@ -28,4 +28,4 @@ function DatasetSelection({ selectedItem, dropdownOpen, toggleDropdown, datasetI
   );
 }
 
-export default DatasetSelection;
+export default LayerSelection;

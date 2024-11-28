@@ -8,7 +8,7 @@ function LayerSelection({ selectedItem, dropdownOpen, toggleDropdown, layerItems
           className="dropdownButton"
           onClick={toggleDropdown}
         >
-          {selectedItem ? `Selected: ${selectedItem}` : "+"}
+          {selectedItem ? `Selected: ${selectedItem}` : "Select Model Type"}
         </button>
         {dropdownOpen && (
           <div className="dropdownContent">

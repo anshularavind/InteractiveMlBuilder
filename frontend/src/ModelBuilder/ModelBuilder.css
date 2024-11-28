@@ -150,3 +150,14 @@
   cursor: grabbing;
   transform: scale(0.95);
 }
+
+.removeButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #e74c3c; /* Red color for delete action */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}

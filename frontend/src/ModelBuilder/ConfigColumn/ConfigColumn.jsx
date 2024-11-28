@@ -5,7 +5,6 @@ import Train from "./Components/Train";
 import "../ModelBuilder.css";
 
 function ConfigColumn({
-
   selectedDataset,
   datasetDropdownOpen,
   toggleDatasetDropdown,
@@ -19,6 +18,7 @@ function ConfigColumn({
   blockInputs,
   handleInputChange,
   createLayers,
+  removeLastLayer,  // Assuming you have removeLastLayer function passed in
 }) {
   return (
     <div className="inputBlock">
@@ -49,16 +49,14 @@ function ConfigColumn({
       />
       <Train />
 
+      {/* Buttons */}
+      <button className="addButton" onClick={createLayers}>
+        Create Layers
+      </button>
+      <button className="removeButton" onClick={removeLastLayer}>
+        Remove Last Layer
+      </button>
     </div>
-  ))}
-  <button className="addButton" onClick={createLayers}>
-    Create Layers
-  </button>
-  <button className="removeButton" onClick={removeLastLayer}>
-    Remove Last Layer
-  </button>
-</div>
-
   );
 }
 

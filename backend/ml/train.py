@@ -59,12 +59,12 @@ def train_model(model, epochs=10):
             time_elapsed_str = f'Time elapsed: {int(minutes)}m {int(seconds)}s'
 
             if epoch + 1 != epochs:
-                output_str = time_elapsed_str + '\nAccuracy of the network on the 10000 test images: {} %'.format(100 * accuracy)
+                output_str = time_elapsed_str + f'\n{epoch + 1} accuracy: {100 * accuracy}%'
                 print(output_str)
                 model.add_output_logs(output_str)
             else:
-                output_str = time_elapsed_str + '\nFinal accuracy of the network on the 10000 test images: {} %'.format(100 * accuracy)
+                output_str = time_elapsed_str + '\nFinal accuracy: {} %'.format(100 * accuracy)
                 print(output_str)
                 model.add_output_logs(output_str)
 
-    return model, accuracy
+    return accuracy

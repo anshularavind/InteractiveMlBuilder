@@ -12,5 +12,8 @@ cd frontend && npm install && cd ..  # Install Node.js dependencies
 cd backend
 # Run in separate terminals
 python ./flask/server.py # Run the Flask server
+
+brew services start redis #start redis server
+cd flask 
 celery -A server.celery worker --loglevel=info # Run the Celery worker
 ```

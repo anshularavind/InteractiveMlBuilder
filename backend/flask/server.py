@@ -7,7 +7,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
-from authlib.integrations.flask_oauth2 import ResourceProtector
 import helper
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv

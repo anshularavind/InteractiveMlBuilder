@@ -10,7 +10,7 @@ def train_model(model, epochs=10):
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)
 
     print('Training model...')
-    #model.add_output_logs('Training model...')
+    model.add_output_logs('Training model...')
 
     start = time.time()
 
@@ -39,7 +39,7 @@ def train_model(model, epochs=10):
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                        .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
         epoch_loss /= len(dataset.train_loader)
-        #model.add_loss_logs(epoch_loss)
+        model.add_loss_logs(epoch_loss)
 
         # Test
         model.eval()
@@ -61,10 +61,10 @@ def train_model(model, epochs=10):
             if epoch + 1 != epochs:
                 output_str = time_elapsed_str + '\nAccuracy of the network on the 10000 test images: {} %'.format(100 * accuracy)
                 print(output_str)
-                #model.add_output_logs(output_str)
+                model.add_output_logs(output_str)
             else:
                 output_str = time_elapsed_str + '\nFinal accuracy of the network on the 10000 test images: {} %'.format(100 * accuracy)
                 print(output_str)
-                #model.add_output_logs(output_str)
+                model.add_output_logs(output_str)
 
     return model, accuracy

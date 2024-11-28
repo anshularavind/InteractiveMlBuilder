@@ -95,18 +95,27 @@ class BuiltModel(nn.Module):
         return model_blocks
 
     def add_output_logs(self, output: str):
-        # add output to self.model_dir/output.logs
-        with open(os.path.join(self.model_dir, 'output.logs'), 'a') as f:
+        # Ensure the directory exists before writing to the log file
+        output_log_path = os.path.join(self.model_dir, 'output.logs')
+        os.makedirs(os.path.dirname(output_log_path), exist_ok=True)  # Create directory if it doesn't exist
+        
+        with open(output_log_path, 'a') as f:
             f.write(output + '\n')
 
     def add_loss_logs(self, loss: float):
-        # add loss to self.model_dir/loss.logs
-        with open(os.path.join(self.model_dir, 'loss.logs'), 'a') as f:
-            f.write(str(loss) + ',')  # comma separated values
+        # Ensure the directory exists before writing to the log file
+        loss_log_path = os.path.join(self.model_dir, 'loss.logs')
+        os.makedirs(os.path.dirname(loss_log_path), exist_ok=True)  # Create directory if it doesn't exist
+        
+        with open(loss_log_path, 'a') as f:
+            f.write(str(loss) + ',')  # comma-separated values
 
     def add_error_logs(self, error: str):
-        # add error to self.model_dir/error.logs
-        with open(os.path.join(self.model_dir, 'error.logs'), 'a') as f:
+        # Ensure the directory exists before writing to the log file
+        error_log_path = os.path.join(self.model_dir, 'error.logs')
+        os.makedirs(os.path.dirname(error_log_path), exist_ok=True)  # Create directory if it doesn't exist
+        
+        with open(error_log_path, 'a') as f:
             f.write(error + '\n')
 
 

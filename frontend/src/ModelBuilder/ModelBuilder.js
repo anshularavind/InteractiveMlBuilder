@@ -72,6 +72,12 @@ function ModelBuilder() {
     );
   };
 
+  // Function to remove the last layer
+const removeLastLayer = () => {
+  setLayers((prevLayers) => prevLayers.slice(0, -1)); // Remove the last layer
+};
+
+
   return (
     <div>
       <div className="container">

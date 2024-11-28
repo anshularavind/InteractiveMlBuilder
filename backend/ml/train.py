@@ -20,12 +20,10 @@ def train_model(model, epochs=10):
     print(f'Output increment: {output_increment}')
     for epoch in range(epochs):
         epoch_loss = 0
-        print(f'Epoch {epoch + 1}/{epochs}')
-        for i, (images, labels) in enumerate(dataset.train_loader):
-            print(f'Step {i+1}/{len(dataset.train_loader)}')
+        for i, (x, y) in enumerate(dataset.train_loader):
             # Forward pass
-            outputs = model(images)
-            loss = criterion(outputs, labels)
+            outputs = model(x)
+            loss = criterion(outputs, y)
             epoch_loss += loss.item()
 
             print(f'Loss: {loss.item()}')
@@ -46,9 +44,9 @@ def train_model(model, epochs=10):
         with torch.no_grad():
             correct = 0
             total = 0
-            for images, labels in dataset.test_loader:
-                outputs = model(images)
-                new_correct, new_total = dataset.get_eval_numbers(outputs, labels)
+            for x, y in dataset.test_loader:
+                outputs = model(x)
+                new_correct, new_total = dataset.get_eval_numbers(outputs, y)
                 correct += new_correct
                 total += new_total
 
@@ -59,11 +57,11 @@ def train_model(model, epochs=10):
             time_elapsed_str = f'Time elapsed: {int(minutes)}m {int(seconds)}s'
 
             if epoch + 1 != epochs:
-                output_str = time_elapsed_str + f'\n{epoch + 1} accuracy: {100 * accuracy}%'
+                output_str = time_elapsed_str + f'\nEpoch #{epoch + 1} {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
                 model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
             else:
-                output_str = time_elapsed_str + '\nFinal accuracy: {} %'.format(100 * accuracy)
+                output_str = time_elapsed_str + f'\nFinal {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
                 model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
 

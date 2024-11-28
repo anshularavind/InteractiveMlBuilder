@@ -26,6 +26,7 @@ class AirQuality(BaseDataset):
     criterion = nn.MSELoss()
     is_2d = False
     num_channels = 1
+    accuracy_descriptor = 'MSE (std normalized)'
 
     def __init__(self, batch_size=64):
         super().__init__(batch_size=batch_size)

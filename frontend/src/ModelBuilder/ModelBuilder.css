@@ -188,6 +188,9 @@
 .dropdown {
   margin-bottom: 100px;
   position: relative;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   width: 100px;
 }
 
@@ -210,6 +213,9 @@
   position: absolute;
   background-color: #fff;
   border: 1px solid #ddd;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   border-radius: 5px;
   margin-top: 5px;
   z-index: 100;
@@ -222,7 +228,10 @@
   padding: 5px 10px;
   font-size: 1rem;
   color: #333;
-  position: absolute;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
   top: 10px; /* Adjust the position based on your layout */
   width: 100%;
 }

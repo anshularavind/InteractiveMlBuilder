@@ -8,13 +8,19 @@
     cursor: pointer;
   }
   
-.container {
-  display: flex;
-  height: 100vh;
-  font-family: 'Poppins', sans-serif;
-}
+  .container {
+    display: flex;
+    align-items: flex-start; /* Align items at the top */
+    margin: 0; /* Remove any outer spacing */
+    padding: 0; /* Remove any inner spacing */
+  }
+  
+  
+  
 
 .inputBlock {
+    margin-top: 0; /* Ensure no extra margin at the top */
+    padding: 0;
   width: 25%;
   padding: 20px;
   background-color: #f0f8ff;

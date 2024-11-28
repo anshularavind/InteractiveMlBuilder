@@ -20,28 +20,28 @@
   background-color: #f0f8ff;
   border-right: 2px solid #ddd;
   display: flex;
-  flex-direction: column; /* Ensures header and content stack vertically */
-  align-items: center; /* Centers items horizontally */
-  justify-content: center; /* Centers items vertically */
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; 
   text-align: center;
-  height: 80vh; /* Adjust as needed */
-  overflow-y: auto; /* Enables vertical scrolling */
+  height: 80vh; 
+  overflow-y: auto; 
 }
 
 .inputBlockHeader {
   position: sticky;
   top: 0;
-  background-color: #f0f8ff; /* Match the background color */
+  background-color: #f0f8ff; 
   z-index: 10;
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
-  width: 100%; /* Ensures header takes full width */
-  text-align: center; /* Center the text in the header */
+  width: 100%; 
+  text-align: center;
 }
 
 .inputBlockContent {
   flex-grow: 1;
-  overflow-y: auto; /* Enables vertical scrolling */
+  overflow-y: auto; 
   margin-top: 10px;
   background-color: #f0f8ff
 }
@@ -127,24 +127,23 @@
   position: absolute;
 }
 
-/* Centering the dropdown container */
 .dropdown {
   margin-bottom: 15px;
   position: relative;
   display: flex;
-  flex-direction: column; /* Ensure vertical stacking */
-  align-items: center; /* Centers items horizontally */
-  width: 100%; /* Ensures it takes up the full width of the parent */
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; 
 }
 
-/* Centering the dropdown button */
+
 .dropdownButton {
-  width: 100%; /* Make the button take full width of its container */
-  max-width: 150px; /* Optionally, set a max-width for the button */
+  width: 100%; 
+  max-width: 150px; 
   padding: 10px;
   display: flex;
-  align-items: center; /* Centers the content inside button horizontally */
-  justify-content: center; /* Centers the content inside button vertically */
+  align-items: center; 
+  justify-content: center; 
   background-color: #357abd;
   color: #fff;
   border: none;
@@ -153,7 +152,7 @@
   text-align: center;
 }
 
-/* Dropdown content style */
+
 .dropdownContent {
   position: absolute;
   background-color: #fff;
@@ -166,7 +165,7 @@
   cursor: pointer;
 }
 
-/* Dropdown item styling */
+
 .dropdownItem {
   padding: 5px 10px;
   font-size: 1rem;
@@ -194,7 +193,7 @@
   border-radius: 5px;
   position: absolute;
   cursor: grab;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 

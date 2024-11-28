@@ -5,6 +5,7 @@ import Train from "./Components/Train";
 import "../ModelBuilder.css";
 
 function ConfigColumn({
+
   selectedDataset,
   datasetDropdownOpen,
   toggleDatasetDropdown,
@@ -47,7 +48,17 @@ function ConfigColumn({
         createLayers={createLayers}
       />
       <Train />
+
     </div>
+  ))}
+  <button className="addButton" onClick={createLayers}>
+    Create Layers
+  </button>
+  <button className="removeButton" onClick={removeLastLayer}>
+    Remove Last Layer
+  </button>
+</div>
+
   );
 }
 

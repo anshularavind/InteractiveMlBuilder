@@ -52,6 +52,12 @@ def test_add_datasets():
     print(db.get_dataset(user_uuid, "path/to/dataset1"))
     db.close()
 
+def test_clear():
+    db = UserDatabase()
+    db.clear()
+
 if __name__ == "__main__":
     test_add_models()
     test_add_datasets()
+    test_add_users()
+    test_clear()

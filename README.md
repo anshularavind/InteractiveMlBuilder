@@ -5,5 +5,12 @@
 ```bash
 bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
 pip install -r requirements.txt  # Install Python dependencies
-cd frontend && npm install && cd..  # Install Node.js dependencies
+cd frontend && npm install && cd ..  # Install Node.js dependencies
+```
+## Running the Backend
+```bash
+cd backend
+# Run in separate terminals
+python ./flask/server.py # Run the Flask server
+celery -A server.celery worker --loglevel=info # Run the Celery worker
 ```

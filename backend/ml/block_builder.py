@@ -57,11 +57,11 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality}
 
-    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase):
+    def __init__(self, model_json: str, user_uuid: str, model_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
-        self.model_uuid = user_db.init_model(user_uuid, model_json) if user_db else None
+        self.model_uuid = model_uuid
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))

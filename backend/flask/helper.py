@@ -1,8 +1,8 @@
-from celery import shared_task
+from celery import shared_task, Celery
 from celery.signals import task_failure
 from ml.block_builder import BuiltModel
 from ml.train import train_model
-from database import interface as db
+from database import interface as database
 from jwcrypto import jwe, jwk
 from os import environ as env
 import json
@@ -19,6 +19,32 @@ from flask import request, g, jsonify
 
 from jwtValidation import auth0_service, json_abort
 import requests
+from celeryApp import celery 
+
+
+import logging
+
+# Create a custom logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+db = database.UserDatabase()
+# Create handlers
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+
+# Create formatters and add it to handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+# Add handlers to the logger
+logger.addHandler(handler)
+
+# Pass in celery object from server.py
+
+
+def useLogger(value):
+    logger.info(value)
 
 
 def validate_token(token):
@@ -59,14 +85,16 @@ def token_required(f):
 
 
 
-@shared_task(bind=True, 
-            max_retries=3, 
-            soft_time_limit=3300,
-            time_limit=3600)
-def train_model_task(self, model_config_str, user_uuid, model_uuid, dataset_path):
+# @shared_task(bind=True, 
+#             max_retries=3, 
+#             soft_time_limit=3300,
+#             time_limit=3600)
+@celery.task(bind=True)
+def train_model_task(self, model_config_str, user_uuid, model_uuid):
     try:
         # Initialize progress tracking
         total_steps = 100
+        logger.info(f"Model built successfully for user {user_uuid}")
         self.update_state(state='PROGRESS', 
                          meta={
                              'current': 0,
@@ -76,6 +104,7 @@ def train_model_task(self, model_config_str, user_uuid, model_uuid, dataset_path
 
         # Build the model
         model = BuiltModel(model_config_str, user_uuid, db)
+        logger.info(f"Model built successfully for user {user_uuid}")
         
         # Train the model
         training_result = train_model(model, epochs=10)
@@ -131,4 +160,5 @@ def get_task_progress(task_id):
             'status': str(task.info)
         }
     return response
+
 

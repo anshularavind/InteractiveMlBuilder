@@ -104,13 +104,14 @@ def train():
         try:
             # Convert model_config to proper JSON string
             model_config_str = json.dumps(model_config) if isinstance(model_config, dict) else model_config
-            
+            logger.info(dataset[2])
+            logger.info(f"Model config: {model_config_str}")
+            logger.info(f"user_uuid: {user_uuid}, model_uuid: {model_uuid}")    
             # Start the Celery task
             task = helper.train_model_task.delay(
                 model_config_str,
                 user_uuid,
                 model_uuid,
-                dataset[2]  # dataset path
             )
 
             return jsonify({
@@ -120,6 +121,7 @@ def train():
             }), 202
 
         except Exception as train_error:
+            logger.error(f"Capture error: {str(train_error)}")
             logger.error(f"Training error: {str(train_error)}")
             return jsonify({
                 "error": "Training failed",

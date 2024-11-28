@@ -20,6 +20,9 @@
   background-color: #f0f8ff;
   border-right: 2px solid #ddd;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
@@ -66,14 +69,21 @@
 }
 
 .dropdown {
-  margin-bottom: 10px;
+  margin-bottom: 100px;
   position: relative;
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100px;
 }
 
 .dropdownButton {
-  width: 100%;
+  width: 150px;
   padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background-color: #357abd;
   color: #fff;
   border: none;
@@ -90,7 +100,7 @@
   margin-top: 5px;
   z-index: 100;
   padding: 10px;
-  width: 100%;
+  width: 125px;
   cursor: pointer;
 }
 

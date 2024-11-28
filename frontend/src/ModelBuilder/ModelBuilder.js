@@ -1,24 +1,40 @@
 import React, { useState } from "react";
 import Visualizer from "./Visualizer/Visualizer";
 import ConfigColumn from "./ConfigColumn/ConfigColumn";
-import "./ModelBuilder.css"; // Import the external CSS file
+import "./ModelBuilder.css";
 
 function ModelBuilder() {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedDataset, setSelectedDataset] = useState(null);
+  const [datasetDropdownOpen, setDatasetDropdownOpen] = useState(false);
+  const [selectedLayer, setSelectedLayer] = useState(null);
+  const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
 
-  const items = [
+  const datasetItems = [
     { value: "MNIST", label: "MNIST" },
     { value: "CIFAR 10", label: "CIFAR 10" },
   ];
 
-  const handleItemClick = (item) => {
-    setSelectedItem(item.value);
-    setDropdownOpen(false);
+  const layerItems = [
+    { value: "FcNN", label: "FcNN" },
+    { value: "Conv", label: "Conv" },
+  ];
+
+  const handleDatasetClick = (item) => {
+    setSelectedDataset(item.value);
+    setDatasetDropdownOpen(false);
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
+  const toggleDatasetDropdown = () => {
+    setDatasetDropdownOpen(!datasetDropdownOpen);
+  };
+
+  const handleLayerClick = (item) => {
+    setSelectedLayer(item.value);
+    setLayerDropdownOpen(false);
+  };
+
+  const toggleLayerDropdown = () => {
+    setLayerDropdownOpen(!layerDropdownOpen);
   };
 
   const [layers, setLayers] = useState([]);
@@ -60,11 +76,16 @@ function ModelBuilder() {
     <div>
       <div className="container">
         <ConfigColumn
-          selectedItem={selectedItem}
-          dropdownOpen={dropdownOpen}
-          toggleDropdown={toggleDropdown}
-          items={items}
-          handleItemClick={handleItemClick}
+          selectedDataset={selectedDataset}
+          datasetDropdownOpen={datasetDropdownOpen}
+          toggleDatasetDropdown={toggleDatasetDropdown}
+          datasetItems={datasetItems}
+          handleDatasetClick={handleDatasetClick}
+          selectedLayer={selectedLayer}
+          layerDropdownOpen={layerDropdownOpen}
+          toggleLayerDropdown={toggleLayerDropdown}
+          layerItems={layerItems}
+          handleLayerClick={handleLayerClick}
           blockInputs={blockInputs}
           handleInputChange={handleInputChange}
           createLayers={createLayers}

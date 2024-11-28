@@ -1,27 +1,46 @@
 import DatasetSelection from "./Components/DatasetSelection";
+import LayerSelection from "./Components/LayerSelection";
 import ModelConfig from "./Components/ModelConfig";
 import Train from "./Components/Train";
 import "../ModelBuilder.css";
 
 function ConfigColumn({
-  selectedItem,
-  dropdownOpen,
-  toggleDropdown,
-  items,
-  handleItemClick,
+  selectedDataset,
+  datasetDropdownOpen,
+  toggleDatasetDropdown,
+  datasetItems,
+  handleDatasetClick,
+  selectedLayer,
+  layerDropdownOpen,
+  toggleLayerDropdown,
+  layerItems,
+  handleLayerClick,
   blockInputs,
   handleInputChange,
   createLayers,
 }) {
   return (
     <div className="inputBlock">
+      {/* Heading for Dataset Selection */}
+      <h2>Select Dataset:</h2>
       <DatasetSelection
-        selectedItem={selectedItem}
-        dropdownOpen={dropdownOpen}
-        toggleDropdown={toggleDropdown}
-        items={items}
-        handleItemClick={handleItemClick}
+        selectedItem={selectedDataset}
+        dropdownOpen={datasetDropdownOpen}
+        toggleDropdown={toggleDatasetDropdown}
+        datasetItems={datasetItems}
+        handleItemClick={handleDatasetClick}
       />
+
+      {/* Heading for Layer Selection */}
+      <h2>Add Layers:</h2>
+      <LayerSelection
+        selectedItem={selectedLayer}
+        dropdownOpen={layerDropdownOpen}
+        toggleDropdown={toggleLayerDropdown}
+        layerItems={layerItems}
+        handleItemClick={handleLayerClick}
+      />
+
       <ModelConfig
         blockInputs={blockInputs}
         handleInputChange={handleInputChange}

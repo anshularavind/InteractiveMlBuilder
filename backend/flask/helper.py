@@ -109,6 +109,9 @@ def train_model_task(self, model_config_str, user_uuid, model_uuid):
         # Train the model
         training_result = train_model(model, epochs=10)
 
+        # Save the model
+        db.save_model_pt(user_uuid, model_uuid, model)
+
         return {
             'current': 100,
             'total': total_steps,

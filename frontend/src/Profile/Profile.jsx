@@ -1,12 +1,10 @@
 import React from "react";
 
-function TrainingControl({ goBack }) {
+function Profile({ goBack }) {
   return (
     <div style={styles.container}>
-      <button style={styles.goBackButton} onClick={goBack}>
-        Back to Home
-      </button>
-      <h2 style={styles.header}>Training Control Page</h2>
+     
+      <h2 style={styles.header}>SOOOO thisss person</h2>
     </div>
   );
 }
@@ -41,4 +39,4 @@ const styles = {
   },
 };
 
-export default TrainingControl;
+export default Profile;

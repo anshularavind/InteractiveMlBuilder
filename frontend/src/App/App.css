@@ -1,3 +1,106 @@
+/* App.css */
+
+.fullScreen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f0f8ff;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ccc;
+}
+
+.navLink {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #4a90e2;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #555;
+}
+
+.userLink {
+  text-decoration: none;
+  color: #4a90e2;
+  margin-right: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logoutButton {
+  padding: 5px 10px;
+  font-size: 0.9rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.fullScreenContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f8ff;
+}
+
+.container {
+  text-align: center;
+  padding: 20px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f0f8ff;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.header {
+  font-size: 2.5rem;
+  color: #4a90e2;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.button {
+  font-size: 1rem;
+  margin: 10px;
+  padding: 10px 20px;
+  color: #fff;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.buttonHover {
+  background-color: #357abd;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -114,3 +217,4 @@ h2 {
 .visual-layer:active {
   cursor: grabbing;
 }
+

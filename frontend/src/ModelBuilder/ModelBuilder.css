@@ -1,0 +1,214 @@
+.headerButton {
+    padding: 5px 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #357abd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+.container {
+  display: flex;
+  height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.inputBlock {
+  width: 20%;
+  padding: 20px;
+  background-color: #f0f8ff;
+  border-right: 2px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  height: 80vh; 
+  overflow-y: auto; 
+}
+
+.inputBlockHeader {
+  position: sticky;
+  top: 0;
+  background-color: #f0f8ff; 
+  z-index: 10;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  width: 100%; 
+}
+
+.inputBlockContent {
+  flex-grow: 1;
+  overflow-y: auto; 
+  margin-top: 10px;
+  background-color: #f0f8ff
+}
+
+.module {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 200px;
+  margin-bottom: 10px;
+  background-color: #fff;
+}
+
+.moduleHeader {
+  background-color: #e0e0e0;
+  padding: 5px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  text-align: center;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.moduleContent {
+  padding: 5px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+
+.addButton {
+  font-size: 1.5rem;
+  padding: 10px;
+  cursor: pointer;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.addButton:hover {
+  background-color: #4a90e2;
+}
+
+.layersArea {
+  width: 75%;
+  position: relative;
+  background-color: #f9f9f9;
+  overflow: hidden;
+  padding: 10px;
+  direction: ltr;
+}
+
+.input {
+  width: 100%;
+  padding: 5px;
+  font-size: 1rem;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+
+.addButton {
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background-color: #4a90e2;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.layer {
+  width: 150px;
+  padding: 10px;
+  text-align: center;
+  background-color: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 5px;
+  cursor: grab;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  position: absolute;
+}
+
+.dropdown {
+  margin-bottom: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; 
+}
+
+.dropdownDatasets {
+  margin-bottom: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  width: 100%; 
+}
+
+
+.dropdownButton {
+  width: 100%; 
+  max-width: 150px; 
+  padding: 10px;
+  display: flex;
+  align-items: center; 
+  justify-content: center; 
+  background-color: #357abd;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+}
+
+
+.dropdownContent {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  margin-top: 5px;
+  z-index: 100;
+  padding: 10px;
+  width: 125px;
+  cursor: pointer;
+}
+
+
+.dropdownItem {
+  padding: 5px 10px;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+
+.visual-flowchart {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.visual-layer {
+  width: 150px;
+  height: auto;
+  background-color: #4a90e2;
+  color: white;
+  text-align: center;
+  line-height: 1.5;
+  padding: 10px;
+  border-radius: 5px;
+  position: absolute;
+  cursor: grab;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.visual-layer:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.visual-layer:active {
+  cursor: grabbing;
+  transform: scale(0.95);
+}

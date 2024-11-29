@@ -7,13 +7,17 @@ bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary
 pip install -r requirements.txt  # Install Python dependencies
 cd frontend && npm install && cd ..  # Install Node.js dependencies
 ```
-## Running the Backend
+## Running the Application
 ```bash
-cd backend
-# Run in separate terminals
-python ./flask/server.py # Run the Flask server
+# Move to project dir, InteractiveMlBuilder
+python backend/flask/server.py # Run the Flask server
 
+# Open a new terminal in same, project dir, InteractiveMlBuilder
 brew services start redis #start redis server
 cd flask 
 celery -A server.celery worker --loglevel=info # Run the Celery worker
+
+# Open 1 more terminal in same, project dir, InteractiveMlBuilder
+cd frontend
+npm start # Run the React server
 ```

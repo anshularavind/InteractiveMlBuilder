@@ -50,16 +50,8 @@ function ModelBuilder() {
     setBlockInputs({ ...blockInputs, [field]: sanitizedValue });
   };
 
-  const createLayers = () => {
-    const newLayers = [];
-    for (let i = 0; i < blockInputs.numHiddenLayers; i++) {
-      newLayers.push({
-        id: layers.length + i,
-        name: `Layer ${i + 1}`,
-        position: { x: 0, y: i * 60 },
-      });
-    }
-    setLayers([...layers, ...newLayers]);
+  const createLayers = (newLayers) => {
+    setLayers((prevLayers) => [...prevLayers, ...newLayers]);
   };
 
   const onLayerDragStop = (id, data) => {

@@ -14,7 +14,7 @@ python backend/flask/server.py # Run the Flask server
 
 # Open a new terminal in same, project dir, InteractiveMlBuilder
 brew services start redis #start redis server
-cd flask 
+cd backend/flask 
 celery -A server.celery worker --loglevel=info # Run the Celery worker
 
 # Open 1 more terminal in same, project dir, InteractiveMlBuilder

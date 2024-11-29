@@ -3,8 +3,8 @@ import "../../ModelBuilder.css";
 function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>
-      <h4>Configure Inputs</h4>
-      {["hiddenSize", "numHiddenLayers"].map((field) => (
+      <h4>Configure Block Parameters</h4>
+      {["inputSize", "outputSize", "hiddenSize", "numHiddenLayers"].map((field) => (
         <div key={field}>
           <label>{field.replace(/([A-Z])/g, " $1")}: </label>
           <input
@@ -16,7 +16,7 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
         </div>
       ))}
       <button className="addButton" onClick={createLayers}>
-        Done
+        Add Block
       </button>
     </div>
   );

@@ -21,9 +21,7 @@
   border-right: 2px solid #ddd;
   display: flex;
   flex-direction: column;
-  align-items: center; 
   justify-content: center; 
-  text-align: center;
   height: 80vh; 
   overflow-y: auto; 
 }
@@ -36,7 +34,6 @@
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
   width: 100%; 
-  text-align: center;
 }
 
 .inputBlockContent {
@@ -137,7 +134,7 @@
 }
 
 .dropdownDatasets {
-  margin-bottom: 100px;
+  margin-bottom: 20px;
   position: relative;
   display: flex;
   flex-direction: column; 

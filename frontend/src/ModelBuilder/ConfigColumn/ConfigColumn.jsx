@@ -24,7 +24,7 @@ function ConfigColumn({
         id: prevModules.length,
         selectedLayer: null,
         layerDropdownOpen: false,
-        blockInputs: { hiddenSize: 0, numHiddenLayers: 0 },
+        blockInputs: { inputSize: 0, outputSize: 0, hiddenSize: 0, numHiddenLayers: 0 },
         isOpen: false, 
       },
     ]);
@@ -43,7 +43,9 @@ function ConfigColumn({
   const handleLayerClick = (id, item) => {
     setModules((prevModules) =>
       prevModules.map((module) =>
-        module.id === id ? { ...module, selectedLayer: item.value } : module
+        module.id === id 
+          ? { ...module, selectedLayer: item.value, layerDropdownOpen: false } 
+          : module
       )
     );
   };
@@ -67,15 +69,22 @@ function ConfigColumn({
   const createModuleLayers = (id) => {
     const module = modules.find((mod) => mod.id === id);
     if (!module) return;
-
-    const newLayers = [];
-    for (let i = 0; i < module.blockInputs.numHiddenLayers; i++) {
-      newLayers.push({
-        id: `${id}-${i}`,
-        name: `Layer ${id} Layer ${i + 1}`,
-      });
-    }
-    createLayers(newLayers);
+  
+    const leftTrapezoidBase = module.blockInputs.inputSize / 10;
+    const rightTrapezoidBase = module.blockInputs.outputSize / 10;
+    const middleRectangleHeight = module.blockInputs.hiddenSize / 10;
+    const middleRectangleWidth = module.blockInputs.numHiddenLayers * 10;
+  
+    const newLayer = {
+      id: `${id}`,
+      name: `Block ${id + 1}`,
+      position: { x: 0, y: 0 },
+      leftTrapezoid: { base: leftTrapezoidBase, height: middleRectangleHeight },
+      rightTrapezoid: { base: rightTrapezoidBase, height: middleRectangleHeight },
+      middleRectangle: { width: middleRectangleWidth, height: middleRectangleHeight },
+    };
+  
+    createLayers([newLayer]);
   };
 
   const toggleModuleVisibility = (id) => {
@@ -100,8 +109,9 @@ function ConfigColumn({
           datasetItems={datasetItems}
           handleItemClick={handleDatasetClick}
         />
-
-        <h2><u>Add Layers</u></h2>
+        <h4>Input Size:</h4>
+        <h4>Output Size: </h4>
+        <h2><u>Add Blocks</u></h2>
         <button className="addButton" onClick={addModelModule}>
           +
         </button>
@@ -114,7 +124,7 @@ function ConfigColumn({
               className="moduleHeader"
               onClick={() => toggleModuleVisibility(module.id)}
             >
-              Layer {module.id + 1}
+              Configure Block {module.id + 1}
             </h3>
             {module.isOpen && (
               <div className="moduleContent">

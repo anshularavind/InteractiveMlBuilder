@@ -64,6 +64,23 @@ function ModelBuilder() {
     );
   };
 
+  const generateJson = () => {
+    const modelBuilderJson = {
+      input: blockInputs.inputSize,
+      output: blockInputs.outputSize,
+      dataset: selectedDataset,
+      lr: blockInputs.learningRate || 0.001, // Add default or custom learning rate here
+      batch_size: blockInputs.batchSize || 32, // Add default or custom batch size here
+      blocks: layers.map((layer) => ({
+        block: layer.name || selectedLayer,
+        params: layer.params || {}, // Add layer-specific parameters if applicable
+      })),
+    };
+
+    console.log("Generated JSON:", modelBuilderJson);
+    return modelBuilderJson; // You can send this JSON to the backend
+  };
+
   return (
     <div>
       <div className="container">
@@ -83,13 +100,12 @@ function ModelBuilder() {
           createLayers={createLayers}
         />
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
+        {/*<button className="addButton" onClick={generateJson}>
+          /Generate JSON
+          </button>*/}
       </div>
     </div>
   );
-
-
 }
-
-
 
 export default ModelBuilder;

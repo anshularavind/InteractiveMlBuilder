@@ -51,25 +51,28 @@ function ModelBuilder() {
   };
 
   const generateJson = (updatedLayers) => {
-    // Example username; replace this with actual user input if needed
-    const username =username();
+    const username = "test_user5";
   
     const modelBuilderJson = {
-      //username, 
-      input: blockInputs.inputSize,
-      output: blockInputs.outputSize,
+      username,
+      model_config: {
+        input: blockInputs.inputSize,
+        output: blockInputs.outputSize,
+        dataset: selectedDataset,
+        lr: blockInputs.learningRate || 0.001,
+        batch_size: blockInputs.batchSize || 32,
+        blocks: updatedLayers.map((layer) => ({
+          block: layer.name || "FcNN",
+          params: layer.params || { output_size: 0, hidden_size: 0, num_hidden_layers: 0 }, // Default params
+        })),
+      },
       dataset: selectedDataset,
-      lr: blockInputs.learningRate || 0.001, 
-      batch_size: blockInputs.batchSize || 32, 
-      blocks: updatedLayers.map((layer) => ({
-        block: layer.name || selectedLayer,
-        params: layer.params || {}, // Layer-specific parameters
-      })),
     };
   
-    console.log("Generated JSON:", modelBuilderJson); // Log the JSON for debugging
-    return modelBuilderJson; // Return the generated JSON
+    console.log("Generated JSON:", modelBuilderJson);
+    return modelBuilderJson;
   };
+  
 
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
@@ -78,6 +81,7 @@ function ModelBuilder() {
       return updatedLayers;
     });
   };
+
 
   const onLayerDragStop = (id, data) => {
     setLayers((prevLayers) =>

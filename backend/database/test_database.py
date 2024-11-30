@@ -3,12 +3,13 @@ from interface import UserDatabase
 def test_add_users():
     db = UserDatabase()
     db.clear()
-    db.add_user("test3")
+    uuid = "12345"
+    username = "test3"
+    db.add_user(uuid, username)
+    db.add_user("413542", "test_user2")
 
-    print(db.get_user_uuid("test3"))
-    db.add_user("test4")
     config_json = {
-        "username": "test_user3",
+        "username": "test3",
         "model_config": {
             "input": [3, 224, 224],
             "output": [10],
@@ -28,8 +29,8 @@ def test_add_users():
         },
         "dataset": "cifar10"
     }
-    db.init_model(db.get_user_uuid("test3"), config_json)
-    print(db.get_user_name(db.get_user_uuid("test3")))
+    db.init_model(uuid, str(config_json))
+    print(db.get_user_name(uuid))
     print(db.get_users())
     db.close()
 
@@ -56,8 +57,14 @@ def test_clear():
     db = UserDatabase()
     db.clear()
 
+def test_delete():
+    db = UserDatabase()
+    db.clear()
+    db.delete()
+
 if __name__ == "__main__":
-    test_add_models()
-    test_add_datasets()
-    test_add_users()
-    test_clear()
+    # test_add_models()
+    # test_add_datasets()
+    # test_add_users()
+    # test_clear()
+    test_delete()

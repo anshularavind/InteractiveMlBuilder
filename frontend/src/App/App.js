@@ -22,11 +22,15 @@ function App() {
 
   return (
     <Router>
-      <div className="container">
+      <div className="fullscreen">
         {!isAuthenticated ? (
-          <div style={{ flexDirection: 'column' }}>
-          <h1 className="header">Welcome to the Interactive ML Model Builder</h1>
-          <p className="subtitle">Please log in to get started:</p>
+          <div className="container">
+          <h1 className="header">
+            Welcome to the Interactive ML Model Builder
+            </h1>
+          <p className="subtitle">
+            Please log in to get started:
+            </p>
           <Button className="loginButton" onClick={() => loginWithRedirect()}>
             Login
           </Button>

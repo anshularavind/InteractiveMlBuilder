@@ -107,14 +107,5 @@ class BuiltModel(nn.Module):
         return model_blocks
 
     def save_model(self):
-        if user_db:
-            user_db.save_model_pt(self.user_uuid, self.model_uuid, self)
-
-
-if __name__ == '__main__':
-
-    # user_db = UserDatabase()
-    # user_db.clear()
-    # user_db.delete()
-    # user_db = UserDatabase()
-    user_db = None
+        if self.user_db:
+            self.user_db.save_model_pt(self.user_uuid, self.model_uuid, self)

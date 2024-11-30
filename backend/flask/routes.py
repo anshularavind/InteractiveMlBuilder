@@ -47,7 +47,7 @@ def define_model():
             return jsonify({"error": "Missing required parameters"}), 400
 
         # Get user UUID after adding user
-        user_uuid = helper.get_user_info()["sub"].split("|")[1]
+        user_uuid = helper.get_user_info()["sub"]
         username = helper.get_user_info()["nickname"]
         is_new_user = db.add_user(user_uuid, username)
         

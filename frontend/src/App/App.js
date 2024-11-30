@@ -8,6 +8,8 @@ import Profile from "../Profile/Profile";
 import Home from "../Home/Home";
 import './App.css';
 
+// App.js
+
 function App() {
   const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
 

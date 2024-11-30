@@ -62,7 +62,7 @@ class BuiltModel(nn.Module):
         super(BuiltModel, self).__init__()
         self.model_json = json.loads(model_json)
         self.user_uuid = user_uuid
-        self.model_uuid = user_db.init_model(model_json) if user_db else 'n/a'
+        self.model_uuid = user_db.init_model(user_uuid,model_json) if user_db else 'n/a'
         self.user_db = user_db
 
         self.batch_size = int(self.model_json.get('batch_size', 64))

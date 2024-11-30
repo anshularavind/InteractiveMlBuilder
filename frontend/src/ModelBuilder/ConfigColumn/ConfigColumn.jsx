@@ -56,7 +56,6 @@ function ConfigColumn({
 
     createLayers([newLayer]);
 
-    // Reset inputs after adding a block
     setBlockInputs({
       inputSize: 0,
       outputSize: 0,

@@ -73,6 +73,8 @@ class BuiltModel(nn.Module):
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_json['LR'])
 
+        self.save_model()
+
     def forward(self, x):
         for block in self.model_blocks:
             x = block(x)
@@ -105,6 +107,10 @@ class BuiltModel(nn.Module):
         assert input_size == output_size, 'Output size of last block does not match model output size'
 
         return model_blocks
+
+    def save_model(self):
+        if user_db:
+            user_db.save_model_pt(self.user_uuid, self.model_uuid, self)
 
 
 if __name__ == '__main__':

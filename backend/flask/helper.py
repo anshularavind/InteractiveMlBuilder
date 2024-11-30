@@ -103,7 +103,7 @@ def train_model_task(self, model_config_str, user_uuid, model_uuid):
                          })
 
         # Build the model
-        model = BuiltModel(model_config_str, user_uuid, model_uuid, db)
+        model = BuiltModel(model_config_str, user_uuid, db)
         logger.info(f"Model built successfully for user {user_uuid}")
         
         # Train the model

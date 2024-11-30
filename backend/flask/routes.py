@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from ml.block_builder import BuiltModel
 from ml.train import train_model
 from threading import Thread
+from celeryApp import celery
 import time
 import os
 from database import interface as database
@@ -26,33 +27,36 @@ logger.addHandler(handler)
 db = database.UserDatabase()
 main_routes = Blueprint("main_routes", __name__)
 
+#dictionary maping user to the task id
+task_dict = {}
+
 @main_routes.route("/api/define-model", methods=["POST"])
 @helper.token_required
 def define_model():
     try:
         data = request.json
-        username = data.get("username")
+        #username = data.get("username")
         model_config = data.get("model_config")
         dataset = data.get("dataset")
 
-        logger.info(f"Received request - username: {username}")
+        #logger.info(f"Received request - username: {username}")
         logger.info(f"Model config: {model_config}")
         logger.info(f"Dataset: {dataset}")
 
-        if not all([username, model_config, dataset]):
+        if not all([model_config, dataset]):
             return jsonify({"error": "Missing required parameters"}), 400
 
         # Get user UUID after adding user
-        is_new_user = db.add_user(username)
-        user_uuid = db.get_user_uuid(username)
+        user_uuid = helper.get_user_info()["sub"].split("|")[1]
+        username = helper.get_user_info()["nickname"]
+        is_new_user = db.add_user(user_uuid, username)
         
         if not user_uuid:
             return jsonify({"error": "Failed to get user ID"}), 500
 
         # Initialize model with user UUID and config
         model = BuiltModel(json.dumps(model_config), user_uuid, db)
-        model_uuid = model.model_uuid
-
+        model_uuid = model.model_uuid       
         # Add dataset with required parameters
         dataset_path = f"datasets/{dataset}"  # Adjust path as needed
         db.add_dataset(user_uuid, dataset, dataset_path)
@@ -75,7 +79,7 @@ def define_model():
 def train():
     try:
         data = request.json
-        username = data.get("username")
+        username = helper.get_user_info()["nickname"]
         model_uuid = data.get("model_uuid")
 
         logger.info(f"Received training request - username: {username}, model_uuid: {model_uuid}")
@@ -84,7 +88,7 @@ def train():
             return jsonify({"error": "Missing required parameters"}), 400
 
         # Get user UUID
-        user_uuid = db.get_user_uuid(username)
+        user_uuid = helper.get_user_info()["sub"].split("|")[1]
         if not user_uuid:
             return jsonify({"error": "User not found"}), 404
 
@@ -105,7 +109,7 @@ def train():
         try:
             # Convert model_config to proper JSON string
             model_config_str = json.dumps(model_config) if isinstance(model_config, dict) else model_config
-            logger.info(dataset[2])
+            logger.info(dataset)
             logger.info(f"Model config: {model_config_str}")
             logger.info(f"user_uuid: {user_uuid}, model_uuid: {model_uuid}")    
             # Start the Celery task
@@ -114,6 +118,7 @@ def train():
                 user_uuid,
                 model_uuid,
             )
+            task_dict[username] = task.id
 
             return jsonify({
                 "status": "Training started",
@@ -136,28 +141,14 @@ def train():
             "details": str(e)
         }), 500
 
-@main_routes.route("/api/train/status/<task_id>")
-@helper.token_required
-def get_train_status(task_id):
-    task = helper.train_model_task.AsyncResult(task_id)
-    if task.state == 'PENDING':
-        return jsonify({'status': 'Pending', 'task_id': task_id})
-    elif task.state == 'PROGRESS':
-        return jsonify({'status': 'In progress', 'progress': task.info.get('progress', 0), 'task_id': task_id})
-    elif task.state == 'SUCCESS':
-        return jsonify({'status': 'Completed', 'result': task.result, 'task_id': task_id})
-    elif task.state == 'FAILURE':
-        return jsonify({'status': 'Failed', 'reason': str(task.info), 'task_id': task_id})
-    else:
-        return jsonify({'status': 'Unknown', 'task_id': task_id})
-
 #route for getting the logs of the task using the getmodeldir and then reading the logs
 @main_routes.route("/api/train_logs", methods=["GET"])
 @helper.token_required
-def train_logs(task_id):
-    data = request.json
-    username = data.get("username")
-    model_dir = db.get_model_dir(username, task_id)
+def train_logs():
+    user_uuid = helper.get_user_info()["sub"].split("|")[1]
+    username = helper.get_user_info()["nickname"]
+    task_id = task_dict.get(username)
+    model_dir = db.get_model_dir(user_uuid , task_id)
     if not model_dir:
         return jsonify({"error": "Model not found"}), 404
 
@@ -176,18 +167,43 @@ def train_logs(task_id):
         "error": error
     }), 200
 
-# @main_routes.route("/api/list-datasets", methods=["GET"])
-# def datasets():
-#     return jsonify({"datasets": os.listdir("../datasets")}), 200
+#stop the training task
+@main_routes.route("/api/train/stop", methods=["POST"])
+@helper.token_required
+def stop_train():
+    try:
+        username = helper.get_user_info()["nickname"]
+        task_id = task_dict.get(username)
+        
+        if not task_id:
+            return jsonify({"error": "No active task found"}), 404
+        
+        # Attempt to forcefully kill the worker process managing this task
+        result = helper.kill_task_worker(task_id)
+        if "error" in result:
+            return jsonify(result), 500
+        
+        logger.info(f"Task {task_id} terminated (worker PID: {result['pid']}) by user {username}")
+        return jsonify({
+            "status": "Task terminated successfully",
+            "task_id": task_id,
+            "worker_pid": result['pid']
+        }), 200
+    except Exception as e:
+        logger.error(f"Failed to stop task: {str(e)}")
+        return jsonify({
+            "error": "Failed to stop task",
+            "details": str(e)
+        }), 500
 
-# # @main_routes.route("/api/train", methods=["GET"])
-# # def train():
-# #     action = request.json.get("action")
-# #     params = request.json.get("params", {})
-# #     # Training control logic here
-# #     return jsonify({"status": "Training action processed"}), 200
 
-# @main_routes.route("/api/training-data", methods=["GET"])
-# def training_data(dataset_name):
-#     return jsonify({"training_data": dataset_name}), 200
-# # Other routes as needed...
+#list all models
+@main_routes.route("/api/models", methods=["GET"])
+@helper.token_required
+def get_models():
+    user_uuid = helper.get_user_info()["sub"].split("|")[1]
+    if not user_uuid:
+        return jsonify({"error": "User not found"}), 404
+
+    models = db.get_models(user_uuid)
+    return jsonify({"models": models}), 200

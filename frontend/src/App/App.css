@@ -83,6 +83,22 @@
   position: relative;
 }
 
+.mainContainer {
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
 .header {
   font-size: 2.5rem;
   color: #4a90e2;

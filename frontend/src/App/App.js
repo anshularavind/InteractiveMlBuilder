@@ -11,7 +11,7 @@ import './App.css';
 // App.js
 
 function App() {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error } = useAuth0();
+  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
 
   if (error) {
     console.log('error:', error);

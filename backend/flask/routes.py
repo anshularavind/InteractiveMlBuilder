@@ -145,7 +145,7 @@ def train():
 @main_routes.route("/api/train_logs", methods=["GET"])
 @helper.token_required
 def train_logs():
-    user_uuid = helper.get_user_info()["sub"].split("|")[1]
+    user_uuid = helper.get_user_info()["sub"]
     username = helper.get_user_info()["nickname"]
     task_id = task_dict.get(username)
     model_dir = db.get_model_dir(user_uuid , task_id)
@@ -201,7 +201,7 @@ def stop_train():
 @main_routes.route("/api/models", methods=["GET"])
 @helper.token_required
 def get_models():
-    user_uuid = helper.get_user_info()["sub"].split("|")[1]
+    user_uuid = helper.get_user_info()["sub"]
     if not user_uuid:
         return jsonify({"error": "User not found"}), 404
 

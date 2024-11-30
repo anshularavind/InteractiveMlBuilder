@@ -2,7 +2,11 @@ import React from "react";
 import FAQ from "./FAQ"; // Import the FAQ component
 import "./About.css";
 
-function About({ goBack }) {
+function About() {
+  const goBack = () => {
+    window.history.back(); // Navigate to the previous page in browser history
+  };
+
   return (
     <div className="about-container">
       <div className="about-header">
@@ -22,7 +26,6 @@ function About({ goBack }) {
             own machine learning models without extensive coding knowledge. By providing an interactive and visual platform, users can select from 
             various neural network architectures, adjust hyperparameters, and train models on pre-loaded datasets. The application aims to make machine 
             learning more accessible by simplifying the model-building process and offering real-time training feedback.
-
           </p>
         </section>
 
@@ -46,3 +49,4 @@ function About({ goBack }) {
 }
 
 export default About;
+

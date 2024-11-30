@@ -24,16 +24,18 @@ function App() {
     <Router>
       <div className="fullscreen">
         {!isAuthenticated ? (
-          <div className="container">
+          <div className="mainContainer">
           <h1 className="header">
             Welcome to the Interactive ML Model Builder
             </h1>
           <p className="subtitle">
             Please log in to get started:
             </p>
+          <div className="buttonContainer">
           <Button className="loginButton" onClick={() => loginWithRedirect()}>
             Login
           </Button>
+          </div>
         </div>
         ) : (
           <>

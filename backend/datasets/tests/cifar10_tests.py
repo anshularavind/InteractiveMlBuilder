@@ -49,7 +49,7 @@ def test_cifar10_nn_model():
     }'''
 
     # training both models to test basic functionality
-    model = BuiltModel(cifar10_nn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(cifar10_nn_model, 'test_user', init_db())
     result = train_model(model, 2)
     assert not math.isnan(result), 'Model training failed'
 
@@ -110,6 +110,6 @@ def test_cifar10_cnn_model():
             }
         ]
     }'''
-    model = BuiltModel(cifar10_cnn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(cifar10_cnn_model, 'test_user', init_db())
     result = train_model(model, 2)
     assert not math.isnan(result), 'Model training failed'

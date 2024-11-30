@@ -49,7 +49,7 @@ def test_mnist_nn_model():
     }'''
 
     # training both models to test basic functionality
-    model = BuiltModel(mnist_nn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(mnist_nn_model, 'test_user', init_db())
     result = train_model(model, 2)
     assert not math.isnan(result), 'Model training failed'
 
@@ -109,6 +109,6 @@ def test_mnist_cnn_model():
             }
         ]
     }'''
-    model = BuiltModel(mnist_cnn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(mnist_cnn_model, 'test_user', init_db())
     result = train_model(model, 2)
     assert not math.isnan(result), 'Model training failed'

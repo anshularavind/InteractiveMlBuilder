@@ -50,8 +50,9 @@ def define_model():
             return jsonify({"error": "Failed to get user ID"}), 500
 
         # Initialize model with user UUID and config
-        model_uuid = db.init_model(user_uuid, json.dumps(model_config))
-        
+        model = BuiltModel(json.dumps(model_config), user_uuid, db)
+        model_uuid = model.model_uuid
+
         # Add dataset with required parameters
         dataset_path = f"datasets/{dataset}"  # Adjust path as needed
         db.add_dataset(user_uuid, dataset, dataset_path)

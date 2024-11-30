@@ -7,7 +7,7 @@ from backend.datasets.base_dataset import BaseDataset
 
 class ETTh1Dataset(Dataset):
     def __init__(self, data, forecast_size, input_size):
-        self.data = data['HUFL']
+        self.data = data['HUFL'].to_numpy()
         self.forecast_size = forecast_size
         self.input_size = input_size
 
@@ -15,8 +15,8 @@ class ETTh1Dataset(Dataset):
         return len(self.data) - self.forecast_size - self.input_size
 
     def __getitem__(self, idx):
-        x = self.data.iloc[idx: idx + self.input_size].copy()
-        y = self.data.iloc[idx + self.input_size: idx + self.input_size + self.forecast_size]
+        x = self.data[idx: idx + self.input_size]
+        y = self.data[idx + self.input_size: idx + self.input_size + self.forecast_size]
         return torch.tensor(x, dtype=torch.float32), torch.tensor(y, dtype=torch.float32)
 
 class ETTh1(BaseDataset):

@@ -1,4 +1,3 @@
-from backend.datasets.etth1 import ETTh1
 from backend.ml.block_builder import BuiltModel
 from backend.ml.train import train_model
 import math
@@ -49,7 +48,7 @@ def test_etth1_nn_model():
     }'''
 
     # Train the model to test basic functionality
-    model = BuiltModel(etth1_nn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(etth1_nn_model, 'test_user', init_db())
     result = train_model(model, 2)  # Number of epochs set to 2 for testing
     assert not math.isnan(result), 'Model training failed'
 

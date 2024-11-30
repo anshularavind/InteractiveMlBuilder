@@ -88,7 +88,7 @@ def train():
             return jsonify({"error": "Missing required parameters"}), 400
 
         # Get user UUID
-        user_uuid = helper.get_user_info()["sub"].split("|")[1]
+        user_uuid = helper.get_user_info()["sub"]
         if not user_uuid:
             return jsonify({"error": "User not found"}), 404
 

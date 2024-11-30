@@ -49,6 +49,6 @@ def test_air_quality_nn_model():
     }'''
 
     # training the model to test basic functionality
-    model = BuiltModel(air_quality_nn_model, 'test_user', init_db(), '..')
+    model = BuiltModel(air_quality_nn_model, 'test_user', init_db())
     result = train_model(model, 2)
     assert not math.isnan(result), 'Model training failed'

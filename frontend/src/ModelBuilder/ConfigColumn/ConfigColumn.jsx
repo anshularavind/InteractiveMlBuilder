@@ -17,7 +17,7 @@ function ConfigColumn({
 }) {
   const [modules, setModules] = useState([]);
 
-  const addModelModule = () => {
+  const addModelModule = (type = "default") => {
     setModules((prevModules) => [
       ...prevModules,
       {
@@ -25,10 +25,12 @@ function ConfigColumn({
         selectedLayer: null,
         layerDropdownOpen: false,
         blockInputs: { inputSize: 0, outputSize: 0, hiddenSize: 0, numHiddenLayers: 0 },
-        isOpen: false, 
+        type, // Add the type property
+        isOpen: false,
       },
     ]);
   };
+  
 
   const toggleLayerDropdown = (id) => {
     setModules((prevModules) =>

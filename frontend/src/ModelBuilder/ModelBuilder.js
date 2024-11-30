@@ -51,19 +51,24 @@ function ModelBuilder() {
   };
 
   const generateJson = (updatedLayers) => {
+    // Example username; replace this with actual user input if needed
+    const username =username();
+  
     const modelBuilderJson = {
+      //username, 
       input: blockInputs.inputSize,
       output: blockInputs.outputSize,
       dataset: selectedDataset,
-      lr: blockInputs.learningRate || 0.001, // Default or custom learning rate
-      batch_size: blockInputs.batchSize || 32, // Default or custom batch size
+      lr: blockInputs.learningRate || 0.001, 
+      batch_size: blockInputs.batchSize || 32, 
       blocks: updatedLayers.map((layer) => ({
         block: layer.name || selectedLayer,
         params: layer.params || {}, // Layer-specific parameters
       })),
     };
-
-    console.log("Generated JSON:", modelBuilderJson); // Automatically logs the JSON
+  
+    console.log("Generated JSON:", modelBuilderJson); // Log the JSON for debugging
+    return modelBuilderJson; // Return the generated JSON
   };
 
   const createLayers = (newLayers) => {

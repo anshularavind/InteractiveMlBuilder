@@ -12,97 +12,64 @@ function ConfigColumn({
   datasetItems,
   handleDatasetClick,
   layerItems,
-  handleInputChange,
   createLayers,
 }) {
-  const [modules, setModules] = useState([]);
+  const [blockInputs, setBlockInputs] = useState({
+    inputSize: 0,
+    outputSize: 0,
+    hiddenSize: 0,
+    numHiddenLayers: 0,
+  });
+  const [selectedLayer, setSelectedLayer] = useState(null);
+  const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
+  const [blockCount, setBlockCount] = useState(0);
 
-  const addModelModule = (type = "default") => {
-    setModules((prevModules) => [
-      ...prevModules,
-      {
-        id: prevModules.length,
-        selectedLayer: null,
-        layerDropdownOpen: false,
-        blockInputs: { inputSize: 0, outputSize: 0, hiddenSize: 0, numHiddenLayers: 0 },
-        type, // Add the type property
-        isOpen: false,
-      },
-    ]);
-  };
-  
-
-  const toggleLayerDropdown = (id) => {
-    setModules((prevModules) =>
-      prevModules.map((module) =>
-        module.id === id
-          ? { ...module, layerDropdownOpen: !module.layerDropdownOpen }
-          : module
-      )
-    );
+  const handleInputChange = (field, value) => {
+    setBlockInputs(prevInputs => ({
+      ...prevInputs,
+      [field]: Math.max(0, parseInt(value) || 0),
+    }));
   };
 
-  const handleLayerClick = (id, item) => {
-    setModules((prevModules) =>
-      prevModules.map((module) =>
-        module.id === id 
-          ? { ...module, selectedLayer: item.value, layerDropdownOpen: false } 
-          : module
-      )
-    );
+  const handleLayerClick = (item) => {
+    setSelectedLayer(item.value);
+    setLayerDropdownOpen(false);
   };
 
-  const handleModuleInputChange = (id, field, value) => {
-    setModules((prevModules) =>
-      prevModules.map((module) =>
-        module.id === id
-          ? {
-              ...module,
-              blockInputs: {
-                ...module.blockInputs,
-                [field]: Math.max(0, parseInt(value) || 0),
-              },
-            }
-          : module
-      )
-    );
-  };
+  const addBlock = () => {
+    const newBlockId = blockCount;
+    setBlockCount(prevCount => prevCount + 1);
 
-  const createModuleLayers = (id) => {
-    const module = modules.find((mod) => mod.id === id);
-    if (!module) return;
-  
-    const leftTrapezoidBase = module.blockInputs.inputSize / 10;
-    const rightTrapezoidBase = module.blockInputs.outputSize / 10;
-    const middleRectangleHeight = module.blockInputs.hiddenSize / 10;
-    const middleRectangleWidth = module.blockInputs.numHiddenLayers * 10;
-  
+    const leftTrapezoidBase = blockInputs.inputSize / 10;
+    const rightTrapezoidBase = blockInputs.outputSize / 10;
+    const middleRectangleHeight = blockInputs.hiddenSize / 10;
+    const middleRectangleWidth = blockInputs.numHiddenLayers * 10;
+
     const newLayer = {
-      id: `${id}`,
-      name: `Block ${id + 1}`,
+      id: `block-${newBlockId}`,
+      name: `Block ${newBlockId + 1}`,
       position: { x: 0, y: 0 },
       leftTrapezoid: { base: leftTrapezoidBase, height: middleRectangleHeight },
       rightTrapezoid: { base: rightTrapezoidBase, height: middleRectangleHeight },
       middleRectangle: { width: middleRectangleWidth, height: middleRectangleHeight },
     };
-  
-    createLayers([newLayer]);
-  };
 
-  const toggleModuleVisibility = (id) => {
-    setModules((prevModules) =>
-      prevModules.map((module) =>
-        module.id === id
-          ? { ...module, isOpen: !module.isOpen }
-          : module
-      )
-    );
+    createLayers([newLayer]);
+
+    // Reset inputs after adding a block
+    setBlockInputs({
+      inputSize: 0,
+      outputSize: 0,
+      hiddenSize: 0,
+      numHiddenLayers: 0,
+    });
+    setSelectedLayer(null);
   };
 
   return (
     <div className="inputBlock">
       <div className="inputBlockHeader">
-        <h1><b>Model Configuration</b></h1>
+        <h1><b>Configuration</b></h1>
         <h2><u>Select Dataset</u></h2>
         <DatasetSelection
           selectedItem={selectedDataset}
@@ -112,42 +79,24 @@ function ConfigColumn({
           handleItemClick={handleDatasetClick}
         />
         <h4>Input Size:</h4>
-        <h4>Output Size: </h4>
-        <h2><u>Add Blocks</u></h2>
-        <button className="addButton" onClick={addModelModule}>
-          +
-        </button>
+        <h4>Output Size:</h4>
       </div>
-
       <div className="inputBlockContent">
-        {modules.map((module) => (
-          <div key={module.id} className="module">
-            <h3
-              className="moduleHeader"
-              onClick={() => toggleModuleVisibility(module.id)}
-            >
-              Configure Block {module.id + 1}
-            </h3>
-            {module.isOpen && (
-              <div className="moduleContent">
-                <LayerSelection
-                  selectedItem={module.selectedLayer}
-                  dropdownOpen={module.layerDropdownOpen}
-                  toggleDropdown={() => toggleLayerDropdown(module.id)}
-                  layerItems={layerItems}
-                  handleItemClick={(item) => handleLayerClick(module.id, item)}
-                />
-                <ModelConfig
-                  blockInputs={module.blockInputs}
-                  handleInputChange={(field, value) =>
-                    handleModuleInputChange(module.id, field, value)
-                  }
-                  createLayers={() => createModuleLayers(module.id)}
-                />
-              </div>
-            )}
-          </div>
-        ))}
+        <h2><u>Add Blocks</u></h2>
+        <LayerSelection
+          selectedItem={selectedLayer}
+          dropdownOpen={layerDropdownOpen}
+          toggleDropdown={() => setLayerDropdownOpen(!layerDropdownOpen)}
+          layerItems={layerItems}
+          handleItemClick={handleLayerClick}
+        />
+        {selectedLayer === "FcNN" && (
+          <ModelConfig
+            blockInputs={blockInputs}
+            handleInputChange={handleInputChange}
+            createLayers={addBlock}
+          />
+        )}
       </div>
 
       <Train />

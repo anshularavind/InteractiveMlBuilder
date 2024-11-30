@@ -21,26 +21,24 @@
   border-right: 2px solid #ddd;
   display: flex;
   flex-direction: column;
-  justify-content: center; 
-  height: 80vh; 
-  overflow-y: auto; 
+  height: 80vh; /* Define the height for the entire block */
+  overflow-y: auto; /* Make the block scrollable */
 }
 
 .inputBlockHeader {
-  position: sticky;
-  top: 0;
-  background-color: #f0f8ff; 
-  z-index: 10;
+  position: sticky; /* Keeps the header fixed at the top of the scrolling area */
+  top: -30; /* Sticks to the top of the container */
+  background-color: #f0f8ff; /* Matches the container's background */
+  z-index: 10; /* Ensures it stays above the content while scrolling */
   padding-bottom: 10px;
   border-bottom: 1px solid #ddd;
-  width: 100%; 
+  width: 100%;
 }
 
 .inputBlockContent {
-  flex-grow: 1;
-  overflow-y: auto; 
-  margin-top: 10px;
-  background-color: #f0f8ff
+  flex-grow: 1; /* Allows the content to fill the remaining space */
+  background-color: #f0f8ff;
+  padding-top: 10px; /* Adds spacing below the header */
 }
 
 .module {

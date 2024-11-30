@@ -1,15 +1,33 @@
-import Draggable from "react-draggable";
+import React, { useEffect, useState } from "react";
 import "../ModelBuilder.css";
 
-function Visualizer({ layers, onLayerDragStop }) {
+function Visualizer({ layers }) {
+  const [positionedLayers, setPositionedLayers] = useState([]);
+
+  useEffect(() => {
+    let currentX = 0;
+    const newPositionedLayers = layers.map((layer) => {
+      const newLayer = {
+        ...layer,
+        position: { x: currentX, y: 0 }
+      };
+      currentX += layer.leftTrapezoid.height + layer.middleRectangle.width + layer.rightTrapezoid.height - (layer.leftTrapezoid.height);
+      return newLayer;
+    });
+  
+    setPositionedLayers(newPositionedLayers);
+  }, [layers]);
+
   const renderBowtie = (bowtie) => {
     const { leftTrapezoid, rightTrapezoid, middleRectangle, name } = bowtie;
+    const width = leftTrapezoid.height + middleRectangle.width + rightTrapezoid.height;
+    const height = Math.max((leftTrapezoid.base), middleRectangle.height, rightTrapezoid.base) + 20;
 
     return (
       <svg
-        width={leftTrapezoid.base+ middleRectangle.width + rightTrapezoid.base}
-        height={Math.max(leftTrapezoid.height, middleRectangle.height, rightTrapezoid.height) + 20}
-        viewBox={`${-leftTrapezoid.base} ${-middleRectangle.height / 2 - 10} ${leftTrapezoid.base + middleRectangle.width + rightTrapezoid.base} ${middleRectangle.height + 20}`}
+        width={width}
+        height={height}
+        viewBox={`${-leftTrapezoid.base} ${-middleRectangle.height / 2 - 10} ${width} ${height}`}
         style={{ overflow: "visible" }}
       >
         <polygon
@@ -42,17 +60,19 @@ function Visualizer({ layers, onLayerDragStop }) {
   };
 
   return (
-    <div className="visual-flowchart">
-      {layers.map((layer) => (
-        <Draggable
+    <div className="visual-flowchart" style={{ position: "relative", height: "100%", width: "100%" }}>
+      {positionedLayers.map((layer) => (
+        <div
           key={layer.id}
-          position={layer.position}
-          onStop={(e, data) => onLayerDragStop(layer.id, data)}
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "50%",
+            transform: `translate(${layer.position.x}px, ${layer.position.y}px)`,
+          }}
         >
-          <div style={{ position: "absolute", background: "none" }}>
-            {renderBowtie(layer)}
-          </div>
-        </Draggable>
+          {renderBowtie(layer)}
+        </div>
       ))}
     </div>
   );

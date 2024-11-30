@@ -1,42 +1,44 @@
 import React from "react";
+import "./Profile.css";
 
-function Profile({ goBack }) {
+function Profile({ user }) {
+  const insights = [
+    { label: "Models Trained", value: user.modelsTrained || 0 },
+    { label: "Datasets Used", value: user.datasetsUsed || 0 },
+    { label: "Layers Configured", value: user.layersConfigured || 0 },
+    { label: "Recent Activity", value: user.recentActivities?.length || 0 },
+  ];
+
   return (
-    <div style={styles.container}>
-     
-      <h2 style={styles.header}>SOOOO thisss person</h2>
+    <div className="profile-container">
+      <h1 className="profile-header">Welcome, {user.name || "User"}!</h1>
+      <p className="profile-subtitle">Here are your ML Model Builder insights:</p>
+
+      <div className="profile-insights">
+        {insights.map((insight, index) => (
+          <div key={index} className="insight-card">
+            <h2 className="insight-value">{insight.value}</h2>
+            <p className="insight-label">{insight.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="profile-activities">
+        <h2>Recent Activities</h2>
+        {user.recentActivities && user.recentActivities.length > 0 ? (
+          <ul className="activities-list">
+            {user.recentActivities.map((activity, index) => (
+              <li key={index} className="activity-item">
+                {activity}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="no-activities">No recent activities to display.</p>
+        )}
+      </div>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    textAlign: "center",
-    padding: "20px",
-    fontFamily: "'Poppins', sans-serif",
-    backgroundColor: "#f8f9fa",
-    minHeight: "100vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  goBackButton: {
-    position: "absolute",
-    top: "20px",
-    left: "20px",
-    fontSize: "1rem",
-    padding: "10px 15px",
-    color: "#fff",
-    backgroundColor: "#4a90e2",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-  header: {
-    fontSize: "2rem",
-    color: "#4a90e2",
-  },
-};
 
 export default Profile;

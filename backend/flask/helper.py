@@ -164,4 +164,10 @@ def get_task_progress(task_id):
         }
     return response
 
-
+#use the token to get the user info
+def get_user_info():
+    token = request.headers.get('Authorization', None)
+    if not token:
+        return None
+    token = token.split()[1]
+    return validate_token(token)

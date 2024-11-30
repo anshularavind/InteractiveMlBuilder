@@ -16,6 +16,7 @@ sys.path.insert(0, sys_dir)
 from backend.datasets.mnist import Mnist
 from backend.datasets.air_quality import AirQuality
 from backend.datasets.cifar10 import Cifar10
+from backend.datasets.etth1 import ETTh1
 from backend.ml.basic_blocks import *
 from backend.ml.train import train_model
 from backend.database.interface import UserDatabase
@@ -55,7 +56,7 @@ channel_classes = {Conv, AdaptivePool}
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
-    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality}
+    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality, 'ETTh1': ETTh1}
 
     def __init__(self, model_json: str, user_uuid: str, model_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()

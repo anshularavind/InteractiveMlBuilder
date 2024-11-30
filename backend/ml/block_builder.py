@@ -73,8 +73,6 @@ class BuiltModel(nn.Module):
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_json['LR'])
 
-        self.save_model()
-
     def forward(self, x):
         for block in self.model_blocks:
             x = block(x)

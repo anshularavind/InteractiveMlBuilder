@@ -14,14 +14,14 @@ class UserDatabase():
                                      port=5432)
         self.cur = self.conn.cursor()
         self.cur.execute("""CREATE TABLE IF NOT EXISTS users (
-            uuid INT PRIMARY KEY,
+            uuid VARCHAR(255) PRIMARY KEY,
             username VARCHAR(255)
         );
         """)
 
         self.cur.execute("""CREATE TABLE IF NOT EXISTS models (
             uuid INT PRIMARY KEY,
-            user_uuid INT REFERENCES users (uuid),
+            user_uuid VARCHAR(255) REFERENCES users (uuid),
             model_dir VARCHAR(255),
             created_at TIMESTAMP
         );
@@ -29,7 +29,7 @@ class UserDatabase():
 
         self.cur.execute("""CREATE TABLE IF NOT EXISTS datasets (
             uuid INT PRIMARY KEY,
-            user_uuid INT REFERENCES users (uuid),
+            user_uuid VARCHAR(255) REFERENCES users (uuid),
             dataset_path VARCHAR(255),
             created_at TIMESTAMP
         );
@@ -52,29 +52,38 @@ class UserDatabase():
         self.cur.close()
         self.conn.close()
 
-    def add_user(self, username):
-        # make sure username is unique
-        if self.get_user_uuid(username):
+    def add_user(self, uuid: str, username: str):
+        # make sure uuid is unique
+        if self.get_user_name(uuid):
             return False
         # hash the username as the unique id int
-        user_uuid = self.hash(username)
-        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, username))
+        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (uuid, username))
         self.conn.commit()
         return True
 
-    def add_user_uuid(self, user_uuid):
-        if self.get_user_name(user_uuid):
-            return False
-        self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, user_uuid))
-        self.conn.commit()
-        return True
+    # def add_user(self, username):
+    #     # make sure username is unique
+    #     if self.get_user_uuid(username):
+    #         return False
+    #     # hash the username as the unique id int
+    #     user_uuid = self.hash(username)
+    #     self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, username))
+    #     self.conn.commit()
+    #     return True
+    #
+    # def add_user_uuid(self, user_uuid):
+    #     if self.get_user_name(user_uuid):
+    #         return False
+    #     self.cur.execute("INSERT INTO users (uuid, username) VALUES (%s, %s)", (user_uuid, user_uuid))
+    #     self.conn.commit()
+    #     return True
 
-    def get_user_uuid(self, username):
-        self.cur.execute("SELECT * FROM users WHERE username=%s", (username,))
-        user = self.cur.fetchone()
-        return user[0] if user else None
+    # def get_user_uuid(self, username):
+    #     self.cur.execute("SELECT * FROM users WHERE username=%s", (username,))
+    #     user = self.cur.fetchone()
+    #     return user[0] if user else None
 
-    def get_user_name(self, user_uuid):
+    def get_user_name(self, user_uuid: str):
         self.cur.execute("SELECT * FROM users WHERE uuid=%s", (user_uuid,))
         user = self.cur.fetchone()
         return user[1] if user else None
@@ -83,10 +92,10 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM users")
         return self.cur.fetchall()
 
-    def init_model(self, user_uuid, config_json):
+    def init_model(self, user_uuid: str, config_json: str):
         created_at = datetime.now()
-        model_uuid = user_uuid + self.hash(config_json)  # add created_at if unique same config ids are needed
-        model_dir = os.path.join(self.user_data_root, str(user_uuid), str(model_uuid))
+        model_uuid = self.hash(user_uuid + config_json)  # add created_at if unique same config ids are needed
+        model_dir = os.path.join(self.user_data_root, user_uuid, str(model_uuid))
 
         # save config
         os.makedirs(model_dir, exist_ok=True)
@@ -104,19 +113,19 @@ class UserDatabase():
 
         return model_uuid
 
-    def get_model_dir(self, user_uuid, model_uuid):
+    def get_model_dir(self, user_uuid: str, model_uuid: int):
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s AND uuid=%s", (user_uuid, model_uuid))
         model = self.cur.fetchone()
         return model[2] if model else None
 
-    def save_model_pt(self, user_uuid, model_uuid, model):
+    def save_model_pt(self, user_uuid: str, model_uuid: int, model: torch.nn.Module):
         model_dir = self.get_model_dir(user_uuid, model_uuid)
         if not model_dir:
             return False
         torch.save(model.state_dict(), os.path.join(model_dir, 'model.pt'))
         return True
 
-    def save_model_logs(self, user_uuid, model_uuid, logs, log_type):
+    def save_model_logs(self, user_uuid: str, model_uuid: int, logs: str, log_type: str):
         if log_type not in ['output', 'loss', 'error']:
             raise ValueError('log_type must be one of "output", "loss", "error"')
 
@@ -127,19 +136,19 @@ class UserDatabase():
             f.write(logs + '\n')
         return True
 
-    def get_models(self, user_uuid):
+    def get_models(self, user_uuid: str):
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s", (user_uuid,))
         return self.cur.fetchall()
 
-    def add_dataset(self, user_uuid, dataset_name, dataset_path):
+    def add_dataset(self, user_uuid: str, dataset_name: str, dataset_path: str):
         # hashing
-        dataset_uuid = self.hash(dataset_name) + user_uuid
+        dataset_uuid = self.hash(user_uuid + dataset_name)
         created_at = datetime.now()
         self.cur.execute("INSERT INTO datasets (uuid, user_uuid, dataset_path, created_at) VALUES (%s, %s, %s, %s)",
                          (dataset_uuid, user_uuid, dataset_path, created_at))
         self.conn.commit()
 
-    def get_dataset(self, user_uuid, dataset_path):
+    def get_dataset(self, user_uuid: str, dataset_path: str):
         self.cur.execute("SELECT * FROM datasets WHERE user_uuid=%s AND dataset_path=%s", (user_uuid, dataset_path))
         return self.cur.fetchone()
 

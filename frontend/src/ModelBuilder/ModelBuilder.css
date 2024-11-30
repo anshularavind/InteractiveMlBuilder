@@ -212,3 +212,23 @@
   cursor: grabbing;
   transform: scale(0.95);
 }
+/* Example block colors */
+.block-FcNN {
+  background-color: #4a90e2; /* Blue */
+  color: white;
+}
+
+.block-Conv {
+  background-color: #f4c542; /* Yellow */
+  color: black;
+}
+
+.block-RNN {
+  background-color: #68b684; /* Green */
+  color: white;
+}
+
+.block-default {
+  background-color: #e3f2fd; /* Light Blue */
+  color: black;
+}

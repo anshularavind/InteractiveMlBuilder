@@ -69,4 +69,6 @@ def train_model(model, epochs=10):
                 if model.user_db:
                     model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
 
+        model.save_model()
+
     return accuracy

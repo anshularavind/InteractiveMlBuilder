@@ -44,9 +44,9 @@ function ConfigColumn({
     setBlockCount((prevCount) => prevCount + 1);
 
     // Calculate precomputed sizes and apply ln and scaling
-    const inputSize = Math.log(blockInputs.inputSize || 1) * SCALING_CONSTANT / log_base;
-    const outputSize = Math.log(blockInputs.outputSize || 1) * SCALING_CONSTANT / log_base;
-    const hiddenSize = Math.log(blockInputs.hiddenSize || 1) * SCALING_CONSTANT / log_base;
+    const inputSize = Math.log((blockInputs.inputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const outputSize = Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const hiddenSize = Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT / log_base;
     const numHiddenLayers = blockInputs.numHiddenLayers * SCALING_CONSTANT;
     const trapHeight = SCALING_CONSTANT * 2;
 

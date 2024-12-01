@@ -13,6 +13,7 @@ function ConfigColumn({
   handleDatasetClick,
   layerItems,
   createLayers,
+  removeLastBlock, // Added here to accept the function as a prop
 }) {
   const [blockInputs, setBlockInputs] = useState({
     inputSize: 0,
@@ -44,9 +45,12 @@ function ConfigColumn({
     setBlockCount((prevCount) => prevCount + 1);
 
     // Calculate precomputed sizes and apply ln and scaling
-    const inputSize = Math.log((blockInputs.inputSize + 1) || 1) * SCALING_CONSTANT / log_base;
-    const outputSize = Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT / log_base;
-    const hiddenSize = Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const inputSize =
+      Math.log((blockInputs.inputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const outputSize =
+      Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const hiddenSize =
+      Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT / log_base;
     const numHiddenLayers = blockInputs.numHiddenLayers * SCALING_CONSTANT;
     const trapHeight = SCALING_CONSTANT * 2;
 
@@ -57,7 +61,7 @@ function ConfigColumn({
       params: {
         output_size: blockInputs.outputSize,
         hidden_size: blockInputs.hiddenSize,
-        num_hidden_layers: blockInputs.numHiddenLayers
+        num_hidden_layers: blockInputs.numHiddenLayers,
       },
       leftTrapezoid: { base: inputSize, height: trapHeight },
       rightTrapezoid: { base: outputSize, height: trapHeight },
@@ -80,8 +84,12 @@ function ConfigColumn({
   return (
     <div className="inputBlock">
       <div className="inputBlockHeader">
-        <h1><b>Configuration</b></h1>
-        <h2><u>Select Dataset</u></h2>
+        <h1>
+          <b>Configuration</b>
+        </h1>
+        <h2>
+          <u>Select Dataset</u>
+        </h2>
         <DatasetSelection
           selectedItem={selectedDataset}
           dropdownOpen={datasetDropdownOpen}
@@ -93,7 +101,21 @@ function ConfigColumn({
         <h4>Output Size:</h4>
       </div>
       <div className="inputBlockContent">
-        <h2><u>Add Blocks</u></h2>
+        {/* Remove Last Block Button */}
+        <div className="remove-block">
+          <button
+            className="deleteButton"
+            onClick={() => {
+              console.log("Remove Last Block button clicked");
+              removeLastBlock(); // Call the passed-in prop function
+            }}
+          >
+            Remove Last Block
+          </button>
+        </div>
+        <h2>
+          <u>Add Blocks</u>
+        </h2>
         <LayerSelection
           selectedItem={selectedLayer}
           dropdownOpen={layerDropdownOpen}
@@ -116,3 +138,4 @@ function ConfigColumn({
 }
 
 export default ConfigColumn;
+

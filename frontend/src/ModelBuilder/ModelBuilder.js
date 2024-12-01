@@ -76,7 +76,6 @@ function ModelBuilder() {
         blocks: updatedLayers.map((layer) => ({
           block: layer.type || "FcNN",
           params: {
-            input_size: layer.params.input_size,
             output_size: layer.params.output_size,
             hidden_size: layer.params.hidden_size,
             num_hidden_layers: layer.params.num_hidden_layers,

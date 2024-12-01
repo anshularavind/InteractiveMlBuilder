@@ -68,11 +68,11 @@ function ModelBuilder() {
         LR: blockInputs.learningRate?.toString() || "0.001", // Convert LR to string as per example
         batch_size: blockInputs.batchSize , // Default batch size
         blocks: updatedLayers.map((layer) => ({
-          block: layer.name || "FcNN", // Default block name
+          block: layer.type || "FcNN", // Default block name
           params: {
-            output_size: layer.params?.output_size , 
-            hidden_size: layer.params?.hidden_size , 
-            num_hidden_layers: layer.params?.num_hidden_layers || 2, // Default num_hidden_layers
+            output_size: layer.params.output_size ,
+            hidden_size: layer.params.hidden_size ,
+            num_hidden_layers: layer.params.num_hidden_layers ,
           },
         })),
       },
@@ -104,7 +104,7 @@ function ModelBuilder() {
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
       const updatedLayers = [...prevLayers, ...newLayers];
-       // Generate JSON whenever a new block is added 
+      generateJson(updatedLayers);
       return updatedLayers;
     });
   };

@@ -53,6 +53,12 @@ function ConfigColumn({
     const newLayer = {
       id: `block-${newBlockId}`,
       name: `Block ${newBlockId + 1}`,
+      type: selectedLayer,
+      params: {
+        output_size: blockInputs.outputSize,
+        hidden_size: blockInputs.hiddenSize,
+        num_hidden_layers: blockInputs.numHiddenLayers
+      },
       leftTrapezoid: { base: inputSize, height: trapHeight },
       rightTrapezoid: { base: outputSize, height: trapHeight },
       middleRectangle: { width: numHiddenLayers, height: hiddenSize },

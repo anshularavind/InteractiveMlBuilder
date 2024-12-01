@@ -12,6 +12,7 @@ datashape==0.5.4
 distributed==2.10.0
 filelock==3.16.1
 Flask==3.1.0
+Flask-Cors==5.0.0
 fsspec==2024.10.0
 greenlet==3.0.3
 idna==3.10

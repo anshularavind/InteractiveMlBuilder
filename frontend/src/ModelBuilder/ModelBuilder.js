@@ -9,6 +9,15 @@ function ModelBuilder(getAccessTokenSilently) {
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
 
+  const [layers, setLayers] = useState([]);
+  const [blockInputs, setBlockInputs] = useState({
+    inputSize: 0,
+    outputSize: 0,
+    hiddenSize: 0,
+    numHiddenLayers: 0,
+  });
+
+  // Dataset and layer options
   const datasetItems = [
     { value: "MNIST", label: "MNIST" },
     { value: "CIFAR 10", label: "CIFAR 10" },
@@ -19,6 +28,7 @@ function ModelBuilder(getAccessTokenSilently) {
     { value: "Conv", label: "Conv" },
   ];
 
+  // Handlers for dataset and layer dropdowns
   const handleDatasetClick = (item) => {
     setSelectedDataset(item.value);
     setDatasetDropdownOpen(false);
@@ -37,80 +47,69 @@ function ModelBuilder(getAccessTokenSilently) {
     setLayerDropdownOpen(!layerDropdownOpen);
   };
 
-  const [layers, setLayers] = useState([]);
-  const [blockInputs, setBlockInputs] = useState({
-    inputSize: 0,
-    outputSize: 0,
-    hiddenSize: 0,
-    numHiddenLayers: 0,
-  });
-
+  // Input change handler for block configurations
   const handleInputChange = (field, value) => {
     const sanitizedValue = Math.max(0, parseInt(value) || 0);
     console.log(`Updating ${field}:`, sanitizedValue);
     setBlockInputs({ ...blockInputs, [field]: sanitizedValue });
   };
 
+  // Generate JSON for model configuration
   const generateJson = (updatedLayers) => {
-    
-  console.log("Current Block Inputs:", blockInputs);
-  console.log("Current Layers:", layers);
-  console.log("Selected Dataset:", selectedDataset);
-    
+    console.log("Current Block Inputs:", blockInputs);
+    console.log("Current Layers:", layers);
+    console.log("Selected Dataset:", selectedDataset);
+
     const username = "test_user5"; // Replace with dynamic username if needed
-  
+
     const modelBuilderJson = {
       username, // Ensure username is included
       model_config: {
-        input: blockInputs.inputSize , 
-        output: blockInputs.outputSize, 
-        dataset: selectedDataset , 
-        LR: blockInputs.learningRate?.toString() || "0.001", // Convert LR to string as per example
-        batch_size: blockInputs.batchSize , // Default batch size
+        input: blockInputs.inputSize,
+        output: blockInputs.outputSize,
+        dataset: selectedDataset,
+        LR: blockInputs.learningRate?.toString() || "0.001",
+        batch_size: blockInputs.batchSize,
         blocks: updatedLayers.map((layer) => ({
-          block: layer.type || "FcNN", // Default block name
+          block: layer.type || "FcNN",
           params: {
-            output_size: layer.params.output_size ,
-            hidden_size: layer.params.hidden_size ,
-            num_hidden_layers: layer.params.num_hidden_layers ,
+            output_size: layer.params.output_size,
+            hidden_size: layer.params.hidden_size,
+            num_hidden_layers: layer.params.num_hidden_layers,
           },
         })),
       },
-      dataset: selectedDataset , // Include dataset at root level as well
+      dataset: selectedDataset, // Include dataset at root level as well
     };
-  
+
     console.log("Generated JSON:", modelBuilderJson); // Log the JSON
     return modelBuilderJson; // Return the JSON
   };
-  
-  const sendJsonToBackend = async (json) => {
 
+  // Function to send JSON to the backend
+  const sendJsonToBackend = async (json) => {
     try {
       const response = await fetch("http://127.0.0.1:4000/api/define-model", {
-
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${getAccessTokenSilently}`
+          "Authorization": `Bearer ${getAccessTokenSilently}`,
         },
         body: JSON.stringify(json),
       });
-  
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-  
+
       const data = await response.json();
       console.log("Response from backend:", data);
     } catch (error) {
       console.error("Error sending JSON to backend:", error);
     }
   };
-  
-  
-  
-  
 
+  // Function to add layers
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
       const updatedLayers = [...prevLayers, ...newLayers];
@@ -119,7 +118,7 @@ function ModelBuilder(getAccessTokenSilently) {
     });
   };
 
-
+  // Function to handle layer dragging
   const onLayerDragStop = (id, data) => {
     setLayers((prevLayers) =>
       prevLayers.map((layer) =>
@@ -130,48 +129,42 @@ function ModelBuilder(getAccessTokenSilently) {
     );
   };
 
+  
   const removeLastBlock = () => {
     setLayers((prevLayers) => {
       if (prevLayers.length === 0) return prevLayers; // No blocks to remove
       return prevLayers.slice(0, -1); // Removes the last block
     });
   };
- 
 
   return (
-    <div>
-      <div className="container">
-        <ConfigColumn
-          selectedDataset={selectedDataset}
-          datasetDropdownOpen={datasetDropdownOpen}
-          toggleDatasetDropdown={toggleDatasetDropdown}
-          datasetItems={datasetItems}
-          handleDatasetClick={handleDatasetClick}
-          selectedLayer={selectedLayer}
-          layerDropdownOpen={layerDropdownOpen}
-          toggleLayerDropdown={toggleLayerDropdown}
-          layerItems={layerItems}
-          handleLayerClick={handleLayerClick}
-          blockInputs={blockInputs}
-          handleInputChange={handleInputChange}
-          createLayers={createLayers}
-        />
-         <button className="deleteButton" onClick={removeLastBlock}>
-    Remove Last Block
-</button>
-<Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
-<button
-  className="sendBackend"
-  onClick={() => sendJsonToBackend(generateJson(layers))}
->
-    Send Json
-</button>
-
-      </div>
-      
-
+    <div className="container">
+      <ConfigColumn
+        selectedDataset={selectedDataset}
+        datasetDropdownOpen={datasetDropdownOpen}
+        toggleDatasetDropdown={toggleDatasetDropdown}
+        datasetItems={datasetItems}
+        handleDatasetClick={handleDatasetClick}
+        selectedLayer={selectedLayer}
+        layerDropdownOpen={layerDropdownOpen}
+        toggleLayerDropdown={toggleLayerDropdown}
+        layerItems={layerItems}
+        handleLayerClick={handleLayerClick}
+        blockInputs={blockInputs}
+        handleInputChange={handleInputChange}
+        createLayers={createLayers}
+        removeLastBlock={removeLastBlock} // Pass removeLastBlock to ConfigColumn
+      />
+      <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
+      <button
+        className="sendBackend"
+        onClick={() => sendJsonToBackend(generateJson(layers))}
+      >
+        Send JSON
+      </button>
     </div>
   );
 }
 
 export default ModelBuilder;
+

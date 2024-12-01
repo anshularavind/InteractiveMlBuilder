@@ -48,12 +48,13 @@ function ConfigColumn({
     const outputSize = Math.log(blockInputs.outputSize || 1) * SCALING_CONSTANT / log_base;
     const hiddenSize = Math.log(blockInputs.hiddenSize || 1) * SCALING_CONSTANT / log_base;
     const numHiddenLayers = blockInputs.numHiddenLayers * SCALING_CONSTANT;
+    const trapHeight = SCALING_CONSTANT * 2;
 
     const newLayer = {
       id: `block-${newBlockId}`,
       name: `Block ${newBlockId + 1}`,
-      leftTrapezoid: { base: inputSize, height: numHiddenLayers },
-      rightTrapezoid: { base: outputSize, height: numHiddenLayers },
+      leftTrapezoid: { base: inputSize, height: trapHeight },
+      rightTrapezoid: { base: outputSize, height: trapHeight },
       middleRectangle: { width: numHiddenLayers, height: hiddenSize },
     };
 

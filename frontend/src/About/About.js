@@ -33,8 +33,7 @@ function About() {
           <h2>Features</h2>
           <ul>
             <li>Upload your own datasets or choose from preloaded ones.</li>
-            <li>Configure fully connected, convolutional, and recurrent neural networks.</li>
-            <li>Intuitive drag-and-drop model builder interface.</li>
+            <li>Configure fully connected and convolutional neural networks.</li>
             <li>Export your trained models for further use or deployment.</li>
             <li>Get started with pre-configured templates for common architectures.</li>
           </ul>

@@ -15,11 +15,11 @@ function FAQ() {
     },
     {
       question: "How do I get started?",
-      answer: "Navigate to the 'Model Builder' section, select a dataset, and start adding blocks to configure your model.",
+      answer: "Navigate to the 'Model Builder' section, select a dataset, and start adding blocks to configure your model. The training section below the model types will show inisghts on specific metrics, visualizations, and outputs tailored to these architectures. ",
     },
     {
       question: "What datasets are supported?",
-      answer: "You can upload your own datasets in CSV format or use preloaded datasets like MNIST and CIFAR-10.",
+      answer: "You can use preloaded datasets like MNIST and CIFAR-10.",
     },
     {
       question: "Can I save my model?",

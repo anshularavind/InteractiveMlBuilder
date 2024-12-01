@@ -36,7 +36,10 @@ function Visualizer({ layers }) {
   }, []);
 
   useEffect(() => {
-    if (layers.length > 0 && containerDimensions.width > 0) {
+    if (layers.length === 0) {
+        setPositionedLayers([]);
+    }
+    else if (layers.length > 0 && containerDimensions.width > 0) {
       // Calculate total unscaled width of all layers
       const totalUnscaledWidth = layers.reduce(
         (acc, layer) =>

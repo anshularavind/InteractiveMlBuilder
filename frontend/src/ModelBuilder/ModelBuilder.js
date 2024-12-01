@@ -47,37 +47,64 @@ function ModelBuilder() {
 
   const handleInputChange = (field, value) => {
     const sanitizedValue = Math.max(0, parseInt(value) || 0);
+    console.log(`Updating ${field}:`, sanitizedValue);
     setBlockInputs({ ...blockInputs, [field]: sanitizedValue });
   };
 
   const generateJson = (updatedLayers) => {
-    const username = "test_user5";
+    
+  console.log("Current Block Inputs:", blockInputs);
+  console.log("Current Layers:", layers);
+  console.log("Selected Dataset:", selectedDataset);
+    
+    const username = "test_user5"; // Replace with dynamic username if needed
   
     const modelBuilderJson = {
-      username,
+      username, // Ensure username is included
       model_config: {
-        input: blockInputs.inputSize,
-        output: blockInputs.outputSize,
-        dataset: selectedDataset,
-        lr: blockInputs.learningRate || 0.001,
-        batch_size: blockInputs.batchSize || 32,
+        input: blockInputs.inputSize , 
+        output: blockInputs.outputSize, 
+        dataset: selectedDataset , 
+        LR: blockInputs.learningRate?.toString() || "0.001", // Convert LR to string as per example
+        batch_size: blockInputs.batchSize , // Default batch size
         blocks: updatedLayers.map((layer) => ({
-          block: layer.name || "FcNN",
-          params: layer.params || { output_size: 0, hidden_size: 0, num_hidden_layers: 0 }, // Default params
+          block: layer.name || "FcNN", // Default block name
+          params: {
+            output_size: layer.params?.output_size , 
+            hidden_size: layer.params?.hidden_size , 
+            num_hidden_layers: layer.params?.num_hidden_layers || 2, // Default num_hidden_layers
+          },
         })),
       },
-      dataset: selectedDataset,
+      dataset: selectedDataset , // Include dataset at root level as well
     };
   
-    console.log("Generated JSON:", modelBuilderJson);
-    return modelBuilderJson;
+    console.log("Generated JSON:", modelBuilderJson); // Log the JSON
+    return modelBuilderJson; // Return the JSON
+  };
+  
+  const sendJsonToBackend = async (json) => {
+    try {
+      const response = await fetch("/api/model-config", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(json),
+      });
+  
+      const data = await response.json();
+      console.log("Response from backend:", data);
+    } catch (error) {
+      console.error("Error sending JSON to backend:", error);
+    }
   };
   
 
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
       const updatedLayers = [...prevLayers, ...newLayers];
-      generateJson(updatedLayers); // Generate JSON whenever a new block is added
+       // Generate JSON whenever a new block is added 
       return updatedLayers;
     });
   };
@@ -92,6 +119,14 @@ function ModelBuilder() {
       )
     );
   };
+
+  const removeLastBlock = () => {
+    setLayers((prevLayers) => {
+      if (prevLayers.length === 0) return prevLayers; // No blocks to remove
+      return prevLayers.slice(0, -1); // Removes the last block
+    });
+  };
+ 
 
   return (
     <div>
@@ -111,8 +146,14 @@ function ModelBuilder() {
           handleInputChange={handleInputChange}
           createLayers={createLayers}
         />
+         <button className="deleteButton" onClick={removeLastBlock}>
+  Remove Last Block
+</button>
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
+        
       </div>
+      
+
     </div>
   );
 }

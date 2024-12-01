@@ -16,26 +16,20 @@ function ConfigColumn({
   removeLastBlock, // Added here to accept the function as a prop
 }) {
   const [blockInputs, setBlockInputs] = useState({
-    hiddenSize: 0,
-    numHiddenLayers: 0,
-  });
-  const [independentInputs, setIndependentInputs] = useState({
     inputSize: 0,
     outputSize: 0,
+    hiddenSize: 0,
+    numHiddenLayers: 0,
   });
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [blockCount, setBlockCount] = useState(0);
 
-  const handleBlockInputChange = (field, value) => {
-    setBlockInputs((prevInputs) => ({
-      ...prevInputs,
-      [field]: Math.max(0, parseInt(value) || 0),
-    }));
-  };
+  const SCALING_CONSTANT = 25; // Scaling constant for visual representation
+  const log_base = Math.log(1.5); // Base of logarithm for scaling
 
-  const handleIndependentInputChange = (field, value) => {
-    setIndependentInputs((prevInputs) => ({
+  const handleInputChange = (field, value) => {
+    setBlockInputs((prevInputs) => ({
       ...prevInputs,
       [field]: Math.max(0, parseInt(value) || 0),
     }));
@@ -50,27 +44,37 @@ function ConfigColumn({
     const newBlockId = blockCount;
     setBlockCount((prevCount) => prevCount + 1);
 
+    // Calculate precomputed sizes and apply ln and scaling
+    const inputSize =
+      Math.log((blockInputs.inputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const outputSize =
+      Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const hiddenSize =
+      Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT / log_base;
+    const numHiddenLayers = blockInputs.numHiddenLayers * SCALING_CONSTANT;
+    const trapHeight = SCALING_CONSTANT * 2;
+
     const newLayer = {
       id: `block-${newBlockId}`,
       name: `Block ${newBlockId + 1}`,
       type: selectedLayer,
       params: {
+        output_size: blockInputs.outputSize,
         hidden_size: blockInputs.hiddenSize,
         num_hidden_layers: blockInputs.numHiddenLayers,
       },
-      leftTrapezoid: { base: 50, height: 50 },
-      rightTrapezoid: { base: 50, height: 50 },
-      middleRectangle: {
-        width: blockInputs.numHiddenLayers * 50,
-        height: blockInputs.hiddenSize,
-      },
+      leftTrapezoid: { base: inputSize, height: trapHeight },
+      rightTrapezoid: { base: outputSize, height: trapHeight },
+      middleRectangle: { width: numHiddenLayers, height: hiddenSize },
     };
 
     // Pass the new layer to Visualizer via createLayers
     createLayers([newLayer]);
 
-    // Reset inputs for block-specific fields
+    // Reset inputs
     setBlockInputs({
+      inputSize: 0,
+      outputSize: 0,
       hiddenSize: 0,
       numHiddenLayers: 0,
     });
@@ -93,26 +97,8 @@ function ConfigColumn({
           datasetItems={datasetItems}
           handleItemClick={handleDatasetClick}
         />
-      </div>
-      <div className="sizeInputs">
-        <label>
-          <h4>Input Size:</h4>
-          <input
-            type="number"
-            value={independentInputs.inputSize}
-            onChange={(e) => handleIndependentInputChange("inputSize", e.target.value)}
-            className="input-box"
-          />
-        </label>
-        <label>
-          <h4>Output Size:</h4>
-          <input
-            type="number"
-            value={independentInputs.outputSize}
-            onChange={(e) => handleIndependentInputChange("outputSize", e.target.value)}
-            className="input-box"
-          />
-        </label>
+        <h4>Input Size:</h4>
+        <h4>Output Size:</h4>
       </div>
       <div className="inputBlockContent">
         {/* Remove Last Block Button */}
@@ -140,7 +126,7 @@ function ConfigColumn({
         {selectedLayer === "FcNN" && (
           <ModelConfig
             blockInputs={blockInputs}
-            handleInputChange={handleBlockInputChange}
+            handleInputChange={handleInputChange}
             createLayers={addBlock}
           />
         )}
@@ -152,6 +138,4 @@ function ConfigColumn({
 }
 
 export default ConfigColumn;
-
-
 

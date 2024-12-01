@@ -3,7 +3,7 @@ import Visualizer from "./Visualizer/Visualizer";
 import ConfigColumn from "./ConfigColumn/ConfigColumn";
 import "./ModelBuilder.css";
 
-function ModelBuilder() {
+function ModelBuilder(getAccessTokenSilently) {
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [datasetDropdownOpen, setDatasetDropdownOpen] = useState(false);
   const [selectedLayer, setSelectedLayer] = useState(null);
@@ -84,14 +84,21 @@ function ModelBuilder() {
   };
   
   const sendJsonToBackend = async (json) => {
+
     try {
-      const response = await fetch("/api/model-config", {
+      const response = await fetch("http://127.0.0.1:4000/api/define-model", {
+
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${getAccessTokenSilently}`
         },
         body: JSON.stringify(json),
       });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
   
       const data = await response.json();
       console.log("Response from backend:", data);
@@ -99,6 +106,9 @@ function ModelBuilder() {
       console.error("Error sending JSON to backend:", error);
     }
   };
+  
+  
+  
   
 
   const createLayers = (newLayers) => {
@@ -147,10 +157,16 @@ function ModelBuilder() {
           createLayers={createLayers}
         />
          <button className="deleteButton" onClick={removeLastBlock}>
-  Remove Last Block
+    Remove Last Block
 </button>
-        <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
-        
+<Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
+<button
+  className="sendBackend"
+  onClick={() => sendJsonToBackend(generateJson(layers))}
+>
+    Send Json
+</button>
+
       </div>
       
 

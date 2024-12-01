@@ -18,6 +18,7 @@ function App() {
     return <div className="container">Oops... {error.message}</div>;
   }
 
+
   if (isLoading) {
     return <div className="container">Loading...</div>;
   }
@@ -62,7 +63,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/model-builder" element={<ModelBuilder />} />
+              <Route path="/model-builder" element={<ModelBuilder getAccessTokenSilently={getAccessTokenSilently}/>} />
               <Route path="/about" element={<About />} />
               <Route path="/profile" element={<Profile user={user} />} />
             </Routes>

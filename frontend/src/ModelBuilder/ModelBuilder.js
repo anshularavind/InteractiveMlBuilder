@@ -5,7 +5,7 @@ import ConfigColumn from "./ConfigColumn/ConfigColumn";
 import "./ModelBuilder.css";
 
 function ModelBuilder() {
-  const { getAccessTokenSilently, loginWithRedirect, logout, user, isAuthenticated, isLoading } = useAuth0(); // Destructure Auth0 methods
+  const { getAccessTokenSilently } = useAuth0(); // Destructure Auth0 methods
   const [selectedDataset, setSelectedDataset] = useState(null);
   const [datasetDropdownOpen, setDatasetDropdownOpen] = useState(false);
   const [selectedLayer, setSelectedLayer] = useState(null);
@@ -76,30 +76,28 @@ function ModelBuilder() {
 
   const sendJsonToBackend = async (json) => {
     try {
-        // Get token before making request
-        const token = await getAccessTokenSilently();
-        
-        const response = await fetch("https://127.0.0.1:4000/api/define-model", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`,
-                "Accept": "application/json"
-            },
-            credentials: "include",
-            mode: "cors",
-            body: JSON.stringify(json)
-        });
+      const token = await getAccessTokenSilently();
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return await response.json();
+      const response = await fetch("https://127.0.0.1:4000/api/define-model", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify(json),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return await response.json();
     } catch (error) {
-        console.error("Error sending JSON to backend:", error);
-        throw error; // Re-throw to handle in component
+      console.error("Error sending JSON to backend:", error);
+      throw error; // Re-throw to handle in component
     }
-};
+  };
 
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
@@ -143,10 +141,8 @@ function ModelBuilder() {
           blockInputs={blockInputs}
           handleInputChange={handleInputChange}
           createLayers={createLayers}
+          removeLastBlock={removeLastBlock} // Pass function as prop
         />
-        <button className="deleteButton" onClick={removeLastBlock}>
-          Remove Last Block
-        </button>
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
         <button
           className="sendBackend"

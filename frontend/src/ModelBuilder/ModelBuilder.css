@@ -230,3 +230,15 @@
   background-color: #e3f2fd; /* Light Blue */
   color: black;
 }
+
+.deleteButton {
+  font-size: 1rem;
+  padding: 10px 20px;
+  color: #fff;
+  background-color: #d9534f; /* Red for delete */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 10px;
+}
+

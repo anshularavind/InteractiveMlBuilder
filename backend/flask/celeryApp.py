@@ -1,5 +1,7 @@
 from celery import Celery
 from flask import Flask
+from flask_cors import CORS
+
 
 def make_celery(app):
     celery = Celery(
@@ -20,6 +22,8 @@ def make_celery(app):
 
 # Initialize Flask
 flask_app = Flask(__name__)
+CORS(flask_app)
+#resources={r"/api/*": {"origins": "http://localhost:3000"}}
 
 # Celery configuration
 flask_app.config.update(

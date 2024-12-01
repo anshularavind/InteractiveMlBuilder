@@ -240,5 +240,8 @@
   border-radius: 5px;
   cursor: pointer;
   margin: 10px;
+  position: absolute;
+  top: 13%;
+  left: 20%;
 }
 

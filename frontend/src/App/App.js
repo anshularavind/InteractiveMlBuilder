@@ -7,12 +7,11 @@ import About from "../About/About";
 import Profile from "../Profile/Profile";
 import Home from "../Home/Home";
 import './App.css';
-
 // App.js
 
 function App() {
-  const { loginWithRedirect, logout, user, isAuthenticated, isLoading, error, getAccessTokenSilently } = useAuth0();
 
+  const { user, isAuthenticated, isLoading, error, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();  
   if (error) {
     console.log('error:', error);
     return <div className="container">Oops... {error.message}</div>;
@@ -24,6 +23,7 @@ function App() {
   }
 
   return (
+
     <Router>
       <div className="fullscreen">
         {!isAuthenticated ? (

@@ -24,8 +24,11 @@ function ConfigColumn({
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [blockCount, setBlockCount] = useState(0);
 
+  const SCALING_CONSTANT = 25; // Scaling constant for visual representation
+  const log_base = Math.log(1.5); // Base of logarithm for scaling
+
   const handleInputChange = (field, value) => {
-    setBlockInputs(prevInputs => ({
+    setBlockInputs((prevInputs) => ({
       ...prevInputs,
       [field]: Math.max(0, parseInt(value) || 0),
     }));
@@ -38,24 +41,26 @@ function ConfigColumn({
 
   const addBlock = () => {
     const newBlockId = blockCount;
-    setBlockCount(prevCount => prevCount + 1);
+    setBlockCount((prevCount) => prevCount + 1);
 
-    const leftTrapezoidBase = blockInputs.inputSize / 10;
-    const rightTrapezoidBase = blockInputs.outputSize / 10;
-    const middleRectangleHeight = blockInputs.hiddenSize / 10;
-    const middleRectangleWidth = blockInputs.numHiddenLayers * 10;
+    // Calculate precomputed sizes and apply ln and scaling
+    const inputSize = Math.log(blockInputs.inputSize || 1) * SCALING_CONSTANT / log_base;
+    const outputSize = Math.log(blockInputs.outputSize || 1) * SCALING_CONSTANT / log_base;
+    const hiddenSize = Math.log(blockInputs.hiddenSize || 1) * SCALING_CONSTANT / log_base;
+    const numHiddenLayers = blockInputs.numHiddenLayers * SCALING_CONSTANT;
 
     const newLayer = {
       id: `block-${newBlockId}`,
       name: `Block ${newBlockId + 1}`,
-      position: { x: 0, y: 0 },
-      leftTrapezoid: { base: leftTrapezoidBase, height: middleRectangleHeight },
-      rightTrapezoid: { base: rightTrapezoidBase, height: middleRectangleHeight },
-      middleRectangle: { width: middleRectangleWidth, height: middleRectangleHeight },
+      leftTrapezoid: { base: inputSize, height: numHiddenLayers },
+      rightTrapezoid: { base: outputSize, height: numHiddenLayers },
+      middleRectangle: { width: numHiddenLayers, height: hiddenSize },
     };
 
+    // Pass the new layer to Visualizer via createLayers
     createLayers([newLayer]);
 
+    // Reset inputs
     setBlockInputs({
       inputSize: 0,
       outputSize: 0,

@@ -28,6 +28,7 @@ ply==3.11
 protobuf==3.20.3
 psycopg2==2.9.10
 pycparser==2.22
+pyjwt==2.10.0
 pyls-spyder==0.4.0
 pynvim==0.5.0
 python-dotenv==1.0.1

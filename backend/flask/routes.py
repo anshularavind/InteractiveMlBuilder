@@ -79,8 +79,10 @@ def define_model():
 def train():
     try:
         data = request.json
+        user_uuid = helper.get_user_info()["sub"]
+        model_config = data.get("model_config")
+        model_uuid = db.hash(user_uuid + json.dumps(model_config))
         username = helper.get_user_info()["nickname"]
-        model_uuid = data.get("model_uuid")
 
         logger.info(f"Received training request - username: {username}, model_uuid: {model_uuid}")
 
@@ -142,13 +144,16 @@ def train():
         }), 500
 
 #route for getting the logs of the task using the getmodeldir and then reading the logs
-@main_routes.route("/api/train_logs", methods=["GET"])
+@main_routes.route("/api/train_logs", methods=["POST"])
 @helper.token_required
 def train_logs():
+    data = request.json
     user_uuid = helper.get_user_info()["sub"]
     username = helper.get_user_info()["nickname"]
+    model_config = data.get("model_config")
+    model_uuid = db.hash(user_uuid + json.dumps(model_config))
     task_id = task_dict.get(username)
-    model_dir = db.get_model_dir(user_uuid , task_id)
+    model_dir = db.get_model_dir(user_uuid , model_uuid)
     if not model_dir:
         return jsonify({"error": "Model not found"}), 404
 

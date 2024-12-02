@@ -120,14 +120,14 @@ if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Convert relative paths to absolute paths
-    cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
-    key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
+    # cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
+    # key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
 
     app.run(
         host="0.0.0.0",
         port=int(env.get("PORT", 4000)),
-        ssl_context=(
-            cert_path,
-            key_path 
-        )
+        # ssl_context=(
+        #     cert_path,
+        #     key_path
+        # )
     )

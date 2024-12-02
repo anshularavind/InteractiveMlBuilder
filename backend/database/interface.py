@@ -5,6 +5,8 @@ import os
 import shutil
 import torch
 import sys
+import hashlib
+
 
 class UserDatabase():
     def __init__(self):
@@ -46,8 +48,10 @@ class UserDatabase():
         self.user_data_root = os.path.join(sys_path, 'backend/database/user_data')
         os.makedirs(self.user_data_root, exist_ok=True)
 
-    def hash(self, string):
-        return abs(hash(string) % 1000000)
+    def hash(self, data_str: str):
+        hashed = hashlib.md5(data_str.encode()).hexdigest()
+        return abs(int(hashed, 16) % 1000000)
+        # return abs(hash(data_str) % 1000000)
 
     def close(self):
         self.cur.close()

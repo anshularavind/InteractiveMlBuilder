@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Visualizer from "./Visualizer/Visualizer";
 import ConfigColumn from "./ConfigColumn/ConfigColumn";
@@ -18,15 +18,17 @@ function ModelBuilder() {
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [layers, setLayers] = useState([]);
+  const [backendResults, setBackendResults] = useState(null);
+  const intervalIdRef = useRef(null);
 
   const datasetItems = [
-    { value: "MNIST", label: "MNIST" },
-    { value: "CIFAR 10", label: "CIFAR 10" },
+    {value: "MNIST", label: "MNIST"},
+    {value: "CIFAR 10", label: "CIFAR 10"},
   ];
 
   const layerItems = [
-    { value: "FcNN", label: "FcNN" },
-    { value: "Conv", label: "Conv" },
+    {value: "FcNN", label: "FcNN"},
+    {value: "Conv", label: "Conv"},
   ];
 
   const handleDatasetClick = (item) => {
@@ -71,8 +73,8 @@ function ModelBuilder() {
         input: datasetInputSize,
         output: datasetOutputSize,
         dataset: selectedDataset,
-        LR: "0.001", 
-        batch_size: 32, 
+        LR: "0.001",
+        batch_size: 32,
         blocks: updatedLayers.map((layer) => ({
           block: layer.type || "FcNN",
           params: {
@@ -105,13 +107,73 @@ function ModelBuilder() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error('HTTP error! Status: ${response.status}');
       }
       return await response.json();
     } catch (error) {
       console.error("Error sending JSON to backend:", error);
       throw error;
     }
+  };
+
+  const startTraining = async (json) => {
+    try {
+      const token = await getAccessTokenSilently();
+
+      const response = await fetch("http://127.0.0.1:4000/api/train", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify(json),
+      });
+
+      if (!response.ok) {
+        throw new Error('HTTP error! Status: ${response.status}');
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error sending JSON to backend:", error);
+      throw error;
+    }
+  }
+
+  const fetchLogs = async (json) => {
+    try {
+      const token = await getAccessTokenSilently();
+      const response = await fetch("http://127.0.0.1:4000/api/train_logs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        credentials: "include",
+        mode: "cors",
+        body: JSON.stringify(json),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setBackendResults(data);
+
+      if (data.output && data.output.startsWith("Final")) {
+        clearInterval(intervalIdRef.current);
+      }
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+    }
+  };
+
+  const startFetchingLogs = (json) => {
+    intervalIdRef.current = setInterval(() => fetchLogs(json), 1000);
   };
 
   const onLayerDragStop = (id, data) => {
@@ -127,6 +189,13 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
+  };
+
+  const handleSendJsonClick = async () => {
+    const json = generateJson(layers);
+    await sendJsonToBackend(json);
+    await startTraining(json);
+    startFetchingLogs(json);
   };
 
   return (
@@ -146,10 +215,16 @@ function ModelBuilder() {
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
         <button
           className="sendBackend"
-          onClick={() => sendJsonToBackend(generateJson(layers))}
+          onClick={handleSendJsonClick}
         >
           Send Json
         </button>
+        {backendResults && (
+          <div className="backend-results">
+            <h3>Backend Results:</h3>
+            <pre>{JSON.stringify(backendResults, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </div>
   );

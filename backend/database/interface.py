@@ -97,15 +97,18 @@ class UserDatabase():
         model_uuid = self.hash(user_uuid + config_json)  # add created_at if unique same config ids are needed
         model_dir = os.path.join(self.user_data_root, user_uuid, str(model_uuid))
 
+        self.cur.execute("DELETE FROM models WHERE user_uuid=%s AND uuid=%s", (user_uuid, model_uuid))
+        self.conn.commit()
+
         # save config
         os.makedirs(model_dir, exist_ok=True)
         with open(os.path.join(model_dir, 'config.json'), 'w') as f:
             f.write(config_json)
 
         # touching output.logs, loss.logs, error.logs if they don't exist
-        open(os.path.join(model_dir, 'output.logs'), 'a').close()
-        open(os.path.join(model_dir, 'loss.logs'), 'a').close()
-        open(os.path.join(model_dir, 'error.logs'), 'a').close()
+        open(os.path.join(model_dir, 'output.logs'), 'w').close()
+        open(os.path.join(model_dir, 'loss.logs'), 'w').close()
+        open(os.path.join(model_dir, 'error.logs'), 'w').close()
 
         self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
                          (model_uuid, user_uuid, model_dir, created_at))

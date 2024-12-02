@@ -114,6 +114,10 @@ class UserDatabase():
         open(os.path.join(model_dir, 'loss.logs'), 'w').close()
         open(os.path.join(model_dir, 'error.logs'), 'w').close()
 
+        # removing model.pt if it exists
+        if os.path.exists(os.path.join(model_dir, 'model.pt')):
+            os.remove(os.path.join(model_dir, 'model.pt'))
+
         self.cur.execute("INSERT INTO models (uuid, user_uuid, model_dir, created_at) VALUES (%s, %s, %s, %s)",
                          (model_uuid, user_uuid, model_dir, created_at))
         self.conn.commit()

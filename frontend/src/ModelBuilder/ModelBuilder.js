@@ -19,16 +19,17 @@ function ModelBuilder() {
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [layers, setLayers] = useState([]);
   const [backendResults, setBackendResults] = useState(null);
+  const [isTraining, setIsTraining] = useState(false); // New state to track training status
   const intervalIdRef = useRef(null);
 
   const datasetItems = [
-    {value: "MNIST", label: "MNIST"},
-    {value: "CIFAR 10", label: "CIFAR 10"},
+    { value: "MNIST", label: "MNIST" },
+    { value: "CIFAR 10", label: "CIFAR 10" },
   ];
 
   const layerItems = [
-    {value: "FcNN", label: "FcNN"},
-    {value: "Conv", label: "Conv"},
+    { value: "FcNN", label: "FcNN" },
+    { value: "Conv", label: "Conv" },
   ];
 
   const handleDatasetClick = (item) => {
@@ -107,7 +108,7 @@ function ModelBuilder() {
       });
 
       if (!response.ok) {
-        throw new Error('HTTP error! Status: ${response.status}');
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
       return await response.json();
     } catch (error) {
@@ -133,14 +134,15 @@ function ModelBuilder() {
       });
 
       if (!response.ok) {
-        throw new Error('HTTP error! Status: ${response.status}');
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
       return await response.json();
     } catch (error) {
-      console.error("Error sending JSON to backend:", error);
+      console.error("Error starting training:", error);
       throw error;
     }
-  }
+  };
 
   const fetchLogs = async (json) => {
     try {
@@ -166,6 +168,7 @@ function ModelBuilder() {
 
       if (data.output && data.output.startsWith("Final")) {
         clearInterval(intervalIdRef.current);
+        setIsTraining(false); // Stop training when logs indicate completion
       }
     } catch (error) {
       console.error("Error fetching logs:", error);
@@ -174,6 +177,41 @@ function ModelBuilder() {
 
   const startFetchingLogs = (json) => {
     intervalIdRef.current = setInterval(() => fetchLogs(json), 1000);
+  };
+
+  const stopTraining = async () => {
+    try {
+      const token = await getAccessTokenSilently();
+
+      const response = await fetch("http://127.0.0.1:4000/api/stop-training", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        credentials: "include",
+        mode: "cors",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      setIsTraining(false);
+      clearInterval(intervalIdRef.current); // Stop fetching logs
+      console.log("Training stopped successfully.");
+    } catch (error) {
+      console.error("Error stopping training:", error);
+    }
+  };
+
+  const handleSendJsonClick = async () => {
+    const json = generateJson(layers);
+    await sendJsonToBackend(json);
+    await startTraining(json);
+    startFetchingLogs(json);
+    setIsTraining(true); // Set training state to true
   };
 
   const onLayerDragStop = (id, data) => {
@@ -191,13 +229,6 @@ function ModelBuilder() {
     });
   };
 
-  const handleSendJsonClick = async () => {
-    const json = generateJson(layers);
-    await sendJsonToBackend(json);
-    await startTraining(json);
-    startFetchingLogs(json);
-  };
-
   return (
     <div>
       <div className="container">
@@ -213,12 +244,22 @@ function ModelBuilder() {
           layers={layers}
         />
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
-        <button
-          className="sendBackend"
-          onClick={handleSendJsonClick}
-        >
-          Send Json
-        </button>
+        <div className="buttons">
+          <button
+            className="sendBackend"
+            onClick={handleSendJsonClick}
+            disabled={isTraining}
+          >
+            {isTraining ? "Training in Progress..." : "TRAIN"}
+          </button>
+          <button
+            className="stopTraining"
+            onClick={stopTraining}
+            disabled={!isTraining} //cant click unlesss traing is active
+          >
+            Stop Training
+          </button>
+        </div>
         {backendResults && (
           <div className="backend-results">
             <h3>Backend Results:</h3>

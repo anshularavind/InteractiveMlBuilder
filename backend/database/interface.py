@@ -1,3 +1,4 @@
+import json
 import psycopg2
 from datetime import datetime
 import os
@@ -92,9 +93,12 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM users")
         return self.cur.fetchall()
 
-    def init_model(self, user_uuid: str, config_json: str):
+    def get_model_uuid(self, user_uuid: str, model_config: dict):
+        return self.hash(user_uuid + json.dumps(model_config))
+
+    def init_model(self, user_uuid: str, model_config: dict):
         created_at = datetime.now()
-        model_uuid = self.hash(user_uuid + config_json)  # add created_at if unique same config ids are needed
+        model_uuid = self.get_model_uuid(user_uuid, model_config)
         model_dir = os.path.join(self.user_data_root, user_uuid, str(model_uuid))
 
         self.cur.execute("DELETE FROM models WHERE user_uuid=%s AND uuid=%s", (user_uuid, model_uuid))
@@ -103,9 +107,9 @@ class UserDatabase():
         # save config
         os.makedirs(model_dir, exist_ok=True)
         with open(os.path.join(model_dir, 'config.json'), 'w') as f:
-            f.write(config_json)
+            f.write(json.dumps(model_config))
 
-        # touching output.logs, loss.logs, error.logs if they don't exist
+        # touching output.logs, loss.logs, error.logs
         open(os.path.join(model_dir, 'output.logs'), 'w').close()
         open(os.path.join(model_dir, 'loss.logs'), 'w').close()
         open(os.path.join(model_dir, 'error.logs'), 'w').close()

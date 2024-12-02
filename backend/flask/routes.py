@@ -55,8 +55,8 @@ def define_model():
             return jsonify({"error": "Failed to get user ID"}), 500
 
         # Initialize model with user UUID and config
-        model = BuiltModel(json.dumps(model_config), user_uuid, db)
-        model_uuid = model.model_uuid       
+        model_uuid = db.init_model(user_uuid, model_config)
+
         # Add dataset with required parameters
         dataset_path = f"datasets/{dataset}"  # Adjust path as needed
         db.add_dataset(user_uuid, dataset, dataset_path)
@@ -81,7 +81,7 @@ def train():
         data = request.json
         user_uuid = helper.get_user_info()["sub"]
         model_config = data.get("model_config")
-        model_uuid = db.hash(user_uuid + json.dumps(model_config))
+        model_uuid = db.get_model_uuid(user_uuid, model_config)
         username = helper.get_user_info()["nickname"]
 
         logger.info(f"Received training request - username: {username}, model_uuid: {model_uuid}")
@@ -89,8 +89,6 @@ def train():
         if not all([username, model_uuid]):
             return jsonify({"error": "Missing required parameters"}), 400
 
-        # Get user UUID
-        user_uuid = helper.get_user_info()["sub"]
         if not user_uuid:
             return jsonify({"error": "User not found"}), 404
 
@@ -99,24 +97,18 @@ def train():
         if not model_dir:
             return jsonify({"error": "Model not found"}), 404
 
-        # Read model config from saved file
-        with open(os.path.join(model_dir, "config.json"), "r") as f:
-            model_config = json.load(f)
-
         # Get dataset information
         dataset = db.get_dataset(user_uuid, f"datasets/{model_config['dataset']}")
         if not dataset:
             return jsonify({"error": "Dataset not found"}), 404
 
         try:
-            # Convert model_config to proper JSON string
-            model_config_str = json.dumps(model_config) if isinstance(model_config, dict) else model_config
             logger.info(dataset)
-            logger.info(f"Model config: {model_config_str}")
-            logger.info(f"user_uuid: {user_uuid}, model_uuid: {model_uuid}")    
+            logger.info(f"Model config: {json.dumps(model_config)}")
+            logger.info(f"user_uuid: {user_uuid}, model_uuid: {model_uuid}")
             # Start the Celery task
             task = helper.train_model_task.delay(
-                model_config_str,
+                model_config,
                 user_uuid,
                 model_uuid,
             )
@@ -151,9 +143,9 @@ def train_logs():
     user_uuid = helper.get_user_info()["sub"]
     username = helper.get_user_info()["nickname"]
     model_config = data.get("model_config")
-    model_uuid = db.hash(user_uuid + json.dumps(model_config))
+    model_uuid = db.get_model_uuid(user_uuid, model_config)
     task_id = task_dict.get(username)
-    model_dir = db.get_model_dir(user_uuid , model_uuid)
+    model_dir = db.get_model_dir(user_uuid, model_uuid)
     if not model_dir:
         return jsonify({"error": "Model not found"}), 404
 

@@ -93,6 +93,7 @@ function ModelBuilder() {
 
   const sendJsonToBackend = async (json) => {
     try {
+      clearInterval(intervalIdRef.current); // Stop fetching logs
       const token = await getAccessTokenSilently();
 
       const response = await fetch("http://127.0.0.1:4000/api/define-model", {

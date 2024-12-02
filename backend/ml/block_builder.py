@@ -58,20 +58,20 @@ class BuiltModel(nn.Module):
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
     name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality, 'ETTh1': ETTh1}
 
-    def __init__(self, model_json: str, user_uuid: str, user_db: UserDatabase):
+    def __init__(self, model_config: dict, user_uuid: str, model_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()
-        self.model_json = json.loads(model_json)
+        self.model_config = model_config
         self.user_uuid = user_uuid
-        self.model_uuid = user_db.init_model(user_uuid,model_json) if user_db else 'n/a'
+        self.model_uuid = model_uuid
         self.user_db = user_db
 
-        self.batch_size = int(self.model_json.get('batch_size', 64))
-        self.dataset_name = self.model_json['dataset']
+        self.batch_size = int(self.model_config.get('batch_size', 64))
+        self.dataset_name = self.model_config['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
         self.is_2d = getattr(self.dataset, 'is_2d', False)
         self.in_channels = getattr(self.dataset, 'num_channels', 1)
         self.model_blocks = self.load_model_from_json()
-        self.lr = float(self.model_json['LR'])
+        self.lr = float(self.model_config['LR'])
 
     def forward(self, x):
         for block in self.model_blocks:
@@ -83,12 +83,12 @@ class BuiltModel(nn.Module):
     def load_model_from_json(self):
         model_blocks = nn.ModuleList()
 
-        input_size = self.model_json['input']
-        output_size = self.model_json['output']
+        input_size = self.model_config['input']
+        output_size = self.model_config['output']
         assert output_size == self.dataset.get_output_size(),\
             f'Output size, {output_size}, does not match dataset output size, {self.dataset.get_output_size()}'
 
-        blocks = self.model_json['blocks']
+        blocks = self.model_config['blocks']
         input_channels = self.in_channels
 
         for block in blocks:

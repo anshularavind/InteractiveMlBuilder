@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 db = database.UserDatabase()
+
 # Create handlers
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
@@ -111,7 +112,7 @@ def token_required(f):
 #             soft_time_limit=3300,
 #             time_limit=3600)
 @celery.task(bind=True)
-def train_model_task(self, model_config_str, user_uuid, model_uuid):
+def train_model_task(self, model_config, user_uuid, model_uuid):
     try:
         # Initialize progress tracking
         total_steps = 100
@@ -124,7 +125,7 @@ def train_model_task(self, model_config_str, user_uuid, model_uuid):
                          })
 
         # Build the model
-        model = BuiltModel(model_config_str, user_uuid, db)
+        model = BuiltModel(model_config, user_uuid, model_uuid, db)
         logger.info(f"Model built successfully for user {user_uuid}")
         
         # Train the model

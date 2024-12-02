@@ -12,6 +12,25 @@ import './App.css';
 function App() {
 
   const { user, isAuthenticated, isLoading, error, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();  
+  const getToken = async () => {
+    return await getAccessTokenSilently({
+      audience: 'https://InteractiveMlApi',
+      scope: 'read:current_user',
+      authorizationParams: {
+        response_type: 'token id_token',
+        token_type: 'JWT'
+      }
+    });
+  };
+
+  getToken()
+  .then(accessToken => {
+    console.log('Access Token:', accessToken);
+  })
+  .catch(err => {
+    console.error('Error getting access token:', err);
+  });
+
   if (error) {
     console.log('error:', error);
     return <div className="container">Oops... {error.message}</div>;

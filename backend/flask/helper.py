@@ -47,16 +47,37 @@ def useLogger(value):
     logger.info(value)
 
 
-def validate_token(token):
-    auth0_domain = env.get("AUTH0_DOMAIN")
-    """Validates the token by calling the Auth0 /userinfo endpoint."""
-    url = f"https://{auth0_domain}/userinfo"
-    headers = {"Authorization": f"Bearer {token}"}
+import jwt
+from datetime import datetime
 
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()  # User info if the token is valid
-    return None
+def validate_token(token):
+    try:
+        # Decode the JWT token
+        decoded_token = jwt.decode(
+            token,
+            options={"verify_signature": False},  # Skip signature verification
+            algorithms=['RS256']
+        )
+
+        logger.info(decoded_token.get('sub'))
+        
+        # Format the user info in Auth0 structure
+        user_info = {
+            'sub': decoded_token.get('sub'),
+            'nickname': decoded_token.get('sub'),
+            'given_name': 'Unknown',
+            'family_name': 'Unknown',
+            'name': 'Unknown',
+            'picture': '',
+            'updated_at': datetime.utcnow().isoformat() + 'Z',
+            'email': '',
+            'email_verified': False
+        }
+        
+        return user_info
+        
+    except jwt.InvalidTokenError:
+        return None
 
 def token_required(f):
     @wraps(f)

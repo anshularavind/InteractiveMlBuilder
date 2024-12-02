@@ -202,3 +202,46 @@
 .trainSection {
   margin-top: 20px;
 } 
+
+.stopTraining {
+  position: absolute;
+  top: 60px; 
+  right: 20px; 
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #e24a4a;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.sendBackend {
+  position: absolute;
+  top: 10px; /* Adjust this value to position below the navigation bar */
+  right: 20px; /* Align to the right edge */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+
+.stopTraining:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}

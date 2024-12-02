@@ -166,9 +166,12 @@ function ModelBuilder() {
       const data = await response.json();
       setBackendResults(data);
 
-      if (data.output && data.output.startsWith("Final")) {
-        clearInterval(intervalIdRef.current);
-        setIsTraining(false); // Stop training when logs indicate completion
+      if (data.output) {
+        const output_lines = data.output.split("\n");
+        if (output_lines.length > 0 && output_lines[output_lines.length - 1].startsWith("Final")) {
+          clearInterval(intervalIdRef.current);
+          setIsTraining(false); // Stop training when logs indicate completion
+        }
       }
     } catch (error) {
       console.error("Error fetching logs:", error);
@@ -210,8 +213,8 @@ function ModelBuilder() {
     const json = generateJson(layers);
     await sendJsonToBackend(json);
     await startTraining(json);
-    startFetchingLogs(json);
     setIsTraining(true); // Set training state to true
+    startFetchingLogs(json);
   };
 
   const onLayerDragStop = (id, data) => {

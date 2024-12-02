@@ -104,7 +104,7 @@ function ConfigColumn({
           <b>Configuration</b>
         </h1>
         <h2>
-          <u>Select Dataset</u>
+  
         </h2>
         <DatasetSelection
           selectedItem={selectedDataset}

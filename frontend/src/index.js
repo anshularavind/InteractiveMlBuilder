@@ -14,13 +14,13 @@ root.render(
     domain={domain}
     clientId={clientId}
     authorizationParams={{
-      redirect_uri: window.location.origin
+        redirect_uri: window.location.origin,
+        audience: "https://InteractiveMlApi",
+        scope: "openid profile email read:current_user"
     }}
-    useRefreshTokens={true}
-    cacheLocation="localstorage"
-  >
+>
     <App />
-  </Auth0Provider>
+</Auth0Provider>
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -59,7 +59,8 @@ def define_model():
 
         # Add dataset with required parameters
         dataset_path = f"datasets/{dataset}"  # Adjust path as needed
-        db.add_dataset(user_uuid, dataset, dataset_path)
+        if not db.get_dataset(user_uuid, dataset_path):
+            db.add_dataset(user_uuid, dataset, dataset_path)
         
         return jsonify({
             "status": "Model defined",

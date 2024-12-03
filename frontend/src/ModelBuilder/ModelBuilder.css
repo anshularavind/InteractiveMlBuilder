@@ -2,10 +2,12 @@
 .inputBlock {
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background: linear-gradient(135deg, #f9fbff, #eef2f9);
+  padding-left: 20px;
+  padding-right: 20px;
+  background: linear-gradient(135deg, #f0f8ff, #eef2f9);
   border-right: 2px solid #ddd;
-  margin-top: -77px;
+  margin-top: 0;
+  height: 100%;
   /* height: 100vh;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow-y: auto;

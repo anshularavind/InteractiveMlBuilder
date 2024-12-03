@@ -141,7 +141,6 @@ function ConfigColumn({
         };
       }
 
-      
       createLayers([newLayer]);
 
       setBlockInputs({
@@ -173,50 +172,52 @@ function ConfigColumn({
         <h4>Input Size: {datasetSizes.inputSize}</h4>
         <h4>Output Size: {datasetSizes.outputSize}</h4>
       </div>
-      <div className="inputBlockContent">
-        <h2>
-          Add Blocks
-        </h2>
-        <LayerSelection
-          selectedItem={selectedLayer}
-          dropdownOpen={layerDropdownOpen}
-          toggleDropdown={() => setLayerDropdownOpen(!layerDropdownOpen)}
-          layerItems={layerItems}
-          handleItemClick={handleLayerClick}
-        />
-        {selectedLayer === "FcNN" && (
-          <ModelConfig
-            blockInputs={blockInputs}
-            handleInputChange={handleBlockInputChange}
-            createLayers={addBlock}
+      {selectedDataset && (
+        <div className="inputBlockContent">
+          <h2>
+            Add Blocks
+          </h2>
+          <LayerSelection
+            selectedItem={selectedLayer}
+            dropdownOpen={layerDropdownOpen}
+            toggleDropdown={() => setLayerDropdownOpen(!layerDropdownOpen)}
+            layerItems={layerItems}
+            handleItemClick={handleLayerClick}
           />
-        )}
-        {selectedLayer === "Conv" && (
-          <ConvModelConfig
-            blockInputs={blockInputs}
-            handleInputChange={handleBlockInputChange}
-            createLayers={addBlock}
-          ></ConvModelConfig>
-        )}
-        {/* Remove Last Block Button */}
-        <br/>
-        <div className="remove-block">
-          <button
-            className="deleteButton"
-            onClick={() => {
-              console.log("Remove Last Block button clicked");
-              removeLastBlock();
-            }}
-          >
-            Remove Last Block
-          </button>
+          {selectedLayer === "FcNN" && (
+            <ModelConfig
+              blockInputs={blockInputs}
+              handleInputChange={handleBlockInputChange}
+              createLayers={addBlock}
+            />
+          )}
+          {selectedLayer === "Conv" && (
+            <ConvModelConfig
+              blockInputs={blockInputs}
+              handleInputChange={handleBlockInputChange}
+              createLayers={addBlock}
+            ></ConvModelConfig>
+          )}
+          {/* Remove Last Block Button */}
+          <br/>
+          <div className="remove-block">
+            <button
+              className="deleteButton"
+              onClick={() => {
+                console.log("Remove Last Block button clicked");
+                removeLastBlock();
+              }}
+            >
+              Remove Last Block
+            </button>
+          </div>
+          <br/><br/>
+          <Train
+            trainInputs={trainInputs}
+            handleInputChange={handleTrainingInputChange}
+          />
         </div>
-        <br/><br/>
-        <Train
-          trainInputs={trainInputs}
-          handleInputChange={handleTrainingInputChange}
-        />
-      </div>
+      )}
     </div>
   );
 }

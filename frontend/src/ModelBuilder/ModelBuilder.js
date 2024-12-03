@@ -72,6 +72,7 @@ function ModelBuilder() {
   useEffect(() => {
     const newConfig = generateJson(layers);
     setModelConfig(newConfig);
+    sessionStorage.setItem("model_config", JSON.stringify(newConfig));
   }, [layers]);
 
   const generateJson = (updatedLayers) => {
@@ -85,7 +86,7 @@ function ModelBuilder() {
       datasetOutputSize = 10;
     }
 
-    const modelBuilderJson = {
+    return {
       model_config: {
         input: datasetInputSize,
         output: datasetOutputSize,
@@ -118,8 +119,6 @@ function ModelBuilder() {
       },
       dataset: selectedDataset,
     };
-
-    return modelBuilderJson;
   };
 
   const sendJsonToBackend = async (json) => {

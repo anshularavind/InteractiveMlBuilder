@@ -25,8 +25,8 @@ function ConfigColumn({
     outputSize: 0,
     hiddenSize: 0,
     numHiddenLayers: 0,
-    kernelSize: 0,
-    numKernels: 0,
+    kernelSize: 3,
+    numKernels: 1,
   });
 
   const [selectedLayer, setSelectedLayer] = useState(null);
@@ -233,14 +233,15 @@ function ConfigColumn({
       outputSize: 0,
       hiddenSize: 0,
       numHiddenLayers: 0,
-      kernelSize: 0,
-      numKernels: 0,
+      kernelSize: 3,
+      numKernels: 1,
     });
     setSelectedLayer(null);
   };
 
   useEffect(() => {
     let cachedModelConfig = loadModelConfig();
+    sessionStorage.setItem('cachedModelConfig', "{}");  // Clear cache to avoid duplicate storing
     if (cachedModelConfig !== null && layers.length === 0 && cachedModelConfig.blocks.length > 0) {
       handleJsonConfig(cachedModelConfig);
     }

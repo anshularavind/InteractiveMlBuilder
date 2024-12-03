@@ -121,8 +121,7 @@ function ConfigColumn({
       } else if (selectedLayer === 'Conv') {
         const kernelSize = blockInputs.kernelSize;
         const kernelSizeScaled = (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-        const numKernels = blockInputs.numKernels
-        console.log(numKernels);
+        const numKernels = blockInputs.numKernels;
         newLayer = {
           id: `block-${newBlockId}`,
           name: `${newBlockId + 1}`,

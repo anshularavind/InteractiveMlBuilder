@@ -123,7 +123,6 @@ function Visualizer({ layers }) {
 
     if (type === 'Conv') {
       const convElements = [];
-      console.log(params.num_kernels);
       for (let i = 0; i < params.num_kernels; i++) {
         convElements.push(
           <rect

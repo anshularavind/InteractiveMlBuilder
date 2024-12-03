@@ -3,9 +3,10 @@ import "../../ModelBuilder.css";
 function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>
-      <h4>Configure Block Parameters</h4>
+      <h4>Configure Block</h4>
       <div>
         <label>Output Size: </label>
+        <br/>
         <input
           type="number"
           value={blockInputs.outputSize}
@@ -15,6 +16,7 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
       </div>
       <div>
         <label>Hidden Size: </label>
+        <br/>
         <input
           type="number"
           value={blockInputs.hiddenSize}
@@ -24,6 +26,7 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
       </div>
       <div>
         <label>Num Hidden Layers: </label>
+        <br/>
         <input
           type="number"
           value={blockInputs.numHiddenLayers}

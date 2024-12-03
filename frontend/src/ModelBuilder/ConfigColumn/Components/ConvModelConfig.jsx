@@ -1,4 +1,6 @@
-function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
+function ConvModelConfig({ blockInputs, handleInputChange, createLayers, selectedDataset }) {
+    const is2D = selectedDataset === 'MNIST' || selectedDataset === 'CIFAR10';
+
     return (
         <div>
             <div>
@@ -22,7 +24,7 @@ function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
                 />
             </div>
             <div>
-                <label>Pooling Output Size: </label>
+                <label>{is2D ? 'Pooling Output Side-Length' : 'Pooling Output Size'}: </label>
                 <br/>
                 <input
                     type='number'

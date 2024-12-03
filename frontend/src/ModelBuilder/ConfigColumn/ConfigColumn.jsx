@@ -122,10 +122,19 @@ function ConfigColumn({
   }, [selectedDataset]);
 
   const handleBlockInputChange = (field, value) => {
-    setBlockInputs((prevInputs) => ({
-      ...prevInputs,
-      [field]: Math.max(0, parseInt(value) || 0),
-    }));
+    setBlockInputs((prevInputs) => {
+      let newValue;
+      if (field === "numHiddenLayers") {
+        newValue = Math.max(0, parseInt(value) || 0);
+      } else {
+        newValue = Math.max(1, parseInt(value) || 0);
+      }
+
+      return {
+        ...prevInputs,
+        [field]: newValue,
+      }
+    });
   };
 
   const handleTrainingInputChange = (field, value) => {

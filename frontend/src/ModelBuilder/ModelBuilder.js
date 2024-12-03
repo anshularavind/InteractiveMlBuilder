@@ -108,7 +108,7 @@ function ModelBuilder() {
             return {
               block: 'Conv',
               params: {
-                output_channels: layer.params.num_kernels,
+                num_kernels: layer.params.num_kernels,
                 kernel_size: layer.params.kernel_size,
                 stride: layer.params.stride,
                 padding: layer.params.padding,

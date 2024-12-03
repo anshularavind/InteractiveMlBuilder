@@ -264,7 +264,7 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
-    setModelConfig(generateJson(layers));
+    sessionStorage.setItem("model_config", "{}");
   };
 
   const downloadModels = async () => {

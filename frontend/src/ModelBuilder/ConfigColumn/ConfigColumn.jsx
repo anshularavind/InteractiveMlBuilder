@@ -232,7 +232,7 @@ function ConfigColumn({
 
   useEffect(() => {
     let cachedModelConfig = loadModelConfig();
-    if (cachedModelConfig !== null && layers.length === 0) {
+    if (cachedModelConfig !== null && layers.length === 0 && cachedModelConfig.blocks.length > 0) {
       handleJsonConfig(cachedModelConfig);
     }
   }, [layers, loadModelConfig]);

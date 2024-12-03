@@ -66,14 +66,13 @@ function ModelBuilder() {
   }
 
   const createLayers = (newLayers) => {
-    setLayers((prevLayers) => {
-      const updatedLayers = [...prevLayers, ...newLayers];
-      const newConfig = generateJson(updatedLayers);
-      setModelConfig(newConfig);
-      sessionStorage.setItem("model_config", JSON.stringify(newConfig));
-      return updatedLayers;
-    });
+    setLayers((prevLayers) => [...prevLayers, ...newLayers]);
   };
+
+  useEffect(() => {
+    const newConfig = generateJson(layers);
+    setModelConfig(newConfig);
+  }, [layers]);
 
   const generateJson = (updatedLayers) => {
     let datasetInputSize = 0;

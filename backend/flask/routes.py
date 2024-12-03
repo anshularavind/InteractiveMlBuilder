@@ -137,7 +137,7 @@ def train():
         }), 500
 
 #route for getting the logs of the task using the getmodeldir and then reading the logs
-@main_routes.route("/api/train_logs", methods=["POST"])
+@main_routes.route("/api/train-logs", methods=["POST"])
 @helper.token_required
 def train_logs():
     data = request.json

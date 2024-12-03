@@ -73,6 +73,26 @@
   transform: scale(1.05);
 }
 
+.clearButton {
+  position: absolute;
+  bottom: 10vh;
+  right: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, #d9534f, #c9302c);
+  border: none;
+  border-radius: 8px;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.clearButton:hover {
+  background: linear-gradient(135deg, #c9302c, #a72822);
+  transform: scale(1.05);
+}
+
 /* Add Blocks Section Styling */
 .addBlocksSection {
   padding: 10px;

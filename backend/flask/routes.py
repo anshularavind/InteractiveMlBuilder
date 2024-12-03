@@ -59,9 +59,10 @@ def define_model():
         model_uuid = db.init_model(user_uuid, model_config)
 
         # Add dataset with required parameters
-        dataset_path = f"datasets/{dataset}"  # Adjust path as needed
-        if not db.get_dataset(user_uuid, dataset_path):
-            db.add_dataset(user_uuid, dataset, dataset_path)
+        # dataset_path = f"datasets/{dataset}"  # Adjust path as needed
+        # if not db.get_dataset(user_uuid, dataset_path):
+        #     db.add_dataset(user_uuid, dataset, dataset_path)
+        db.add_dataset(user_uuid, model_uuid, dataset)
         
         return jsonify({
             "status": "Model defined",
@@ -100,7 +101,7 @@ def train():
             return jsonify({"error": "Model not found"}), 404
 
         # Get dataset information
-        dataset = db.get_dataset(user_uuid, f"datasets/{model_config['dataset']}")
+        dataset = db.get_dataset(user_uuid, model_uuid, model_config["dataset"])
         if not dataset:
             return jsonify({"error": "Dataset not found"}), 404
 
@@ -269,11 +270,26 @@ def download_model():
 @main_routes.route("/api/users", methods=["GET"])
 @helper.token_required
 def get_users():
-    user_dict = []
+    user_list = []
     users = db.get_users()
     for user in users:
-        user_dict.append({})
-        user_dict[-1]['user_uuid'] = user[0]
-        user_dict[-1]['username'] = user[1]
-        user_dict[-1]['num_models'] = len(db.get_models(user[0]))
-    return jsonify({"users": user_dict}), 200
+        user_list.append({})
+        user_list[-1]['user_uuid'] = user[0]
+        user_list[-1]['username'] = user[1]
+        user_list[-1]['num_models'] = len(db.get_models(user[0]))
+    return jsonify({"users": user_list}), 200
+
+# get all unique datasets
+@main_routes.route("/api/datasets", methods=["GET"])
+@helper.token_required
+def get_datasets():
+    dataset_model_dict = []
+    datasets = db.get_unique_datasets()
+    for dataset in datasets:
+        dataset_model_dict.append({})
+        dataset_model_dict[-1]['name'] = dataset[0]
+        models = db.get_models_by_dataset(dataset[0])
+        dataset_model_dict[-1]['models'] = [{"user_uuid": model[0], "model_uuid": model[1]} for model in models]
+
+    print(dataset_model_dict)
+    return jsonify({"datasets": dataset_model_dict}), 200

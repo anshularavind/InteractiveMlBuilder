@@ -205,6 +205,8 @@ function ModelBuilder() {
     intervalIdRef.current = setInterval(() => fetchLogs(json), 1000);
   };
 
+
+
   const stopTraining = async () => {
     try {
       const token = await getAccessTokenSilently();
@@ -337,5 +339,7 @@ function ModelBuilder() {
     </div>
   );
 }
+
+
 
 export default ModelBuilder;

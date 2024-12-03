@@ -192,7 +192,7 @@ class UserDatabase():
         # DO NOT RUN THIS IN PRODUCTION
         # deletes all tables
         self.clear()
-        self.cur.execute("DROP TABLE models")
         self.cur.execute("DROP TABLE datasets")
+        self.cur.execute("DROP TABLE models")
         self.cur.execute("DROP TABLE users")
         self.conn.commit()

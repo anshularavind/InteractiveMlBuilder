@@ -179,6 +179,10 @@ class UserDatabase():
         self.cur.execute("SELECT user_uuid, model_uuid FROM datasets WHERE dataset_name=%s", (dataset_name,))
         return self.cur.fetchall()
 
+    def get_datasets_by_user(self, user_uuid: str):
+        self.cur.execute("SELECT DISTINCT dataset_name FROM datasets WHERE user_uuid=%s", (user_uuid,))
+        return self.cur.fetchall()
+
     def clear(self):
         # DO NOT RUN THIS IN PRODUCTION
         shutil.rmtree(self.user_data_root, ignore_errors=True)

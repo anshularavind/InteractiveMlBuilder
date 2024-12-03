@@ -197,6 +197,13 @@ function ModelBuilder() {
       const data = await response.json();
       setBackendResults(data);
 
+      // If there is an error or the logs indicate training is complete, stop fetching logs
+      if (data.error !== null && data.error !== "") {
+        clearInterval(intervalIdRef.current);
+        setIsTraining(false);
+      }
+
+      // If final log message is received, stop fetching logs
       if (data.output) {
         let output_data = data.output;
         output_data = output_data.replace(/\n+$/, "");  // Remove trailing newlines

@@ -9,6 +9,7 @@ import "../ModelBuilder.css";
 function ConfigColumn({
   selectedDataset,
   setSelectedDataset,
+  datasetSizesMap,
   datasetDropdownOpen,
   toggleDatasetDropdown,
   datasetItems,
@@ -33,6 +34,10 @@ function ConfigColumn({
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [blockCount, setBlockCount] = useState(0);
   const [datasetSizes, setDatasetSizes] = useState({ inputSize: 0, outputSize: 0 });
+
+  useEffect(() => {
+    setDatasetSizes(datasetSizesMap[selectedDataset] ?? { inputSize: 0, outputSize: 0 });
+  }, [selectedDataset]);
 
   // Handle JSON configuration (if any)
   // TODO: change as per new visParams
@@ -114,16 +119,6 @@ function ConfigColumn({
     createLayers(processedLayers);
     setBlockCount(processedLayers.length);
   };
-
-  useEffect(() => {
-    if (selectedDataset === "MNIST") {
-      setDatasetSizes({ inputSize: 784, outputSize: 10 });
-    } else if (selectedDataset === "CIFAR10") {
-      setDatasetSizes({ inputSize: 3072, outputSize: 10 });
-    } else {
-      setDatasetSizes({ inputSize: 0, outputSize: 0 });
-    }
-  }, [selectedDataset]);
 
   const handleBlockInputChange = (field, value) => {
     setBlockInputs((prevInputs) => {

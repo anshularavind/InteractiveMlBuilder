@@ -9,6 +9,7 @@ from database import interface as database
 import json
 import helper
 import logging
+from flask import send_file
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
@@ -209,9 +210,6 @@ def get_models():
     models = db.get_models(user_uuid)
     return jsonify({"models": models}), 200
 
-#download model by sending the model.pt file
-from flask import send_file
-
 @main_routes.route("/api/download-model", methods=["POST"])
 @helper.token_required
 def download_model():
@@ -266,3 +264,16 @@ def download_model():
     except Exception as e:
         logger.error(f"Error downloading model: {str(e)}")
         return jsonify({"error": "Failed to download model"}), 500
+
+# get all users
+@main_routes.route("/api/users", methods=["GET"])
+@helper.token_required
+def get_users():
+    user_dict = []
+    users = db.get_users()
+    for user in users:
+        user_dict.append({})
+        user_dict[-1]['user_uuid'] = user[0]
+        user_dict[-1]['username'] = user[1]
+        user_dict[-1]['num_models'] = len(db.get_models(user[0]))
+    return jsonify({"users": user_dict}), 200

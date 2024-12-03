@@ -266,6 +266,11 @@ function ModelBuilder() {
     sessionStorage.setItem("model_config", "{}");
   };
 
+  const removeBlocks = () => {
+    setLayers([]);
+    sessionStorage.setItem("model_config", "{}");
+  }
+
   const downloadModels = async () => {
     try {
         const token = await getAccessTokenSilently();
@@ -345,6 +350,9 @@ function ModelBuilder() {
             <pre>{JSON.stringify(backendResults, null, 2)}</pre>
           </div>
         )}
+        <div className="buttons">
+          <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
+        </div>
       </div>
     </div>
   );

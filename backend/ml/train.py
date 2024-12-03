@@ -1,6 +1,19 @@
 import torch
-import torch.nn as nn
 import time
+import os
+
+
+def check_stop_condition(model):
+    # Check if the model has been trained before
+    if model.user_db:
+        model_dir = model.user_db.get_model_dir(model.user_uuid, model.model_uuid)
+        stop_path = os.path.join(model_dir, 'STOP')
+        if os.path.exists(stop_path):
+            os.remove(stop_path)
+            print('Received signal to stop training...')
+            model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Received signal to stop training...', 'error')
+            return True
+    return False
 
 
 def train_model(model):
@@ -23,6 +36,8 @@ def train_model(model):
     for epoch in range(epochs):
         epoch_loss = 0
         for i, (x, y) in enumerate(dataset.train_loader):
+            if check_stop_condition(model):
+                return -1
             # Forward pass
             outputs = model(x)
             loss = criterion(outputs, y)
@@ -48,6 +63,8 @@ def train_model(model):
             correct = 0
             total = 0
             for x, y in dataset.test_loader:
+                if check_stop_condition(model):
+                    return -1
                 outputs = model(x)
                 new_correct, new_total = dataset.get_eval_numbers(outputs, y)
                 correct += new_correct

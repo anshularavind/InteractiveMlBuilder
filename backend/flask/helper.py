@@ -137,10 +137,14 @@ def train_model_task(self, model_config, user_uuid, model_uuid):
         # Save the model
         db.save_model_pt(user_uuid, model_uuid, model)
 
+        status = 'Training completed successfully!'
+        if training_result == -1:
+            status = 'Training stopped by user request.'
+
         return {
             'current': 100,
             'total': total_steps,
-            'status': 'Training completed successfully!',
+            'status': status,
             'result': training_result,
             'model_uuid': model_uuid
         }

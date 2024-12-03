@@ -230,10 +230,12 @@ function ConfigColumn({
     setSelectedLayer(null);
   };
 
-  let cachedModelConfig = loadModelConfig();
-  if (cachedModelConfig !== null && layers.length === 0) {
-    handleJsonConfig(cachedModelConfig);
-  }
+  useEffect(() => {
+    let cachedModelConfig = loadModelConfig();
+    if (cachedModelConfig !== null && layers.length === 0) {
+      handleJsonConfig(cachedModelConfig);
+    }
+  }, [layers, loadModelConfig]);
 
   return (
     <div className="inputBlock">

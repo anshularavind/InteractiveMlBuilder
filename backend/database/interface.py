@@ -106,6 +106,7 @@ class UserDatabase():
         model_uuid = self.get_model_uuid(user_uuid, model_config)
         model_dir = os.path.join(self.user_data_root, user_uuid, str(model_uuid))
 
+        self.cur.execute("DELETE FROM datasets WHERE user_uuid=%s AND model_uuid=%s", (user_uuid, model_uuid))
         self.cur.execute("DELETE FROM models WHERE user_uuid=%s AND uuid=%s", (user_uuid, model_uuid))
         self.conn.commit()
 

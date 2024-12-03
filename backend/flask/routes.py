@@ -126,17 +126,19 @@ def train():
         except Exception as train_error:
             logger.error(f"Capture error: {str(train_error)}")
             logger.error(f"Training error: {str(train_error)}")
+            db.save_model_logs(user_uuid, model_uuid, "error", str(train_error))
             return jsonify({
                 "error": "Training failed",
                 "details": str(train_error)
-            }), 500
+            }), 202
 
     except Exception as e:
         logger.error(f"Error in train_model: {str(e)}")
+        db.save_model_logs(user_uuid, model_uuid, "error", str(e))
         return jsonify({
             "error": "Failed to process training request",
             "details": str(e)
-        }), 500
+        }), 202
 
 #route for getting the logs of the task using the getmodeldir and then reading the logs
 @main_routes.route("/api/train-logs", methods=["POST"])

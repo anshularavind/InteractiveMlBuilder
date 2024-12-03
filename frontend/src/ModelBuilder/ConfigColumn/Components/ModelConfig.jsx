@@ -1,5 +1,5 @@
 import "../../ModelBuilder.css";
-
+ // FcNN Model Config
 function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>

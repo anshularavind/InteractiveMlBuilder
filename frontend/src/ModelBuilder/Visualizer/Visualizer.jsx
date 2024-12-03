@@ -107,9 +107,8 @@ function Visualizer({ layers }) {
     }
   }, [layers, containerDimensions]);
 
-  // Use your existing renderBowtie function without changes
-  const renderBowtie = (bowtie) => {
-    const { leftTrapezoid, rightTrapezoid, middleRectangle, name } = bowtie;
+  const renderBlock = (block) => {
+    const { leftTrapezoid, rightTrapezoid, middleRectangle, name, type, params } = block;
 
     const width =
       leftTrapezoid.height + middleRectangle.width + rightTrapezoid.height;
@@ -118,6 +117,50 @@ function Visualizer({ layers }) {
       middleRectangle.height,
       rightTrapezoid.height
     );
+
+    const convWidth = middleRectangle.width;
+    const convHeight = middleRectangle.height;
+
+    if (type === 'Conv') {
+      const convElements = [];
+      console.log(params.num_kernels);
+      for (let i = 0; i < params.num_kernels; i++) {
+        convElements.push(
+          <rect
+            key={i}
+            x={-middleRectangle.width / 2 + (i * 5)}
+            y={-middleRectangle.height / 2 + (i * 5)}
+            width={convWidth}
+            height={convHeight}
+            fill="purple"
+            stroke="black"
+            strokeWidth={2}
+          />
+        );
+      }
+
+      return (
+        <svg
+          width={convWidth * 2}
+          height={convHeight * 2}
+          viewBox={`${-convWidth} ${-convHeight / 2} ${convWidth * 2} ${convHeight * 2}`}
+          style={{ overflow: "visible" }}
+        >
+          {convElements}
+          <text
+            x="0"
+            y="0"
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            fill="white"
+            fontSize="20px"
+            fontWeight={"bold"}
+          >
+            {name}
+          </text>
+        </svg>
+      );
+    }
 
     return (
       <svg
@@ -133,6 +176,8 @@ function Visualizer({ layers }) {
             leftTrapezoid.base / 2
           } 0,${middleRectangle.height / 2}`}
           fill="blue"
+          stroke="black"
+          strokeWidth={2}
         />
         <rect
           x="0"
@@ -140,6 +185,8 @@ function Visualizer({ layers }) {
           width={middleRectangle.width}
           height={middleRectangle.height}
           fill="green"
+          stroke="black"
+          strokeWidth={2}
         />
         <text
           x={middleRectangle.width / 2}
@@ -147,7 +194,8 @@ function Visualizer({ layers }) {
           textAnchor="middle"
           alignmentBaseline="middle"
           fill="white"
-          fontSize="12px"
+          fontSize="20px"
+          fontWeight={"bold"}
         >
           {name}
         </text>
@@ -160,6 +208,8 @@ function Visualizer({ layers }) {
             middleRectangle.width
           },${middleRectangle.height / 2}`}
           fill="red"
+          stroke="black"
+          strokeWidth={2}
         />
       </svg>
     );
@@ -180,7 +230,7 @@ function Visualizer({ layers }) {
             top: `${layer.position.y}px`,
           }}
         >
-          {renderBowtie(layer)}
+          {renderBlock(layer)}
         </div>
       ))}
     </div>

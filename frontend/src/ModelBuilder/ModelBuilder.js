@@ -82,14 +82,28 @@ function ModelBuilder() {
         LR: trainInputs.lr,
         batch_size: trainInputs.batch_size,
         epochs: trainInputs.epochs,
-        blocks: updatedLayers.map((layer) => ({
-          block: layer.type || "FcNN",
-          params: {
-            output_size: layer.params.output_size,
-            hidden_size: layer.params.hidden_size,
-            num_hidden_layers: layer.params.num_hidden_layers,
-          },
-        })),
+        blocks: updatedLayers.map((layer) => {
+          if (layer.type === 'FcNN' || !layer.type) {
+            return {
+              block: 'FcNN',
+              params: {
+                output_size: layer.params.output_size,
+                hidden_size: layer.params.hidden_size,
+                num_hidden_layers: layer.params.num_hidden_layers,
+              },
+            };
+          } else if (layer.type === 'Conv') {
+            return {
+              block: 'Conv',
+              params: {
+                output_channels: layer.params.num_kernels,
+                kernel_size: layer.params.kernel_size,
+                stride: layer.params.stride,
+                padding: layer.params.padding,
+              },
+            };
+          }
+        }),
       },
       dataset: selectedDataset,
     };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import DatasetSelection from "./Components/DatasetSelection";
 import LayerSelection from "./Components/LayerSelection";
-import ModelConfig from "./Components/ModelConfig";
+import FcNNModelConfig from "./Components/FcNNModelConfig";
 import ConvModelConfig from "./Components/ConvModelConfig";
 import Train from "./Components/Train";
 import "../ModelBuilder.css";
@@ -34,35 +34,35 @@ function ConfigColumn({
   const [blockCount, setBlockCount] = useState(0);
   const [datasetSizes, setDatasetSizes] = useState({ inputSize: 0, outputSize: 0 });
 
-  // Add the handleJsonConfig method here
+  // Handle JSON configuration (if any)
+  // TODO: change as per new visParams
   const handleJsonConfig = (jsonConfig) => {
     // Set dataset and training parameters
     setSelectedDataset(jsonConfig.dataset);
-    // selectedDataset = jsonConfig.dataset;
-    
     setTrainInputs({
       lr: jsonConfig.lr,
-      batch_size: jsonConfig.batch_size, 
-      epochs: jsonConfig.epochs
+      batch_size: jsonConfig.batch_size,
+      epochs: jsonConfig.epochs,
     });
 
     // Set initial dataset sizes
     setDatasetSizes({
       inputSize: jsonConfig.input,
-      outputSize: jsonConfig.output
+      outputSize: jsonConfig.output,
     });
 
     // Process each block
     const processedLayers = jsonConfig.blocks.map((block, index) => {
       const SCALING_CONSTANT = 25;
       const log_base = Math.log(1.5);
-      
-      const inputSize = index === 0 ? jsonConfig.input : 
-        jsonConfig.blocks[index-1].params.output_size;
-      
-      const inputSizeScaled = (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-      const outputSizeScaled = (Math.log((block.params.output_size + 1) || 1) * 
-        SCALING_CONSTANT) / log_base;
+
+      const inputSize =
+        index === 0 ? jsonConfig.input : jsonConfig.blocks[index - 1].params.output_size;
+
+      const inputSizeScaled =
+        (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      const outputSizeScaled =
+        (Math.log((block.params.output_size + 1) || 1) * SCALING_CONSTANT) / log_base;
 
       let layerConfig = {
         id: `block-${index}`,
@@ -70,36 +70,40 @@ function ConfigColumn({
         type: block.block,
         params: {
           input_size: inputSize,
-          ...block.params
-        }
+          ...block.params,
+        },
       };
 
-      if (block.block === 'FcNN') {
-        const hiddenSizeScaled = (Math.log((block.params.hidden_size + 1) || 1) * 
-          SCALING_CONSTANT) / log_base;
+      if (block.block === "FcNN") {
+        const hiddenSizeScaled =
+          (Math.log((block.params.hidden_size + 1) || 1) * SCALING_CONSTANT) / log_base;
         const numHiddenLayersScaled = block.params.num_hidden_layers * SCALING_CONSTANT;
-        
+
         layerConfig = {
           ...layerConfig,
-          leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT * 2 },
-          rightTrapezoid: { base: outputSizeScaled, height: SCALING_CONSTANT * 2 },
-          middleRectangle: { 
-            width: numHiddenLayersScaled, 
-            height: hiddenSizeScaled 
-          }
+          visParams: {
+            leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT * 2 },
+            rightTrapezoid: { base: outputSizeScaled, height: SCALING_CONSTANT * 2 },
+            middleRectangle: {
+              width: numHiddenLayersScaled,
+              height: hiddenSizeScaled,
+            },
+          },
         };
-      } else if (block.block === 'Conv') {
-        const kernelSizeScaled = (Math.log((block.params.kernel_size + 1) || 1) * 
-          SCALING_CONSTANT) / log_base;
-          
+      } else if (block.block === "Conv") {
+        const kernelSizeScaled =
+          (Math.log((block.params.kernel_size + 1) || 1) * SCALING_CONSTANT) / log_base;
+
         layerConfig = {
           ...layerConfig,
-          leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT },
-          rightTrapezoid: { base: outputSizeScaled, height: SCALING_CONSTANT },
-          middleRectangle: { 
-            width: kernelSizeScaled, 
-            height: kernelSizeScaled 
-          }
+          visParams: {
+            leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT },
+            rightTrapezoid: { base: outputSizeScaled, height: SCALING_CONSTANT },
+            middleRectangle: {
+              width: kernelSizeScaled,
+              height: kernelSizeScaled,
+            },
+          },
         };
       }
 
@@ -133,7 +137,7 @@ function ConfigColumn({
       return {
         ...prevInputs,
         [field]: newValue,
-      }
+      };
     });
   };
 
@@ -181,49 +185,79 @@ function ConfigColumn({
 
     const SCALING_CONSTANT = 25;
     const log_base = Math.log(1.5);
-    const inputSizeScaled = (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-    const outputSizeScaled = (Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+    const log_base_pool = Math.log(3);
+    const inputSizeScaled =
+      (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+    const outputSizeScaled =
+      (Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
 
     let newLayer;
 
-    if (selectedLayer === 'FcNN') {
-      const hiddenSizeScaled = (Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+    if (selectedLayer === "FcNN") {
+      const hiddenSizeScaled =
+        (Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
       const numHiddenLayersScaled = blockInputs.numHiddenLayers * SCALING_CONSTANT;
       const trapHeight = SCALING_CONSTANT * 2;
 
       newLayer = {
         id: `block-${newBlockId}`,
         name: `${newBlockId + 1}`,
-        type: 'FcNN',
+        type: "FcNN",
         params: {
           input_size: inputSize,
           output_size: blockInputs.outputSize,
           hidden_size: blockInputs.hiddenSize,
           num_hidden_layers: blockInputs.numHiddenLayers,
         },
-        leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
-        rightTrapezoid: { base: outputSizeScaled, height: trapHeight },
-        middleRectangle: { width: numHiddenLayersScaled, height: hiddenSizeScaled },
+        visParams: {
+          leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
+          rightTrapezoid: { base: outputSizeScaled, height: trapHeight },
+          middleRectangle: {
+            width: numHiddenLayersScaled,
+            height: hiddenSizeScaled,
+          },
+          width: trapHeight + numHiddenLayersScaled + trapHeight,
+        },
       };
-    } else if (selectedLayer === 'Conv') {
+    } else if (selectedLayer === "Conv") {
+      const outputSize = blockInputs.outputSize;
+      const poolSize = Math.sqrt(blockInputs.outputSize);
+      const outputSizeScaled =
+        (Math.log((outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      const poolSizeScaled =
+        (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
       const kernelSize = blockInputs.kernelSize;
-      const kernelSizeScaled = (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      const kernelSizeScaled =
+        (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
       const numKernels = blockInputs.numKernels;
+      let outputLength;
+
+      if (datasetSizes.inputSize === 784) {
+        outputLength = Math.floor(28 - blockInputs.kernelSize) + 1;
+      } else if (datasetSizes.inputSize === 3072) {
+        outputLength = Math.floor(32 - blockInputs.kernelSize) + 1;
+      }
+
+      const outputLengthScaled =
+        (Math.log((outputLength + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
+
       newLayer = {
         id: `block-${newBlockId}`,
         name: `${newBlockId + 1}`,
-        type: 'Conv',
+        type: "Conv",
         params: {
           input_size: inputSize,
-          output_size: (kernelSize * kernelSize),
+          output_size: blockInputs.outputSize,
           kernel_size: kernelSize,
           num_kernels: numKernels,
           stride: 1,
-          padding: 0
+          padding: Math.floor(kernelSize / 2),
         },
-        leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT },
-        rightTrapezoid: { base: outputSizeScaled, height: SCALING_CONSTANT },
-        middleRectangle: { width: kernelSizeScaled, height: kernelSizeScaled },
+        visParams: {
+          kernel_size: kernelSizeScaled,
+          poolingBlock: { smallBlock: poolSizeScaled, largeBlock: outputLengthScaled },
+          width: kernelSizeScaled + numKernels * 5 + outputLengthScaled + 10,
+        },
       };
     }
 
@@ -241,8 +275,12 @@ function ConfigColumn({
 
   useEffect(() => {
     let cachedModelConfig = loadModelConfig();
-    sessionStorage.setItem('cachedModelConfig', "{}");  // Clear cache to avoid duplicate storing
-    if (cachedModelConfig !== null && layers.length === 0 && cachedModelConfig.blocks.length > 0) {
+    sessionStorage.setItem("cachedModelConfig", "{}"); // Clear cache to avoid duplicate storing
+    if (
+      cachedModelConfig !== null &&
+      layers.length === 0 &&
+      cachedModelConfig.blocks.length > 0
+    ) {
       handleJsonConfig(cachedModelConfig);
     }
   }, [layers, loadModelConfig]);
@@ -253,9 +291,6 @@ function ConfigColumn({
         <h1>
           <b>Configuration</b>
         </h1>
-        <h2>
-
-        </h2>
         <DatasetSelection
           selectedItem={selectedDataset}
           dropdownOpen={datasetDropdownOpen}
@@ -268,9 +303,7 @@ function ConfigColumn({
       </div>
       {selectedDataset && (
         <div className="inputBlockContent">
-          <h2>
-            Add Blocks
-          </h2>
+          <h2>Add Blocks</h2>
           <LayerSelection
             selectedItem={selectedLayer}
             dropdownOpen={layerDropdownOpen}
@@ -279,7 +312,7 @@ function ConfigColumn({
             handleItemClick={handleLayerClick}
           />
           {selectedLayer === "FcNN" && (
-            <ModelConfig
+            <FcNNModelConfig
               blockInputs={blockInputs}
               handleInputChange={handleBlockInputChange}
               createLayers={addBlock}
@@ -290,10 +323,9 @@ function ConfigColumn({
               blockInputs={blockInputs}
               handleInputChange={handleBlockInputChange}
               createLayers={addBlock}
-            ></ConvModelConfig>
+            />
           )}
-          {/* Remove Last Block Button */}
-          <br/>
+          <br />
           <div className="remove-block">
             <button
               className="deleteButton"
@@ -305,7 +337,7 @@ function ConfigColumn({
               Remove Last Block
             </button>
           </div>
-          <br/>
+          <br />
           <Train
             trainInputs={trainInputs}
             handleInputChange={handleTrainingInputChange}
@@ -317,4 +349,3 @@ function ConfigColumn({
 }
 
 export default ConfigColumn;
-

@@ -1,9 +1,6 @@
-import "../../ModelBuilder.css";
-
 function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
     return (
         <div>
-            <h4>Configure Block</h4>
             <div>
                 <label>Kernel Size: </label>
                 <br/>
@@ -24,8 +21,19 @@ function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
                     className='input'
                 />
             </div>
+            <div>
+                <label>Pooling Output Size: </label>
+                <br/>
+                <input
+                    type='number'
+                    value={blockInputs.outputSize}
+                    onChange={(e) => handleInputChange('outputSize', e.target.value)}
+                    className='input'
+                />
+            </div>
             <button className='addButton' onClick={createLayers}>Add Block</button>
         </div>
+
     );
 }
 

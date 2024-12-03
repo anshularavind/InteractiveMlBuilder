@@ -1,9 +1,8 @@
 import "../../ModelBuilder.css";
- // FcNN Model Config
-function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
+
+function FcNNModelConfig({ blockInputs, handleInputChange, createLayers }) {
   return (
     <div>
-      <h4>Configure Block</h4>
       <div>
         <label>Output Size: </label>
         <br/>
@@ -41,4 +40,4 @@ function ModelConfig({ blockInputs, handleInputChange, createLayers }) {
   );
 }
 
-export default ModelConfig;
+export default FcNNModelConfig;

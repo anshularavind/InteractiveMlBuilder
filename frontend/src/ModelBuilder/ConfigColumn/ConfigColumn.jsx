@@ -42,7 +42,6 @@ function ConfigColumn({
   // Handle JSON configuration (if any)
   // TODO: change as per new visParams
   const handleJsonConfig = (jsonConfig) => {
-
     setSelectedDataset(jsonConfig.dataset);
     setTrainInputs({
       lr: jsonConfig.lr,

@@ -211,7 +211,7 @@ function ConfigColumn({
               Remove Last Block
             </button>
           </div>
-          <br/><br/>
+          <br/>
           <Train
             trainInputs={trainInputs}
             handleInputChange={handleTrainingInputChange}

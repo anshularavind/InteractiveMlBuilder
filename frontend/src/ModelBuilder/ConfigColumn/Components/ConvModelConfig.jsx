@@ -3,9 +3,10 @@ import "../../ModelBuilder.css";
 function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
     return (
         <div>
-            <h4>Configure Block Parameters</h4>
+            <h4>Configure Block</h4>
             <div>
                 <label>Kernel Size: </label>
+                <br/>
                 <input
                     type='number'
                     value={blockInputs.kernelsSize}
@@ -15,6 +16,7 @@ function ConvModelConfig({ blockInputs, handleInputChange, createLayers }) {
             </div>
             <div>
                 <label>Output Channels: </label>
+                <br/>
                 <input
                     type='number'
                     value={blockInputs.numKernels}

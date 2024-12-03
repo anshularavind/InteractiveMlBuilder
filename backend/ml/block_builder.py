@@ -23,13 +23,14 @@ from backend.database.interface import UserDatabase
 
 
 '''
-Model Builder Input/Output Json Format:
+Model Builder Input/Output Dict Format:
 {
     'input': <input_shape>,
     'output': <output_shape>,
     'dataset': <dataset_name>,
     'lr': <learning_rate>,
     'batch_size': <batch_size>,
+    'epochs': <epochs>,
     'blocks':
     [
         {'block': <block_name>, 'params': <block_params>},
@@ -41,7 +42,7 @@ Model Builder Input/Output Json Format:
 # Output Size Notes:
     # Needed for all blocks except Tokenizer & TokenEmbedding
     # Expected to be Channels x Height x Width for multi-channel & multi-dim data
-Block Params Json Format:
+Block Params Dict Format:
 {
     'param1': <value1>,
     'param2': <value2>,
@@ -65,6 +66,7 @@ class BuiltModel(nn.Module):
         self.model_uuid = model_uuid
         self.user_db = user_db
 
+        self.epochs = int(self.model_config.get('epochs', 10))
         self.batch_size = int(self.model_config.get('batch_size', 64))
         self.dataset_name = self.model_config['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)

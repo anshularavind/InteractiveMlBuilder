@@ -3,8 +3,9 @@ import torch.nn as nn
 import time
 
 
-def train_model(model, epochs=10):
-    # Define the loss function and optimizer
+def train_model(model):
+    # Define the loss function and optimizer and epochs
+    epochs = model.epochs
     dataset = model.dataset
     criterion = dataset.criterion
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)

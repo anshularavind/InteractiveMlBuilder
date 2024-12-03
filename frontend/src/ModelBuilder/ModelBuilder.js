@@ -21,6 +21,11 @@ function ModelBuilder() {
   const [backendResults, setBackendResults] = useState(null);
   const [isTraining, setIsTraining] = useState(false); // New state to track training status
   const intervalIdRef = useRef(null);
+  const [trainInputs, setTrainInputs] = useState({
+    lr: .01,
+    batch_size: 64,
+    epochs: 10,
+  });
 
   const datasetItems = [
     { value: "MNIST", label: "MNIST" },
@@ -74,8 +79,9 @@ function ModelBuilder() {
         input: datasetInputSize,
         output: datasetOutputSize,
         dataset: selectedDataset,
-        LR: "0.001",
-        batch_size: 32,
+        LR: trainInputs.lr,
+        batch_size: trainInputs.batch_size,
+        epochs: trainInputs.epochs,
         blocks: updatedLayers.map((layer) => ({
           block: layer.type || "FcNN",
           params: {
@@ -280,6 +286,8 @@ function ModelBuilder() {
           createLayers={createLayers}
           removeLastBlock={removeLastBlock}
           layers={layers}
+          trainInputs={trainInputs}
+          setTrainInputs={setTrainInputs}
         />
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
         <div className="buttons">

@@ -55,11 +55,11 @@ function Visualizer({ layers }) {
       // Calculate scaling factor to fit within the container
       const scalingFactor = Math.min(
         1,
-        containerDimensions.width / totalUnscaledWidth
+        (containerDimensions.width - spacing * layers.length) / totalUnscaledWidth
       );
 
       // Scale and position layers
-      let currentX = 0;
+      let currentX = spacing; // Start with spacing to ensure padding at the start
       const scaledLayers = layers.map((layer) => {
         // Scale visParams
         const scaledVisParams = {};
@@ -104,13 +104,14 @@ function Visualizer({ layers }) {
         };
       });
 
-      // After mapping through all layers, currentX now holds the total flowchart width
-      const totalFlowchartWidth = currentX;
+      // Calculate total scaled width of the flowchart
+      const totalScaledWidth =
+        scaledLayers.reduce((acc, layer) => acc + layer.visParams.width + spacing, 0) - spacing;
 
-      // Calculate offset to center the flowchart
-      const offsetX = (containerDimensions.width - totalFlowchartWidth) / 2;
+      // Adjust offset to ensure the flowchart is centered or aligned within bounds
+      const offsetX = Math.max(0, (containerDimensions.width - totalScaledWidth) / 2);
 
-      // Adjust positions to center the flowchart
+      // Adjust positions to center the flowchart or fit it within bounds
       const positionedLayers = scaledLayers.map((layer) => ({
         ...layer,
         position: {

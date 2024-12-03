@@ -168,7 +168,9 @@ function ModelBuilder() {
       setBackendResults(data);
 
       if (data.output) {
-        const output_lines = data.output.split("\n");
+        let output_data = data.output;
+        output_data = output_data.replace(/\n+$/, "");  // Remove trailing newlines
+        let output_lines = output_data.split("\n");
         if (output_lines.length > 0 && output_lines[output_lines.length - 1].startsWith("Final")) {
           clearInterval(intervalIdRef.current);
           setIsTraining(false); // Stop training when logs indicate completion

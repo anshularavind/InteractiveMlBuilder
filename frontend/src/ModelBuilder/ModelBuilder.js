@@ -19,6 +19,7 @@ function ModelBuilder() {
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [layers, setLayers] = useState([]);
   const [modelConfig, setModelConfig] = useState(null);
+  const [blockCount, setBlockCount] = useState(0);
   const [backendResults, setBackendResults] = useState(null);
   const [isTraining, setIsTraining] = useState(false); // New state to track training status
   const intervalIdRef = useRef(null);
@@ -282,14 +283,16 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
-    // clearing because onEffect for layers will update it
+
+    setBlockCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
     sessionStorage.setItem("model_config", "{}");
   };
 
   const removeBlocks = () => {
     setLayers([]);
+    setBlockCount(0);
     sessionStorage.setItem("model_config", "{}");
-  }
+  };
 
   const downloadModels = async () => {
     try {
@@ -333,6 +336,8 @@ function ModelBuilder() {
           toggleDatasetDropdown={toggleDatasetDropdown}
           datasetItems={datasetItems}
           handleDatasetClick={handleDatasetClick}
+          blockCount={blockCount}
+          setBlockCount={setBlockCount}
           layerItems={layerItems}
           createLayers={createLayers}
           removeLastBlock={removeLastBlock}

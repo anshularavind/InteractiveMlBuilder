@@ -14,6 +14,8 @@ function ConfigColumn({
   toggleDatasetDropdown,
   datasetItems,
   handleDatasetClick,
+  blockCount,
+  setBlockCount,
   layerItems,
   createLayers,
   removeLastBlock,
@@ -32,7 +34,7 @@ function ConfigColumn({
 
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
-  const [blockCount, setBlockCount] = useState(0);
+
   const [datasetSizes, setDatasetSizes] = useState({ inputSize: 0, outputSize: 0 });
 
   useEffect(() => {

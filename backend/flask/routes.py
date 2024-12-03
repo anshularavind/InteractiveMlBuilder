@@ -165,7 +165,7 @@ def train_logs():
     }), 200
 
 #stop the training task
-@main_routes.route("/api/train/stop", methods=["POST"])
+@main_routes.route("/api/stop-training", methods=["POST"])
 @helper.token_required
 def stop_train():
     try:
@@ -174,18 +174,21 @@ def stop_train():
         
         if not task_id:
             return jsonify({"error": "No active task found"}), 404
+            
+        # First attempt to revoke the task with termination signal
+        celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
         
-        # Attempt to forcefully kill the worker process managing this task
-        result = helper.kill_task_worker(task_id)
-        if "error" in result:
-            return jsonify(result), 500
+        # Force kill any remaining worker processes
+        import subprocess
+        kill_command = "pkill -9 -f 'celery worker'"
+        subprocess.run(kill_command, shell=True)
         
-        logger.info(f"Task {task_id} terminated (worker PID: {result['pid']}) by user {username}")
+        logger.info(f"Task {task_id} terminated by user {username}")
         return jsonify({
-            "status": "Task terminated successfully",
-            "task_id": task_id,
-            "worker_pid": result['pid']
+            "status": "Task termination signal sent",
+            "task_id": task_id
         }), 200
+        
     except Exception as e:
         logger.error(f"Failed to stop task: {str(e)}")
         return jsonify({

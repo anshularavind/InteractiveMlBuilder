@@ -31,7 +31,16 @@ function ModelBuilder() {
   const datasetItems = [
     { value: "MNIST", label: "MNIST" },
     { value: "CIFAR10", label: "CIFAR10" },
+    { value: "AirQuality", label: "AirQuality" },
+    { value: "ETTh1", label: "ETTh1" },
   ];
+
+  const datasetSizesMap = {
+    "MNIST": { inputSize: 784, outputSize: 10 },
+    "CIFAR10": { inputSize: 3072, outputSize: 10 },
+    "AirQuality": { inputSize: 11, outputSize: 2 },
+    "ETTh1": { inputSize: 9, outputSize: 3 }
+  };
 
   const layerItems = [
     { value: "FcNN", label: "FcNN" },
@@ -76,15 +85,8 @@ function ModelBuilder() {
   }, [layers]);
 
   const generateJson = (updatedLayers) => {
-    let datasetInputSize = 0;
-    let datasetOutputSize = 0;
-    if (selectedDataset === "MNIST") {
-      datasetInputSize = 784;
-      datasetOutputSize = 10;
-    } else if (selectedDataset === "CIFAR10") {
-      datasetInputSize = 3072;
-      datasetOutputSize = 10;
-    }
+    let datasetInputSize = datasetSizesMap[selectedDataset]?.inputSize ?? 0;
+    let datasetOutputSize = datasetSizesMap[selectedDataset]?.outputSize ?? 0;
 
     return {
       model_config: {
@@ -315,6 +317,7 @@ function ModelBuilder() {
         <ConfigColumn
           selectedDataset={selectedDataset}
           setSelectedDataset={setSelectedDataset}
+          datasetSizesMap={datasetSizesMap}
           datasetDropdownOpen={datasetDropdownOpen}
           toggleDatasetDropdown={toggleDatasetDropdown}
           datasetItems={datasetItems}

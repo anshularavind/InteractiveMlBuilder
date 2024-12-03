@@ -88,6 +88,38 @@ function ModelBuilder() {
     let datasetInputSize = datasetSizesMap[selectedDataset]?.inputSize ?? 0;
     let datasetOutputSize = datasetSizesMap[selectedDataset]?.outputSize ?? 0;
 
+    let blocks = updatedLayers.map((layer) => {
+      if (layer.type === 'FcNN' || !layer.type) {
+        return [{
+          block: 'FcNN',
+          params: {
+            output_size: layer.params.output_size,
+            hidden_size: layer.params.hidden_size,
+            num_hidden_layers: layer.params.num_hidden_layers,
+          },
+        }];
+      } else if (layer.type === 'Conv') {
+        return [
+          {
+            block: 'Conv',
+            params: {
+              num_kernels: layer.params.num_kernels,
+              kernel_size: layer.params.kernel_size,
+              stride: layer.params.stride,
+              padding: layer.params.padding,
+            },
+          },
+          {
+            block: 'Pool',
+            params: {
+              output_size: (selectedDataset === "MNIST" || selectedDataset === "CIFAR10") ?
+                  layer.params.output_size ** 2 : layer.params.output_size,
+            }
+          },
+        ];
+      }
+    });
+
     return {
       model_config: {
         input: datasetInputSize,
@@ -96,30 +128,8 @@ function ModelBuilder() {
         LR: trainInputs.lr,
         batch_size: trainInputs.batch_size,
         epochs: trainInputs.epochs,
-        blocks: updatedLayers.map((layer) => {
-          if (layer.type === 'FcNN' || !layer.type) {
-            return {
-              block: 'FcNN',
-              params: {
-                output_size: layer.params.output_size,
-                hidden_size: layer.params.hidden_size,
-                num_hidden_layers: layer.params.num_hidden_layers,
-              },
-            };
-          } else if (layer.type === 'Conv') {
-            return {
-              block: 'Conv',
-              params: {
-                num_kernels: layer.params.num_kernels,
-                kernel_size: layer.params.kernel_size,
-                stride: layer.params.stride,
-                padding: layer.params.padding,
-              },
-            };
-          }
-        }),
+        blocks: blocks.flat(),  // unpack nested arrays of blocks
       },
-      dataset: selectedDataset,
     };
   };
 
@@ -272,6 +282,7 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
+    // clearing because onEffect for layers will update it
     sessionStorage.setItem("model_config", "{}");
   };
 

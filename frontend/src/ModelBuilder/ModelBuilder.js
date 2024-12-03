@@ -18,6 +18,7 @@ function ModelBuilder() {
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [layers, setLayers] = useState([]);
+  const [modelConfig, setModelConfig] = useState(null);
   const [backendResults, setBackendResults] = useState(null);
   const [isTraining, setIsTraining] = useState(false); // New state to track training status
   const intervalIdRef = useRef(null);
@@ -55,10 +56,21 @@ function ModelBuilder() {
     setLayerDropdownOpen(!layerDropdownOpen);
   };
 
+  const loadModelConfig = () => {
+    let json = sessionStorage.getItem("model_config");
+    if (json !== null) {
+      if ("model_config" in JSON.parse(json))
+        return JSON.parse(json)["model_config"];
+    }
+    return null;
+  }
+
   const createLayers = (newLayers) => {
     setLayers((prevLayers) => {
       const updatedLayers = [...prevLayers, ...newLayers];
-      generateJson(updatedLayers);
+      const newConfig = generateJson(updatedLayers);
+      setModelConfig(newConfig);
+      sessionStorage.setItem("model_config", JSON.stringify(newConfig));
       return updatedLayers;
     });
   };
@@ -205,8 +217,6 @@ function ModelBuilder() {
     intervalIdRef.current = setInterval(() => fetchLogs(json), 1000);
   };
 
-
-
   const stopTraining = async () => {
     try {
       const token = await getAccessTokenSilently();
@@ -235,7 +245,7 @@ function ModelBuilder() {
   };
 
   const handleSendJsonClick = async () => {
-    const json = generateJson(layers);
+    let json = JSON.parse(JSON.stringify(modelConfig));
     await sendJsonToBackend(json);
     await startTraining(json);
     setIsTraining(true); // Set training state to true
@@ -255,12 +265,12 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
+    setModelConfig(generateJson(layers));
   };
 
   const downloadModels = async () => {
     try {
         const token = await getAccessTokenSilently();
-        const modelConfig = generateJson(layers);
         const response = await fetch("http://127.0.0.1:4000/api/download-model", {
             method: "POST",
             headers: {
@@ -294,6 +304,7 @@ function ModelBuilder() {
       <div className="container">
         <ConfigColumn
           selectedDataset={selectedDataset}
+          setSelectedDataset={setSelectedDataset}
           datasetDropdownOpen={datasetDropdownOpen}
           toggleDatasetDropdown={toggleDatasetDropdown}
           datasetItems={datasetItems}
@@ -304,6 +315,7 @@ function ModelBuilder() {
           layers={layers}
           trainInputs={trainInputs}
           setTrainInputs={setTrainInputs}
+          loadModelConfig={loadModelConfig}
         />
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
         <div className="buttons">

@@ -37,8 +37,8 @@ function ConvBlock({ layer }) {
     >
       {convElements}
       <text
-        x="0"
-        y="0"
+        x={-width/1.5}
+        y={-height/2}
         textAnchor="middle"
         alignmentBaseline="middle"
         fill="white"

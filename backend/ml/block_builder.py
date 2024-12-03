@@ -71,9 +71,9 @@ class BuiltModel(nn.Module):
         self.dataset_name = self.model_config['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
         self.is_2d = getattr(self.dataset, 'is_2d', False)
-        self.in_channels = getattr(self.dataset, 'num_channels', 1)
+        self.in_channels = getattr(self.dataset, 'num_kernels', 1)
         self.model_blocks = self.load_model_from_json()
-        self.lr = float(self.model_config['LR'])
+        self.lr = float(self.model_config.get('LR', 0.001))
 
     def forward(self, x):
         for block in self.model_blocks:

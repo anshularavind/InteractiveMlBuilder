@@ -14,7 +14,7 @@ function ConfigColumn({
   layerItems,
   createLayers,
   removeLastBlock,
-  layers, 
+  layers,
 }) {
   const [blockInputs, setBlockInputs] = useState({
     outputSize: 0,
@@ -27,7 +27,6 @@ function ConfigColumn({
   const [datasetSizes, setDatasetSizes] = useState({ inputSize: 0, outputSize: 0 });
 
   useEffect(() => {
-   
     if (selectedDataset === "MNIST") {
       setDatasetSizes({ inputSize: 784, outputSize: 10 });
     } else if (selectedDataset === "CIFAR 10") {
@@ -53,7 +52,6 @@ function ConfigColumn({
     const newBlockId = blockCount;
     setBlockCount((prevCount) => prevCount + 1);
 
-  
     let inputSize;
     if (layers && layers.length > 0) {
       inputSize = layers[layers.length - 1].params.output_size;
@@ -88,7 +86,6 @@ function ConfigColumn({
 
     createLayers([newLayer]);
 
-
     setBlockInputs({
       outputSize: 0,
       hiddenSize: 0,
@@ -103,9 +100,6 @@ function ConfigColumn({
         <h1>
           <b>Configuration</b>
         </h1>
-        <h2>
-  
-        </h2>
         <DatasetSelection
           selectedItem={selectedDataset}
           dropdownOpen={datasetDropdownOpen}
@@ -149,6 +143,30 @@ function ConfigColumn({
       </div>
 
       <Train />
+
+      {/* Block Listing Section */}
+      <div className="blockList">
+        <h2>
+          <u>Block Parameters</u>
+        </h2>
+        {layers && layers.length > 0 ? (
+          <ul>
+            {layers.map((layer) => (
+              <li key={layer.id}>
+                <b>{layer.name}:</b>
+                <ul>
+                  <li>Type: {layer.type}</li>
+                  <li>Output Size: {layer.params.output_size}</li>
+                  <li>Hidden Size: {layer.params.hidden_size}</li>
+                  <li>Number of Hidden Layers: {layer.params.num_hidden_layers}</li>
+                </ul>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No blocks have been added yet.</p>
+        )}
+      </div>
     </div>
   );
 }

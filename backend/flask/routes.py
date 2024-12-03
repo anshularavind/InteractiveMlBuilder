@@ -115,7 +115,7 @@ def train():
                 user_uuid,
                 model_uuid,
             )
-            task_dict[username] = task.id
+            task_dict[username] = [task.id, model_uuid]
 
             return jsonify({
                 "status": "Training started",
@@ -175,19 +175,18 @@ def train_logs():
 def stop_train():
     try:
         username = helper.get_user_info()["nickname"]
-        task_id = task_dict.get(username)
+        task_id, model_uuid = task_dict.get(username)
         
         if not task_id:
             return jsonify({"error": "No active task found"}), 404
-            
-        # First attempt to revoke the task with termination signal
-        celery.control.revoke(task_id, terminate=True, signal='SIGKILL')
-        
-        # Force kill any remaining worker processes
-        import subprocess
-        kill_command = "pkill -9 -f 'celery worker'"
-        subprocess.run(kill_command, shell=True)
-        
+
+        # celery.control.revoke(task_id, terminate=True, signal='SIGKILL')  # First attempt to kill
+        model_dir = db.get_model_dir(helper.get_user_info()["sub"], model_uuid)
+        stop_path = os.path.join(model_dir, "STOP")
+        open(stop_path, "w").close()
+        while os.path.exists(stop_path):
+            time.sleep(0.25)
+
         logger.info(f"Task {task_id} terminated by user {username}")
         return jsonify({
             "status": "Task termination signal sent",

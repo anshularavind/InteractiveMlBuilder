@@ -184,6 +184,8 @@ class UserDatabase():
         self.cur.execute("SELECT DISTINCT dataset_name FROM datasets WHERE user_uuid=%s", (user_uuid,))
         return self.cur.fetchall()
 
+
+
     def clear(self):
         # DO NOT RUN THIS IN PRODUCTION
         shutil.rmtree(self.user_data_root, ignore_errors=True)

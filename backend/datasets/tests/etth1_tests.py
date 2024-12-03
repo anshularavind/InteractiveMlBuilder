@@ -13,12 +13,13 @@ def init_db():
 
 
 def test_etth1_nn_model():
-    etth1_nn_model = '''{
+    etth1_nn_model = {
         "input": 9,
         "output": 3,
         "dataset": "ETTh1",
         "LR": "0.001",
         "batch_size": 512,
+        "epochs": 2,
         "blocks": [
             {
                 "block": "FcNN",
@@ -45,11 +46,11 @@ def test_etth1_nn_model():
                 }
             }
         ]
-    }'''
+    }
 
     # Train the model to test basic functionality
-    model = BuiltModel(etth1_nn_model, 'test_user', init_db())
-    result = train_model(model, 2)  # Number of epochs set to 2 for testing
+    model = BuiltModel(etth1_nn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)  # Number of epochs set to 2 for testing
     assert not math.isnan(result), 'Model training failed'
 
 

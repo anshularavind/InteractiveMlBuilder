@@ -14,18 +14,16 @@ function ConfigColumn({
   layerItems,
   createLayers,
   removeLastBlock,
-  layers, 
+  layers,
+  trainInputs,
+  setTrainInputs,
 }) {
   const [blockInputs, setBlockInputs] = useState({
     outputSize: 0,
     hiddenSize: 0,
     numHiddenLayers: 0,
   });
-  const [trainInputs, setTrainInputs] = useState({
-    lr: .01,
-    batch_size: 64,
-    epochs: 10,
-  });
+
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [blockCount, setBlockCount] = useState(0);

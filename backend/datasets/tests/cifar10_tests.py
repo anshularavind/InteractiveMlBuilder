@@ -14,12 +14,13 @@ def init_db():
 
 
 def test_cifar10_nn_model():
-    cifar10_nn_model = '''{
+    cifar10_nn_model = {
         "input": 3072,
         "output": 10,
         "dataset": "CIFAR10",
         "LR": "0.001",
         "batch_size": 2048,
+        "epochs": 2,
         "blocks": [
             {
                 "block": "FcNN",
@@ -46,21 +47,22 @@ def test_cifar10_nn_model():
                 }
             }
         ]
-    }'''
+    }
 
     # training both models to test basic functionality
-    model = BuiltModel(cifar10_nn_model, 'test_user', init_db())
-    result = train_model(model, 2)
+    model = BuiltModel(cifar10_nn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)
     assert not math.isnan(result), 'Model training failed'
 
 
 def test_cifar10_cnn_model():
-    cifar10_cnn_model = '''{
+    cifar10_cnn_model = {
         "input": 3072,
         "output": 10,
         "dataset": "CIFAR10",
         "LR": "0.001",
         "batch_size": 2048,
+        "epochs": 2,
         "blocks": [
             {
                 "block": "Conv",
@@ -109,7 +111,7 @@ def test_cifar10_cnn_model():
                 }
             }
         ]
-    }'''
-    model = BuiltModel(cifar10_cnn_model, 'test_user', init_db())
-    result = train_model(model, 2)
+    }
+    model = BuiltModel(cifar10_cnn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)
     assert not math.isnan(result), 'Model training failed'

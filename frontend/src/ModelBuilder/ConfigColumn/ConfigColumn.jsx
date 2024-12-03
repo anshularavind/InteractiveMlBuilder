@@ -14,12 +14,17 @@ function ConfigColumn({
   layerItems,
   createLayers,
   removeLastBlock,
-  layers,
+  layers, 
 }) {
   const [blockInputs, setBlockInputs] = useState({
     outputSize: 0,
     hiddenSize: 0,
     numHiddenLayers: 0,
+  });
+  const [trainInputs, setTrainInputs] = useState({
+    lr: .01,
+    batch_size: 64,
+    epochs: 10,
   });
   const [selectedLayer, setSelectedLayer] = useState(null);
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
@@ -27,6 +32,7 @@ function ConfigColumn({
   const [datasetSizes, setDatasetSizes] = useState({ inputSize: 0, outputSize: 0 });
 
   useEffect(() => {
+   
     if (selectedDataset === "MNIST") {
       setDatasetSizes({ inputSize: 784, outputSize: 10 });
     } else if (selectedDataset === "CIFAR 10") {
@@ -36,12 +42,38 @@ function ConfigColumn({
     }
   }, [selectedDataset]);
 
-  const handleInputChange = (field, value) => {
+  const handleBlockInputChange = (field, value) => {
     setBlockInputs((prevInputs) => ({
       ...prevInputs,
       [field]: Math.max(0, parseInt(value) || 0),
     }));
   };
+
+  const handleTrainingInputChange = (field, value) => {
+  setTrainInputs((prevInputs) => {
+    let newValue;
+    switch (field) {
+      case "lr":
+        newValue = parseFloat(value) || 0;
+        newValue = Math.max(0, Math.min(0.1, newValue));
+        break;
+      case "batch_size":
+        newValue = parseInt(value) || 0;
+        newValue = Math.max(1, Math.min(2048, newValue));
+        break;
+      case "epochs":
+        newValue = parseInt(value) || 0;
+        newValue = Math.max(1, Math.min(100, newValue));
+        break;
+      default:
+        newValue = value;
+    }
+    return {
+      ...prevInputs,
+      [field]: newValue,
+    };
+  });
+};
 
   const handleLayerClick = (item) => {
     setSelectedLayer(item.value);
@@ -52,6 +84,7 @@ function ConfigColumn({
     const newBlockId = blockCount;
     setBlockCount((prevCount) => prevCount + 1);
 
+  
     let inputSize;
     if (layers && layers.length > 0) {
       inputSize = layers[layers.length - 1].params.output_size;
@@ -86,6 +119,7 @@ function ConfigColumn({
 
     createLayers([newLayer]);
 
+
     setBlockInputs({
       outputSize: 0,
       hiddenSize: 0,
@@ -100,6 +134,9 @@ function ConfigColumn({
         <h1>
           <b>Configuration</b>
         </h1>
+        <h2>
+  
+        </h2>
         <DatasetSelection
           selectedItem={selectedDataset}
           dropdownOpen={datasetDropdownOpen}
@@ -111,20 +148,8 @@ function ConfigColumn({
         <h4>Output Size: {datasetSizes.outputSize}</h4>
       </div>
       <div className="inputBlockContent">
-        {/* Remove Last Block Button */}
-        <div className="remove-block">
-          <button
-            className="deleteButton"
-            onClick={() => {
-              console.log("Remove Last Block button clicked");
-              removeLastBlock();
-            }}
-          >
-            Remove Last Block
-          </button>
-        </div>
         <h2>
-          <u>Add Blocks</u>
+          Add Blocks
         </h2>
         <LayerSelection
           selectedItem={selectedLayer}
@@ -136,37 +161,29 @@ function ConfigColumn({
         {selectedLayer === "FcNN" && (
           <ModelConfig
             blockInputs={blockInputs}
-            handleInputChange={handleInputChange}
+            handleInputChange={handleBlockInputChange}
             createLayers={addBlock}
           />
         )}
+        {/* Remove Last Block Button */}
+        <br/>
+        <div className="remove-block">
+          <button
+            className="deleteButton"
+            onClick={() => {
+              console.log("Remove Last Block button clicked");
+              removeLastBlock();
+            }}
+          >
+            Remove Last Block
+          </button>
+        </div>
       </div>
 
-      <Train />
-
-      {/* Block Listing Section */}
-      <div className="blockList">
-        <h2>
-          <u>Block Parameters</u>
-        </h2>
-        {layers && layers.length > 0 ? (
-          <ul>
-            {layers.map((layer) => (
-              <li key={layer.id}>
-                <b>{layer.name}:</b>
-                <ul>
-                  <li>Type: {layer.type}</li>
-                  <li>Output Size: {layer.params.output_size}</li>
-                  <li>Hidden Size: {layer.params.hidden_size}</li>
-                  <li>Number of Hidden Layers: {layer.params.num_hidden_layers}</li>
-                </ul>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No blocks have been added yet.</p>
-        )}
-      </div>
+      <Train
+        trainInputs={trainInputs}
+        handleInputChange={handleTrainingInputChange}
+      />
     </div>
   );
 }

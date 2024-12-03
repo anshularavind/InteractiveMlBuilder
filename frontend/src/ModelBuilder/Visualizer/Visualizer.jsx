@@ -1,10 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import "../ModelBuilder.css";
+import FcNNBlock from "./Components/FcNNBlock";
+import ConvBlock from "./Components/ConvBlock";
 
 function Visualizer({ layers }) {
   const [positionedLayers, setPositionedLayers] = useState([]);
   const containerRef = useRef(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+  const [containerDimensions, setContainerDimensions] = useState({
+    width: 0,
+    height: 0,
+  });
 
   useEffect(() => {
     const updateDimensions = () => {
@@ -37,54 +42,65 @@ function Visualizer({ layers }) {
 
   useEffect(() => {
     if (layers.length === 0) {
-        setPositionedLayers([]);
-    }
-    else if (layers.length > 0 && containerDimensions.width > 0) {
+      setPositionedLayers([]);
+    } else if (layers.length > 0 && containerDimensions.width > 0) {
+      const spacing = 50;
+
       // Calculate total unscaled width of all layers
       const totalUnscaledWidth = layers.reduce(
-        (acc, layer) =>
-          acc +
-          layer.leftTrapezoid.base +
-          layer.middleRectangle.width +
-          layer.rightTrapezoid.base,
+        (acc, layer) => acc + layer.visParams.width + spacing,
         0
       );
 
       // Calculate scaling factor to fit within the container
-      const scalingFactor = Math.min(1, containerDimensions.width / totalUnscaledWidth);
-      const spacing = 50;
+      const scalingFactor = Math.min(
+        1,
+        containerDimensions.width / totalUnscaledWidth
+      );
 
       // Scale and position layers
       let currentX = 0;
       const scaledLayers = layers.map((layer) => {
-        const scaledLeftTrapezoid = {
-          base: layer.leftTrapezoid.base * scalingFactor,
-          height: layer.leftTrapezoid.height * scalingFactor,
-        };
-        const scaledRightTrapezoid = {
-          base: layer.rightTrapezoid.base * scalingFactor,
-          height: layer.rightTrapezoid.height * scalingFactor,
-        };
-        const scaledMiddleRectangle = {
-          width: layer.middleRectangle.width * scalingFactor,
-          height: layer.middleRectangle.height * scalingFactor,
-        };
+        // Scale visParams
+        const scaledVisParams = {};
+        for (let key in layer.visParams) {
+          if (layer.visParams.hasOwnProperty(key)) {
+            const value = layer.visParams[key];
+            if (typeof value === "object") {
+              scaledVisParams[key] = {};
+              for (let prop in value) {
+                if (
+                  value.hasOwnProperty(prop) &&
+                  typeof value[prop] === "number"
+                ) {
+                  scaledVisParams[key][prop] = value[prop] * scalingFactor;
+                } else {
+                  scaledVisParams[key][prop] = value[prop];
+                }
+              }
+            } else if (typeof value === "number") {
+              scaledVisParams[key] = value * scalingFactor;
+            } else {
+              scaledVisParams[key] = value;
+            }
+          }
+        }
 
-        const layerWidth =
-          scaledLeftTrapezoid.height +
-          scaledMiddleRectangle.width +
-          scaledRightTrapezoid.height +
-          spacing;
+        const layerWidth = scaledVisParams.width + spacing;
 
-        const layerPosition = { x: currentX, y: -scaledMiddleRectangle.height / 2 + containerDimensions.height / 2};
+        const layerPosition = {
+          x: currentX,
+          y:
+            -(scaledVisParams.middleRectangle?.height || 0) / 2 +
+            containerDimensions.height / 2,
+        };
 
         currentX += layerWidth;
+
         return {
           ...layer,
           position: layerPosition,
-          leftTrapezoid: scaledLeftTrapezoid,
-          rightTrapezoid: scaledRightTrapezoid,
-          middleRectangle: scaledMiddleRectangle,
+          visParams: scaledVisParams,
         };
       });
 
@@ -108,110 +124,13 @@ function Visualizer({ layers }) {
   }, [layers, containerDimensions]);
 
   const renderBlock = (block) => {
-    const { leftTrapezoid, rightTrapezoid, middleRectangle, name, type, params } = block;
+    const { type } = block;
 
-    const width =
-      leftTrapezoid.height + middleRectangle.width + rightTrapezoid.height;
-    const height = Math.max(
-      leftTrapezoid.height,
-      middleRectangle.height,
-      rightTrapezoid.height
-    );
-
-    const convWidth = middleRectangle.width;
-    const convHeight = middleRectangle.height;
-
-    if (type === 'Conv') {
-      const convElements = [];
-      for (let i = 0; i < params.num_kernels; i++) {
-        convElements.push(
-          <rect
-            key={i}
-            x={-middleRectangle.width / 2 + (i * 5)}
-            y={-middleRectangle.height / 2 + (i * 5)}
-            width={convWidth}
-            height={convHeight}
-            fill="purple"
-            stroke="black"
-            strokeWidth={2}
-          />
-        );
-      }
-
-      return (
-        <svg
-          width={convWidth * 2}
-          height={convHeight * 2}
-          viewBox={`${-convWidth} ${-convHeight / 2} ${convWidth * 2} ${convHeight * 2}`}
-          style={{ overflow: "visible" }}
-        >
-          {convElements}
-          <text
-            x="0"
-            y="0"
-            textAnchor="middle"
-            alignmentBaseline="middle"
-            fill="white"
-            fontSize="20px"
-            fontWeight={"bold"}
-          >
-            {name}
-          </text>
-        </svg>
-      );
+    if (type === "Conv") {
+      return <ConvBlock layer={block} />;
     }
 
-    return (
-      <svg
-        width={width}
-        height={height}
-        viewBox={`${-leftTrapezoid.height} ${-middleRectangle.height / 2 - 10} ${width} ${height}`}
-        style={{ overflow: "visible" }}
-      >
-        <polygon
-          points={`0,${-middleRectangle.height / 2} ${-leftTrapezoid.height},${
-            -leftTrapezoid.base / 2
-          } ${-leftTrapezoid.height},${
-            leftTrapezoid.base / 2
-          } 0,${middleRectangle.height / 2}`}
-          fill="blue"
-          stroke="black"
-          strokeWidth={2}
-        />
-        <rect
-          x="0"
-          y={-middleRectangle.height / 2}
-          width={middleRectangle.width}
-          height={middleRectangle.height}
-          fill="green"
-          stroke="black"
-          strokeWidth={2}
-        />
-        <text
-          x={middleRectangle.width / 2}
-          y="0"
-          textAnchor="middle"
-          alignmentBaseline="middle"
-          fill="white"
-          fontSize="20px"
-          fontWeight={"bold"}
-        >
-          {name}
-        </text>
-        <polygon
-          points={`${middleRectangle.width},${-middleRectangle.height / 2} ${
-            middleRectangle.width + rightTrapezoid.height
-          },${-rightTrapezoid.base / 2} ${
-            middleRectangle.width + rightTrapezoid.height
-          },${rightTrapezoid.base / 2} ${
-            middleRectangle.width
-          },${middleRectangle.height / 2}`}
-          fill="red"
-          stroke="black"
-          strokeWidth={2}
-        />
-      </svg>
-    );
+    return <FcNNBlock layer={block} />;
   };
 
   return (

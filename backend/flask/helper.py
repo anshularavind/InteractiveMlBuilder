@@ -132,7 +132,7 @@ def train_model_task(self, model_config, user_uuid, model_uuid):
         logger.info(f"Model built successfully for user {user_uuid}")
         
         # Train the model
-        training_result = train_model(model, epochs=10)
+        training_result = train_model(model)
 
         # Save the model
         db.save_model_pt(user_uuid, model_uuid, model)

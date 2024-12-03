@@ -1,12 +1,70 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./Profile.css";
+import { useAuth0 } from "@auth0/auth0-react";
 
-function Profile({ user }) {
+function Profile() {
+  const {
+    getAccessTokenSilently,
+    user,
+    isAuthenticated,
+    isLoading,
+  } = useAuth0();
+
+  const [users, setUsers] = useState(null); // Store the current user's data
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        const response = await fetch('http://localhost:4000/api/users', {
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+          credentials: "include",
+          mode: "cors",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error fetching users: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (Array.isArray(data.users)) {
+          const currentUser = data.users.find((u) => u.username === user?.nickname);
+          setUsers(currentUser || {}); // Set the current user's data
+        } else {
+          throw new Error('Invalid data format for users.');
+        }
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError(err.message);
+        setUsers({}); // Handle errors by setting an empty object
+      }
+    };
+
+    getUsers();
+  }, [getAccessTokenSilently, user]);
+
+  if (isLoading || !users) {
+    return <div>Loading user insights...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (Object.keys(users).length === 0) {
+    return <div>No data available for this user.</div>;
+  }
+
   const insights = [
-    { label: "Models Trained", value: user.modelsTrained || 0 },
-    { label: "Datasets Used", value: user.datasetsUsed || 0 },
-    { label: "Layers Configured", value: user.layersConfigured || 0 },
-    { label: "Recent Activity", value: user.recentActivities?.length || 0 },
+    { label: "Models Trained", value: users.num_models || 0 },
+    { label: "Datasets Used", value: users.num_datasets || 0 },
+    { label: "Highest Rank", value: users.layersConfigured || 0 },
   ];
 
   return (
@@ -21,21 +79,6 @@ function Profile({ user }) {
             <p className="insight-label">{insight.label}</p>
           </div>
         ))}
-      </div>
-
-      <div className="profile-activities">
-        <h2>Recent Activities</h2>
-        {user.recentActivities && user.recentActivities.length > 0 ? (
-          <ul className="activities-list">
-            {user.recentActivities.map((activity, index) => (
-              <li key={index} className="activity-item">
-                {activity}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="no-activities">No recent activities to display.</p>
-        )}
       </div>
     </div>
   );

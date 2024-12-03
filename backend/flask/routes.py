@@ -208,3 +208,61 @@ def get_models():
 
     models = db.get_models(user_uuid)
     return jsonify({"models": models}), 200
+
+#download model by sending the model.pt file
+from flask import send_file
+
+@main_routes.route("/api/download-model", methods=["POST"])
+@helper.token_required
+def download_model():
+    try:
+        data = request.json
+        user_uuid = helper.get_user_info()["sub"]
+        model_config = data.get("model_config")
+        
+        logger.info(f"Received model config: {model_config}")
+        if not model_config:
+            return jsonify({"error": "Model configuration is required"}), 400
+
+        # Get all model directories for the user
+        user_models_dir = db.get_models(user_uuid)
+        if not user_models_dir:
+            return jsonify({"error": "No models found for user"}), 404
+
+        model_uuids = [[str(model[0]), model[2]] for model in user_models_dir]
+        logger.info(f"Found models: {model_uuids}")
+
+        # Normalize the received config and saved configs for comparison
+        normalized_input_config = json.loads(json.dumps(model_config))
+
+        # Search through all model directories to find matching config
+        for model_dir in model_uuids:
+            config_path = os.path.join(model_dir[1], "config.json")
+            logger.info(f"Checking model at {config_path}")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    saved_config = json.load(f)
+                
+                # Normalize saved config
+                normalized_saved_config = json.loads(json.dumps(saved_config))
+                logger.info(normalized_saved_config)
+                
+                # Compare normalized configurations
+                if normalized_saved_config == normalized_input_config:
+                    model_path = os.path.join(model_dir[1], "model.pt")
+                    if os.path.exists(model_path):
+                        logger.info(f"Found matching model at {model_path}")
+                        return send_file(
+                            model_path,
+                            mimetype='application/octet-stream',
+                            as_attachment=True,
+                            download_name=f'model_{model_dir[0]}.pt'
+                        )
+                else:
+                    logger.info(f"Config mismatch: \nSaved: {normalized_saved_config}\nReceived: {normalized_input_config}")
+
+        return jsonify({"error": "No matching model found"}), 404
+
+    except Exception as e:
+        logger.error(f"Error downloading model: {str(e)}")
+        return jsonify({"error": "Failed to download model"}), 500

@@ -235,6 +235,38 @@ function ModelBuilder() {
     });
   };
 
+  const downloadModels = async () => {
+    try {
+        const token = await getAccessTokenSilently();
+        const modelConfig = generateJson(layers);
+        const response = await fetch("http://127.0.0.1:4000/api/download-model", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(modelConfig),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `model_${Date.now()}.pt`;
+        document.body.appendChild(a);
+        a.click();
+        
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    } catch (error) {
+        console.error("Error downloading model:", error);
+    }
+};
+
   return (
     <div>
       <div className="container">
@@ -264,6 +296,13 @@ function ModelBuilder() {
             disabled={!isTraining} //cant click unlesss traing is active
           >
             Stop Training
+          </button>
+          <button
+              className="downloadModels"
+              onClick={downloadModels}  // Remove the immediate invocation
+              disabled={isTraining}
+          >
+              Download Models
           </button>
         </div>
         {backendResults && (

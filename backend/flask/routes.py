@@ -265,20 +265,6 @@ def download_model():
     except Exception as e:
         logger.error(f"Error downloading model: {str(e)}")
         return jsonify({"error": "Failed to download model"}), 500
-
-# get all users
-@main_routes.route("/api/users", methods=["GET"])
-@helper.token_required
-def get_users():
-    user_list = []
-    users = db.get_users()
-    for user in users:
-        user_list.append({})
-        user_list[-1]['user_uuid'] = user[0]
-        user_list[-1]['username'] = user[1]
-        user_list[-1]['num_models'] = len(db.get_models(user[0]))
-    return jsonify({"users": user_list}), 200
-
 # get all unique datasets
 @main_routes.route("/api/datasets", methods=["GET"])
 @helper.token_required
@@ -293,3 +279,19 @@ def get_datasets():
 
     print(dataset_model_dict)
     return jsonify({"datasets": dataset_model_dict}), 200
+
+# get all users
+@main_routes.route("/api/users", methods=["GET"])
+@helper.token_required
+def get_users():
+    user_list = []
+    users = db.get_users()
+    for user in users:
+        user_list.append({})
+        user_list[-1]['user_uuid'] = user[0]
+        user_list[-1]['username'] = user[1]
+        user_list[-1]['num_models'] = len(db.get_models(user[0]))
+        user_list[-1]['num_datasets'] = len(db.get_datasets_by_user(user[0]))
+    return jsonify({"users": user_list}), 200
+
+

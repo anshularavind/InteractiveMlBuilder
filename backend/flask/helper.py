@@ -60,13 +60,15 @@ def validate_token(token):
             algorithms=['RS256']
         )
 
+        logger.info(decoded_token)
+
         logger.info(decoded_token.get('sub'))
         
         # Format the user info in Auth0 structure
         user_info = {
             'sub': decoded_token.get('sub'),
-            'nickname': decoded_token.get('sub'),
-            'given_name': 'Unknown',
+            'nickname': decoded_token.get('https://InteractiveMlApi/nickname'),
+            'given_name': decoded_token.get('https://InteractiveMlApi/name'),
             'family_name': 'Unknown',
             'name': 'Unknown',
             'picture': '',

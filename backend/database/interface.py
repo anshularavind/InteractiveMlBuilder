@@ -33,7 +33,8 @@ class UserDatabase():
         self.cur.execute("""CREATE TABLE IF NOT EXISTS datasets (
             uuid INT PRIMARY KEY,
             user_uuid VARCHAR(255) REFERENCES users (uuid),
-            dataset_path VARCHAR(255),
+            model_uuid INT REFERENCES models (uuid),
+            dataset_name VARCHAR(255),
             created_at TIMESTAMP
         );
         """)
@@ -155,24 +156,35 @@ class UserDatabase():
         self.cur.execute("SELECT * FROM models WHERE user_uuid=%s", (user_uuid,))
         return self.cur.fetchall()
 
-    def add_dataset(self, user_uuid: str, dataset_name: str, dataset_path: str):
+    def add_dataset(self, user_uuid: str, model_uuid: int, dataset_name: str):
         # hashing
-        dataset_uuid = self.hash(user_uuid + dataset_name)
+        dataset_uuid = self.hash(user_uuid + dataset_name) + model_uuid
         created_at = datetime.now()
-        self.cur.execute("INSERT INTO datasets (uuid, user_uuid, dataset_path, created_at) VALUES (%s, %s, %s, %s)",
-                         (dataset_uuid, user_uuid, dataset_path, created_at))
+        self.cur.execute("DELETE FROM datasets WHERE user_uuid=%s AND model_uuid=%s AND dataset_name=%s",
+                         (user_uuid, model_uuid, dataset_name))
+        self.cur.execute("INSERT INTO datasets (uuid, user_uuid, model_uuid, dataset_name, created_at) VALUES (%s, %s, %s, %s, %s)",
+                         (dataset_uuid, user_uuid, model_uuid, dataset_name, created_at))
         self.conn.commit()
 
-    def get_dataset(self, user_uuid: str, dataset_path: str):
-        self.cur.execute("SELECT * FROM datasets WHERE user_uuid=%s AND dataset_path=%s", (user_uuid, dataset_path))
-        return self.cur.fetchone()
+    def get_dataset(self, user_uuid: str, model_uuid: int, dataset_name: str):
+        self.cur.execute("SELECT * FROM datasets WHERE user_uuid=%s AND model_uuid=%s AND dataset_name=%s",
+                         (user_uuid, model_uuid, dataset_name))
+        return self.cur.fetchall()
+
+    def get_unique_datasets(self):
+        self.cur.execute("SELECT DISTINCT dataset_name FROM datasets")
+        return self.cur.fetchall()
+
+    def get_models_by_dataset(self, dataset_name: str):
+        self.cur.execute("SELECT user_uuid, model_uuid FROM datasets WHERE dataset_name=%s", (dataset_name,))
+        return self.cur.fetchall()
 
     def clear(self):
         # DO NOT RUN THIS IN PRODUCTION
         shutil.rmtree(self.user_data_root, ignore_errors=True)
         os.makedirs(self.user_data_root, exist_ok=True)
-        self.cur.execute("DELETE FROM models")
         self.cur.execute("DELETE FROM datasets")
+        self.cur.execute("DELETE FROM models")
         self.cur.execute("DELETE FROM users")
         self.conn.commit()
 

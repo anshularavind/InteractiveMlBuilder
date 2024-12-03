@@ -114,7 +114,7 @@ function ConfigColumn({
   useEffect(() => {
     if (selectedDataset === "MNIST") {
       setDatasetSizes({ inputSize: 784, outputSize: 10 });
-    } else if (selectedDataset === "CIFAR 10") {
+    } else if (selectedDataset === "CIFAR10") {
       setDatasetSizes({ inputSize: 3072, outputSize: 10 });
     } else {
       setDatasetSizes({ inputSize: 0, outputSize: 0 });

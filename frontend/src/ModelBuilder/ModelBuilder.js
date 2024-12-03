@@ -30,7 +30,7 @@ function ModelBuilder() {
 
   const datasetItems = [
     { value: "MNIST", label: "MNIST" },
-    { value: "CIFAR 10", label: "CIFAR 10" },
+    { value: "CIFAR10", label: "CIFAR10" },
   ];
 
   const layerItems = [
@@ -81,7 +81,7 @@ function ModelBuilder() {
     if (selectedDataset === "MNIST") {
       datasetInputSize = 784;
       datasetOutputSize = 10;
-    } else if (selectedDataset === "CIFAR 10") {
+    } else if (selectedDataset === "CIFAR10") {
       datasetInputSize = 3072;
       datasetOutputSize = 10;
     }

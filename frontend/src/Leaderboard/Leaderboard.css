@@ -113,3 +113,83 @@ table td {
     border-color: #007BFF;
     box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
 }
+
+.dataset-tabs {
+    display: flex;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.dataset-tab {
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dataset-tab.active {
+    background-color: #007BFF;
+    color: #fff;
+    border-color: #007BFF;
+}
+
+.dataset-tab:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.dataset-details {
+    margin-top: 1rem;
+}
+
+.leaderboard-container {
+    text-align: center;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+}
+
+.main-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.main-tab {
+    padding: 0.75rem 2rem;
+    margin: 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: 2px solid #007BFF;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #007BFF;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.main-tab.active {
+    background-color: #007BFF;
+    color: #fff;
+    border-color: #0056b3;
+}
+
+.main-tab:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.leaderboard-title {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.leaderboard-content {
+    margin-top: 1rem;
+}

@@ -57,7 +57,7 @@ channel_classes = {Conv, AdaptivePool}
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
-    name_to_dataset = {'MNIST': Mnist, 'CIFAR 10': Cifar10, 'AirQuality': AirQuality, 'ETTh1': ETTh1}
+    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality, 'ETTh1': ETTh1}
 
     def __init__(self, model_config: dict, user_uuid: str, model_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()

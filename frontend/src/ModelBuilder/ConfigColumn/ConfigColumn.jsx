@@ -218,7 +218,7 @@ function ConfigColumn({
           output_size: (kernelSize * kernelSize),
           kernel_size: kernelSize,
           num_kernels: numKernels,
-          stride: 0,
+          stride: 1,
           padding: 0
         },
         leftTrapezoid: { base: inputSizeScaled, height: SCALING_CONSTANT },

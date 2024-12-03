@@ -5,7 +5,8 @@
   padding: 20px;
   background: linear-gradient(135deg, #f9fbff, #eef2f9);
   border-right: 2px solid #ddd;
-  height: 100vh;
+  margin-top: -77px;
+  /* height: 100vh;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
   width: 20%; /* Increased width */
@@ -13,14 +14,14 @@
 
 /* Header Styling */
 .inputBlockHeader {
-  position: sticky;
+  /* position: sticky; */
   top: 0;
-  background-color: #eef2f9;
+  /* background-color: #eef2f9; */
   z-index: 10;
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
+  padding: 10px;
+  /* border-bottom: 1px solid #ddd; */
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   margin-bottom: 3px;
 }
 

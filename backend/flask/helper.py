@@ -125,6 +125,7 @@ def train_model_task(self, model_config, user_uuid, model_uuid):
                          })
 
         # Build the model
+        #make model_config json
         model = BuiltModel(model_config, user_uuid, model_uuid, db)
         logger.info(f"Model built successfully for user {user_uuid}")
         
@@ -193,3 +194,5 @@ def get_user_info():
         return None
     token = token.split()[1]
     return validate_token(token)
+
+    

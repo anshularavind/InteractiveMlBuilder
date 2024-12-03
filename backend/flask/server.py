@@ -23,7 +23,7 @@ from helper import train_model_task  # Now this won't cause circular import
 
 app.register_blueprint(main_routes)
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.dirname(os.path.abspath(__file__))   
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:

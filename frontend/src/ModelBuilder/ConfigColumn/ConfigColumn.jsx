@@ -393,6 +393,7 @@ function ConfigColumn({
               blockInputs={blockInputs}
               handleInputChange={handleBlockInputChange}
               createLayers={addBlock}
+              selectedDataset={selectedDataset}
             />
           )}
           <br />

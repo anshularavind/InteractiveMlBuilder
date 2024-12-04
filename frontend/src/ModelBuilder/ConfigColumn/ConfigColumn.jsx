@@ -227,7 +227,7 @@ function ConfigColumn({
     const inputSizeScaled =
       (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
     const outputSizeScaled =
-      (Math.log((blockInputs.outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      (Math.log(((blockInputs.outputSize ** 2) + 1) || 1) * SCALING_CONSTANT) / log_base;
 
     let newLayer;
 
@@ -285,7 +285,7 @@ function ConfigColumn({
         type: "Conv",
         params: {
           input_size: inputSize,
-          output_size: blockInputs.outputSize,
+          output_size: blockInputs.outputSize ** 2,
           kernel_size: kernelSize,
           num_kernels: numKernels,
           stride: 1,

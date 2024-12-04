@@ -3,6 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Visualizer from "./Visualizer/Visualizer";
 import ConfigColumn from "./ConfigColumn/ConfigColumn";
 import "./ModelBuilder.css";
+import GraphParser from "./GraphParser";
 import TrainingGraph from "./TrainingGraph";
 
 //
@@ -436,7 +437,7 @@ function ModelBuilder() {
               Download Models
                </button>
          </div>
-         <TrainingGraph graphData={graphData} />
+         <GraphParser backendResults={backendResults} />
        {backendResults && (
         <div className="backend-results">
           <h3>Backend Results:</h3>

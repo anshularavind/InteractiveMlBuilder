@@ -2,6 +2,7 @@ import React from "react";
 
 function FcNNBlock({ layer }) {
   const { visParams, name } = layer;
+  console.log(layer)
   const { leftTrapezoid, rightTrapezoid, middleRectangle, width } = visParams;
 
   const height = Math.max(

@@ -55,6 +55,53 @@ function DatasetLeaderboard() {
         datasets.length > 0 ? datasets[activeDatasetIndex] : null;
 
     // Filter models by search term
+    const visualizeModel = async (model_uuid) => {
+        // use get model_config route to get model config and then visualize
+        let model_config = null;
+        try {
+            const token = await getAccessTokenSilently();
+            const response = await fetch(`http://localhost:4000/api/model-config`, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                    Accept: "application/json",
+                },
+                credentials: "include",
+                mode: "cors",
+                body: JSON.stringify({
+                    model_uuid: model_uuid
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Error fetching model config");
+            }
+            const data = await response.json();
+            if (data.model_config) {
+                console.log('Model config received:', data.model_config);
+                // Visualize model
+            } else {
+                throw new Error('Invalid data format for model config.');
+            }
+            model_config = data.model_config;
+
+        }
+
+        catch (error) {
+            console.error(error);
+        }
+
+        console.log('Model config:', JSON.stringify(model_config));
+
+        sessionStorage.setItem("model_config", JSON.stringify(model_config));
+
+        // redirect to https://localhost:3000/model-builder
+        window.location.href = 'https://localhost:3000/model-builder';
+
+
+    }
+
     const filteredModels =
         activeDataset && activeDataset.models
             ? activeDataset.models.filter(
@@ -102,7 +149,11 @@ function DatasetLeaderboard() {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{model.user_uuid}</td>
-                                    <td>{model.model_uuid}</td>
+                                    <td>
+                                        <button onClick={() => visualizeModel(model.model_uuid)}>
+                                            {model.model_uuid}
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

@@ -295,4 +295,20 @@ def get_users():
         user_list[-1]['num_datasets'] = len(db.get_datasets_by_user(user[0]))
     return jsonify({"users": user_list}), 200
 
+#get model config using model_uuid and user_uuid
+@main_routes.route("/api/model-config", methods=["POST"])
+@helper.token_required
+def get_model_config():
+    user_uuid = helper.get_user_info()["sub"]
+    model_uuid = request.json.get("model_uuid")
+    logger.info(f"Received model config request - user_uuid: {user_uuid}, model_uuid: {model_uuid}")
+    model_dir = db.get_model_dir(user_uuid, model_uuid)
+    if not model_dir:
+        return jsonify({"error": "Model not found"}), 404
+    if not os.path.exists(os.path.join(model_dir, "config.json")):
+        return jsonify({"error": "Config not found"}), 404
+    with open(os.path.join(model_dir, "config.json"), "r") as f:
+        model_config = json.load(f)
+    return jsonify({"model_config": model_config}), 200
+
 

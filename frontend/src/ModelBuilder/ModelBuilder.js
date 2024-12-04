@@ -407,19 +407,26 @@ function ModelBuilder() {
           >
               Download Models
                </button>
-         </div>
-         <GraphParser backendResults={backendResults} />
-       {backendResults && (
-        <div className="backend-results">
-          <h3>Backend Results:</h3>
-          <pre>{JSON.stringify(backendResults, null, 2)}</pre>
         </div>
-      )}
-    </div>
+        <GraphParser backendResults={backendResults} />
+        {backendResults && (
+          <div className="backend-results">
+            <h3>Backend Results:</h3>
+            <pre>{JSON.stringify(backendResults, null, 2)}</pre>
+          </div>
+        )}
+        {/*Error Logs for front end below.For final product comment out backend-results just above and uncomment this*/}
+        {/*{backendResults && (*/}
+        {/*  <div className="error-message">*/}
+        {/*    <h3>Error:</h3>*/}
+        {/*    <p>{backendResults.error}</p>*/}
+        {/*  </div>*/}
+        {/*)}*/}
+      </div>
         <div className="buttons">
           <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
         </div>
-      </div>
+    </div>
   );
 }
 

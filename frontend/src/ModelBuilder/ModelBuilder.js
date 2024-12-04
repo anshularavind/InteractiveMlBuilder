@@ -3,6 +3,45 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Visualizer from "./Visualizer/Visualizer";
 import ConfigColumn from "./ConfigColumn/ConfigColumn";
 import "./ModelBuilder.css";
+import TrainingGraph from "./TrainingGraph";
+
+//
+// function ModelBuilder() {
+//
+
+//
+//
+//
+//
+//
+//
+// @@ -368,19 +389,20 @@ function ModelBuilder() {
+//               disabled={isTraining}
+//           >
+//               Download Models
+//           </button>
+//               </button>
+//         </div>
+//         <TrainingGraph graphData={graphData} />
+//       {backendResults && (
+//         <div className="backend-results">
+//           <h3>Backend Results:</h3>
+//           <pre>{JSON.stringify(backendResults, null, 2)}</pre>
+//         </div>
+//         {backendResults && (
+//           <div className="backend-results">
+//             <h3>Backend Results:</h3>
+//             <pre>{JSON.stringify(backendResults, null, 2)}</pre>
+//           </div>
+//         )}
+//       )}
+//     </div>
+//         <div className="buttons">
+//           <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
+//         </div>
+//       </div>
+//     </div>
+//   );
 
 function ModelBuilder() {
   const {
@@ -28,6 +67,14 @@ function ModelBuilder() {
     batch_size: 64,
     epochs: 10,
   });
+
+  // New state to track training status
+  const [graphData, setGraphData] = useState({
+    epochs: [],
+    losses: [],
+    accuracies: [],
+  });
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const datasetItems = [
     { value: "MNIST", label: "MNIST" },
@@ -214,6 +261,18 @@ function ModelBuilder() {
       const data = await response.json();
       setBackendResults(data);
 
+      if (data.logs) {
+        const newLogs = data.logs; // Replace with actual log structure
+        setGraphData((prevData) => ({
+          epochs: [...prevData.epochs, ...newLogs.map((log) => log.epoch)],
+          losses: [...prevData.losses, ...newLogs.map((log) => log.loss)],
+          accuracies: [
+            ...prevData.accuracies,
+            ...newLogs.map((log) => log.accuracy),
+          ],
+        }));
+      }
+
       // If there is an error or the logs indicate training is complete, stop fetching logs
       if (data.error !== null && data.error !== "") {
         clearInterval(intervalIdRef.current);
@@ -231,7 +290,10 @@ function ModelBuilder() {
         }
       }
     } catch (error) {
+      setErrorMessage("Error fetching logs. Please try again.");
       console.error("Error fetching logs:", error);
+      clearInterval(intervalIdRef.current);
+      setIsTraining(false);
     }
   };
 
@@ -372,19 +434,20 @@ function ModelBuilder() {
               disabled={isTraining}
           >
               Download Models
-          </button>
+               </button>
+         </div>
+         <TrainingGraph graphData={graphData} />
+       {backendResults && (
+        <div className="backend-results">
+          <h3>Backend Results:</h3>
+          <pre>{JSON.stringify(backendResults, null, 2)}</pre>
         </div>
-        {backendResults && (
-          <div className="backend-results">
-            <h3>Backend Results:</h3>
-            <pre>{JSON.stringify(backendResults, null, 2)}</pre>
-          </div>
-        )}
+      )}
+    </div>
         <div className="buttons">
           <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
         </div>
       </div>
-    </div>
   );
 }
 

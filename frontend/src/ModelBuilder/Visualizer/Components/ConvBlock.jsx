@@ -28,6 +28,12 @@ function ConvBlock({ layer }) {
     );
   }
 
+  const poolX = -width + params.num_kernels * 5 + convWidth + poolOffset;
+  const poolY = -height + params.num_kernels * 5;
+
+  const smallPoolX = poolX + poolingBlock.largeBlock / 2 - poolingBlock.smallBlock / 2;
+  const smallPoolY = poolY + poolingBlock.largeBlock - poolingBlock.smallBlock / 2
+
   return (
     <svg
       width={width}
@@ -50,8 +56,8 @@ function ConvBlock({ layer }) {
       {poolingBlock && (
         <>
           <rect
-            x={-width + params.num_kernels * 5 + convWidth + poolOffset}
-            y={-height + params.num_kernels * 5}
+            x={poolX}
+            y={poolY}
             width={poolingBlock.largeBlock}
             height={poolingBlock.largeBlock}
             fill="darkorchid"
@@ -59,20 +65,8 @@ function ConvBlock({ layer }) {
             strokeWidth={2}
           />
           <rect
-            x={
-              -width +
-              params.num_kernels * 5 +
-              convWidth +
-              poolOffset +
-              poolingBlock.largeBlock / 2 -
-              poolingBlock.smallBlock / 2
-            }
-            y={
-              -height +
-              params.num_kernels * 5 +
-              poolingBlock.largeBlock -
-              poolingBlock.smallBlock / 2
-            }
+            x={smallPoolX}
+            y={smallPoolY}
             width={poolingBlock.smallBlock}
             height={poolingBlock.smallBlock}
             fill="lavender"
@@ -81,6 +75,42 @@ function ConvBlock({ layer }) {
           />
         </>
       )}
+      <line
+        x1={poolX + 2}
+        y1={poolY + 2}
+        x2={smallPoolX}
+        y2={smallPoolY}
+        stroke="white"
+        strokeWidth={3}
+        strokeDasharray="4,5" // Defines the dashed pattern
+      />
+      <line
+        x1={poolX + poolingBlock.largeBlock - 2}
+        y1={poolY + 2}
+        x2={smallPoolX + poolingBlock.smallBlock}
+        y2={smallPoolY}
+        stroke="white"
+        strokeWidth={3}
+        strokeDasharray="4,5"
+      />
+      <line
+        x1={poolX}
+        y1={poolY + poolingBlock.largeBlock}
+        x2={smallPoolX}
+        y2={smallPoolY + poolingBlock.smallBlock}
+        stroke="black"
+        strokeWidth={3}
+        strokeDasharray="4,5" // Defines the dashed pattern
+      />
+      <line
+        x1={poolX + poolingBlock.largeBlock}
+        y1={poolY + poolingBlock.largeBlock}
+        x2={smallPoolX + poolingBlock.smallBlock}
+        y2={smallPoolY + poolingBlock.smallBlock}
+        stroke="black"
+        strokeWidth={3}
+        strokeDasharray="4,5"
+      />
     </svg>
   );
 }

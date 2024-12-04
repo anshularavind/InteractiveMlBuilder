@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import SearchBar from "./SearchBar";
 
+
 function DatasetLeaderboard() {
     const { getAccessTokenSilently } = useAuth0();
     const [datasets, setDatasets] = useState([]);
@@ -84,7 +85,7 @@ function DatasetLeaderboard() {
             } else {
                 throw new Error('Invalid data format for model config.');
             }
-            model_config = data.model_config;
+            model_config = data;
 
         }
 
@@ -94,12 +95,12 @@ function DatasetLeaderboard() {
 
         console.log('Model config:', JSON.stringify(model_config));
 
-        sessionStorage.setItem("model_config", JSON.stringify(model_config));
+        
 
         // redirect to https://localhost:3000/model-builder
         window.location.href = 'https://localhost:3000/model-builder';
 
-        
+        sessionStorage.setItem("model_config", JSON.stringify(model_config));
 
 
     }

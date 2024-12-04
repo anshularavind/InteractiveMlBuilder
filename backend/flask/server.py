@@ -95,7 +95,7 @@ def session_info():
     
 
 @app.route('/api/square', methods=['POST'])
-def xtest_celery():
+def test_celery():
     """
     Test route to square a number using Celery.
     Expects JSON input: {"number": <int>}

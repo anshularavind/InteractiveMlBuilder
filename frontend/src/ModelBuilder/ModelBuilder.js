@@ -81,13 +81,16 @@ function ModelBuilder() {
 
   useEffect(() => {
     const newConfig = generateJson(layers);
+    console.log(layers);
     setModelConfig(newConfig);
-    sessionStorage.setItem("model_config", JSON.stringify(newConfig));
+    if (newConfig?.model_config?.blocks?.length > 0)
+      sessionStorage.setItem("model_config", JSON.stringify(newConfig));
   }, [layers]);
 
   const generateJson = (updatedLayers) => {
     let datasetInputSize = datasetSizesMap[selectedDataset]?.inputSize ?? 0;
     let datasetOutputSize = datasetSizesMap[selectedDataset]?.outputSize ?? 0;
+    console.log(updatedLayers);
 
     let blocks = updatedLayers.map((layer) => {
       if (layer.type === 'FcNN' || !layer.type) {
@@ -108,6 +111,7 @@ function ModelBuilder() {
               kernel_size: layer.params.kernel_size,
               stride: layer.params.stride,
               padding: layer.params.padding,
+              output_size: layer.params.output_size,
             },
           },
           {

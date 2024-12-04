@@ -56,44 +56,43 @@ function ConfigColumn({
       outputSize: jsonConfig.output,
     });
   
-    const SCALING_CONSTANT = 25;
-    const log_base = Math.log(1.5);
-    const log_base_pool = Math.log(3);
+    
+
+    let layerConfig;
   
-    let processedLayers = [];
-    let previousConvLayerIndex = null; 
+    const processedLayers = [];
+    let previousConvLayerIndex = null;
+
   
     jsonConfig.blocks.forEach((block, index) => {
-      const inputSize =
-        index === 0
-          ? jsonConfig.input
-          : processedLayers[processedLayers.length - 1]?.params?.output_size ||
-            jsonConfig.input;
-  
-      const inputSizeScaled =
-        (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-  
-      let layerConfig;
-  
-      if (block.block === "FcNN") {
+      const inputSize = index === 0 
+        ? jsonConfig.input 
+        : processedLayers[processedLayers.length - 1]?.params?.output_size || jsonConfig.input;
+      
+        const SCALING_CONSTANT = 25;
+        const log_base = Math.log(1.5);
+        const log_base_pool = Math.log(3);
+        const inputSizeScaled =
+          (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
         const outputSizeScaled =
-          (Math.log((block.params.output_size + 1) || 1) * SCALING_CONSTANT) /
-          log_base;
-  
+          (Math.log((block.params.output_size + 1) || 1) * SCALING_CONSTANT) / log_base;
+
+        console.log("outputSizeScaled", outputSizeScaled)
+      
+      if (block.block === "FcNN") {
         const hiddenSizeScaled =
-          (Math.log((block.params.hidden_size + 1) || 1) * SCALING_CONSTANT) /
-          log_base;
-        const numHiddenLayersScaled =
-          block.params.num_hidden_layers * SCALING_CONSTANT;
+        (Math.log((block.params.hidden_size + 1) || 1) * SCALING_CONSTANT) / log_base;
+        const numHiddenLayersScaled = block.params.num_hidden_layers * SCALING_CONSTANT;
         const trapHeight = SCALING_CONSTANT * 2;
-  
+        
+        
         layerConfig = {
           id: `block-${processedLayers.length}`,
           name: `${processedLayers.length + 1}`,
           type: "FcNN",
           params: {
             input_size: inputSize,
-            ...block.params,
+            ...block.params
           },
           visParams: {
             leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
@@ -105,36 +104,37 @@ function ConfigColumn({
             width: trapHeight + numHiddenLayersScaled + trapHeight,
           },
         };
-  
+        
         processedLayers.push(layerConfig);
-        previousConvLayerIndex = null; 
+        previousConvLayerIndex = null;
+        
       } else if (block.block === "Conv") {
-        const numKernels = block.params.out_channels;
-        const outputSize = numKernels; 
-  
+        console.log("block", block)
+
+        const outputSize = block.params.output_size;
         const outputSizeScaled =
           (Math.log((outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-  
+        const poolSize = Math.sqrt(block.params.output_size);
+        const poolSizeScaled =
+          (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
         const kernelSize = block.params.kernel_size;
         const kernelSizeScaled =
           (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-  
+        const numKernels = block.params.num_kernels;
 
-        let poolSizeScaled = 0;
-        let outputLengthScaled = 0;
-  
         let outputLength;
+
         if (jsonConfig.input === 784) {
-          outputLength = Math.floor(28 - kernelSize) + 1; 
+          outputLength = Math.floor(28 - kernelSize) + 1;
         } else if (jsonConfig.input === 3072) {
-          outputLength = Math.floor(32 - kernelSize) + 1; 
-        } else {
-          outputLength = Math.floor(Math.sqrt(inputSize) - kernelSize) + 1;
+          outputLength = Math.floor(32 - kernelSize) + 1;
         }
-  
-        outputLengthScaled =
-          (Math.log((outputLength + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-  
+
+        const outputLengthScaled = 
+        (Math.log((outputLength + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
+
+        console.log("outputLength", outputLength)
+        
         layerConfig = {
           id: `block-${processedLayers.length}`,
           name: `${processedLayers.length + 1}`,
@@ -144,52 +144,18 @@ function ConfigColumn({
             output_size: outputSize,
             kernel_size: kernelSize,
             num_kernels: numKernels,
-            stride: block.params.stride,
-            padding: block.params.padding,
+            stride: block.params.stride || 1,
+            padding: block.params.padding || Math.floor(kernelSize / 2),
           },
           visParams: {
             kernel_size: kernelSizeScaled,
-            width:
-              kernelSizeScaled +
-              numKernels * 5 +
-              outputLengthScaled +
-              10,
+            poolingBlock: { smallBlock: poolSizeScaled, largeBlock: outputLengthScaled },
+            width: kernelSizeScaled + numKernels * 5 + outputLengthScaled + 10,
           },
         };
-  
+        
         processedLayers.push(layerConfig);
-        previousConvLayerIndex = processedLayers.length - 1; 
-      } else if (block.block === "Pool") {
-        if (previousConvLayerIndex !== null) {
-
-          const poolOutputSize = block.params.output_size;
-          const poolSize = Math.sqrt(poolOutputSize);
-  
-
-          const poolSizeScaled =
-            (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-          const outputLengthScaled =
-            (Math.log((poolOutputSize + 1) || 1) * SCALING_CONSTANT) /
-            log_base_pool;
-  
-          const prevConvLayer = processedLayers[previousConvLayerIndex];
-  
-          prevConvLayer.visParams.poolingBlock = {
-            smallBlock: poolSizeScaled,
-            largeBlock: outputLengthScaled,
-          };
-  
-          const numKernels = prevConvLayer.params.num_kernels;
-          prevConvLayer.visParams.width =
-            prevConvLayer.visParams.kernel_size +
-            numKernels * 5 +
-            outputLengthScaled +
-            10;
-  
-          previousConvLayerIndex = null; 
-        } else {
-          console.warn("Pool block without preceding Conv block");
-        }
+        previousConvLayerIndex = processedLayers.length - 1;
       }
     });
   

@@ -17,6 +17,7 @@ fsspec==2024.10.0
 greenlet==3.0.3
 idna==3.10
 inflection==0.5.1
+iniconfig==2.0.0
 itsdangerous==2.2.0
 jsonpointer==2.1
 jwt==1.3.1

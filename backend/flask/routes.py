@@ -38,7 +38,7 @@ def define_model():
         data = request.json
         #username = data.get("username")
         model_config = data.get("model_config")
-        dataset = data.get("dataset")
+        dataset = model_config.get("dataset")
 
         #logger.info(f"Received request - username: {username}")
         logger.info(f"Model config: {model_config}")

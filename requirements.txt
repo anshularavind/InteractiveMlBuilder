@@ -8,7 +8,7 @@ cffi==1.17.1
 charset-normalizer==3.4.0
 cryptography==43.0.3
 dask==2.10.1
-datashape==0.5.4
+datashape==0.5.2
 distributed==2.10.0
 filelock==3.16.1
 Flask==3.1.0
@@ -23,6 +23,7 @@ jwt==1.3.1
 mccabe==0.6.1
 mpmath==1.3.0
 networkx==3.4.2
+packaging==24.2
 pillow==11.0.0
 ply==3.11
 protobuf==3.20.3
@@ -30,7 +31,7 @@ psycopg2==2.9.10
 pycparser==2.22
 pyjwt==2.10.0
 pyls-spyder==0.4.0
-pynvim==0.5.0
+pytest==8.3.4
 python-dotenv==1.0.1
 redis==5.0.0  
 requests==2.32.3

@@ -17,8 +17,9 @@ function Profile() {
     const getUsers = async () => {
       try {
         const token = await getAccessTokenSilently();
-        const response = await fetch('http://localhost:4000/api/users', {
-          method: 'GET',
+        console.log("Fetching users from backend...");
+        const response = await fetch("http://localhost:4000/api/users", {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -27,27 +28,31 @@ function Profile() {
           credentials: "include",
           mode: "cors",
         });
-
+  
         if (!response.ok) {
           throw new Error(`Error fetching users: ${response.statusText}`);
         }
-
         const data = await response.json();
-        if (Array.isArray(data.users)) {
-          const currentUser = data.users.find((u) => u.username === user?.nickname);
-          setUsers(currentUser || {}); // Set the current user's data
+        if (data.users && Array.isArray(data.users)) {
+          console.log("Users received:", data.users);
+          setUsers(data.users[0]); // Update state with user data
         } else {
-          throw new Error('Invalid data format for users.');
+          console.error("Invalid data format for users.");
+          setUsers({}); // Set to an empty object if data is invalid
         }
       } catch (err) {
-        console.error('Error fetching users:', err);
-        setError(err.message);
-        setUsers({}); // Handle errors by setting an empty object
+        console.error(err);
+        setError("Failed to fetch user insights");
+        setUsers({}); // Ensure state is updated to stop the loading spinner
       }
+      const token = await getAccessTokenSilently();
+  console.log("Token fetched:", token);
     };
-
+  
     getUsers();
-  }, [getAccessTokenSilently, user]);
+  }, [getAccessTokenSilently]);
+  
+  
 
   if (isLoading || !users) {
     return <div>Loading user insights...</div>;
@@ -61,6 +66,10 @@ function Profile() {
     return <div>No data available for this user.</div>;
   }
 
+  if (!users || Object.keys(users).length === 0) {
+    return <div>No data available for this user.</div>;
+  }
+  
   const insights = [
     { label: "Models Trained", value: users.num_models || 0 },
     { label: "Datasets Used", value: users.num_datasets || 0 },

@@ -298,6 +298,15 @@
   width: 20%;
   margin: 1%; /* Center it horizontally */
 }
+
+.error-message {
+  width: 20%;
+  margin: 1%; /* Center it horizontally */
+  color: red;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
 /*block param section*/
 .blockList {
   margin-top: 20px;

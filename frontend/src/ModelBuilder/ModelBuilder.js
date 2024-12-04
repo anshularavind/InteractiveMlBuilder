@@ -6,44 +6,6 @@ import "./ModelBuilder.css";
 import GraphParser from "./GraphParser";
 import TrainingGraph from "./TrainingGraph";
 
-//
-// function ModelBuilder() {
-//
-
-//
-//
-//
-//
-//
-//
-// @@ -368,19 +389,20 @@ function ModelBuilder() {
-//               disabled={isTraining}
-//           >
-//               Download Models
-//           </button>
-//               </button>
-//         </div>
-//         <TrainingGraph graphData={graphData} />
-//       {backendResults && (
-//         <div className="backend-results">
-//           <h3>Backend Results:</h3>
-//           <pre>{JSON.stringify(backendResults, null, 2)}</pre>
-//         </div>
-//         {backendResults && (
-//           <div className="backend-results">
-//             <h3>Backend Results:</h3>
-//             <pre>{JSON.stringify(backendResults, null, 2)}</pre>
-//           </div>
-//         )}
-//       )}
-//     </div>
-//         <div className="buttons">
-//           <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-
 function ModelBuilder() {
   const {
     getAccessTokenSilently,
@@ -165,8 +127,7 @@ function ModelBuilder() {
           {
             block: 'Pool',
             params: {
-              output_size: (selectedDataset === "MNIST" || selectedDataset === "CIFAR10") ?
-                  layer.params.output_size ** 2 : layer.params.output_size,
+              output_size: layer.params.output_size,
             }
           },
         ];

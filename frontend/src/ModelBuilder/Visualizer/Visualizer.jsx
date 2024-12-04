@@ -11,6 +11,17 @@ function Visualizer({ layers }) {
     height: 0,
   });
 
+  const [hoveredBlock, setHoveredBlock] = useState(null);
+
+  const handleMouseEnter = (blockId) => {
+    setHoveredBlock(blockId);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredBlock(null);
+  };
+
+
   useEffect(() => {
     const updateDimensions = () => {
       if (containerRef.current) {
@@ -124,6 +135,8 @@ function Visualizer({ layers }) {
     }
   }, [layers, containerDimensions]);
 
+
+
   const renderBlock = (block) => {
     const { type } = block;
 
@@ -134,6 +147,8 @@ function Visualizer({ layers }) {
     return <FcNNBlock layer={block} />;
   };
 
+
+  
   return (
     <div
       ref={containerRef}
@@ -149,11 +164,36 @@ function Visualizer({ layers }) {
             top: `${layer.position.y}px`,
           }}
         >
-          {renderBlock(layer)}
+          <div
+            className="block-container"
+            style={{ position: "relative", display: "inline-block" }}
+            onMouseEnter={(e) => {
+              const tooltip = document.getElementById(`tooltip-${layer.id}`);
+              tooltip.style.display = "block";
+            }}
+            onMouseLeave={(e) => {
+              const tooltip = document.getElementById(`tooltip-${layer.id}`);
+              tooltip.style.display = "none";
+            }}
+          >
+            {/* Tooltip */}
+            <div
+              id={`tooltip-${layer.id}`}
+              className="tooltip"
+              
+            >
+              Hi block{layer.id}
+            </div>
+  
+            {/* Render the block */}
+            {renderBlock(layer)}
+          </div>
         </div>
       ))}
     </div>
   );
+  
+  
 }
 
 export default Visualizer;

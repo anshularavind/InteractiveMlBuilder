@@ -351,7 +351,17 @@ function ModelBuilder() {
     } catch (error) {
         console.error("Error downloading model:", error);
     }
-};
+  };
+
+  const isTrainingDisabled = () => {
+    if (isTraining || layers.length === 0)
+      return true;
+    let datasetOutputSize = datasetSizesMap[selectedDataset]?.outputSize ?? 0;
+    let lastLayerOutputSize = layers[layers.length - 1].params.output_size;
+    if (datasetOutputSize === 0 || lastLayerOutputSize !== datasetOutputSize)
+        return true;
+    return false;
+  }
 
   return (
     <div>
@@ -379,7 +389,7 @@ function ModelBuilder() {
           <button
             className="sendBackend"
             onClick={handleSendJsonClick}
-            disabled={isTraining}
+            disabled={isTrainingDisabled()}
           >
             {isTraining ? "Training in Progress..." : "TRAIN"}
           </button>

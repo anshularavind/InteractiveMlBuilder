@@ -3,26 +3,13 @@ from celery.signals import task_failure
 from ml.block_builder import BuiltModel
 from ml.train import train_model
 from database import interface as database
-from jwcrypto import jwe, jwk
-from os import environ as env
-import json
-from urllib.request import urlopen
-
-from authlib.oauth2.rfc7523 import JWTBearerTokenValidator
-from authlib.jose.rfc7517.jwk import JsonWebKey
-
 from functools import wraps
-from http import HTTPStatus
-from types import SimpleNamespace
-
 from flask import request, g, jsonify
-
 from jwtValidation import auth0_service, json_abort
-import requests
-from celeryApp import celery 
-
-
+from datetime import datetime
+from celeryApp import celery
 import logging
+import jwt
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
@@ -48,39 +35,33 @@ def useLogger(value):
     logger.info(value)
 
 
-import jwt
-from datetime import datetime
-
 def validate_token(token):
-    try:
-        # Decode the JWT token
-        decoded_token = jwt.decode(
-            token,
-            options={"verify_signature": False},  # Skip signature verification
-            algorithms=['RS256']
-        )
+    # Decode the JWT token
+    decoded_token = jwt.decode(
+        token,
+        options={"verify_signature": False},  # Skip signature verification
+        algorithms=['RS256']
+    )
 
-        logger.info(decoded_token)
+    logger.info(decoded_token)
 
-        logger.info(decoded_token.get('sub'))
-        
-        # Format the user info in Auth0 structure
-        user_info = {
-            'sub': decoded_token.get('sub'),
-            'nickname': decoded_token.get('https://InteractiveMlApi/nickname'),
-            'given_name': decoded_token.get('https://InteractiveMlApi/name'),
-            'family_name': 'Unknown',
-            'name': 'Unknown',
-            'picture': '',
-            'updated_at': datetime.utcnow().isoformat() + 'Z',
-            'email': '',
-            'email_verified': False
-        }
-        
-        return user_info
-        
-    except jwt.InvalidTokenError:
-        return None
+    logger.info(decoded_token.get('sub'))
+
+    # Format the user info in Auth0 structure
+    user_info = {
+        'sub': decoded_token.get('sub'),
+        'nickname': decoded_token.get('https://InteractiveMlApi/nickname'),
+        'given_name': decoded_token.get('https://InteractiveMlApi/name'),
+        'family_name': 'Unknown',
+        'name': 'Unknown',
+        'picture': '',
+        'updated_at': datetime.utcnow().isoformat() + 'Z',
+        'email': '',
+        'email_verified': False
+    }
+
+    return user_info
+
 
 def token_required(f):
     @wraps(f)
@@ -106,7 +87,6 @@ def token_required(f):
             return jsonify({"error": str(e)}), 401
             
     return decorated
-
 
 
 # @shared_task(bind=True, 

@@ -4,6 +4,7 @@ import FcNNBlock from "./Components/FcNNBlock";
 import ConvBlock from "./Components/ConvBlock";
 
 function Visualizer({ layers }) {
+  const { visParams, name, params } = layers;
   const [positionedLayers, setPositionedLayers] = useState([]);
   const containerRef = useRef(null);
   const [containerDimensions, setContainerDimensions] = useState({
@@ -182,7 +183,11 @@ function Visualizer({ layers }) {
               className="tooltip"
               
             >
-              Hi block{layer.id}
+              {Object.entries(layer.params).map(([key, value]) => (
+                <div key={key}>
+                  {key}: {value}
+                </div>
+              ))}
             </div>
   
             {/* Render the block */}

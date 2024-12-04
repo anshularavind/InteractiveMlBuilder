@@ -30,8 +30,9 @@ class FcNN(nn.Module):
 
 
 class Conv(nn.Module):
-    def __init__(self, kernel_size, input_size, is_2d=False, in_channels=1, out_channels=1, stride=1, padding=0):
+    def __init__(self, kernel_size, input_size, is_2d=False, in_channels=1, num_kernels=1, stride=1, padding=0, **kwargs):
         super(Conv, self).__init__()
+        out_channels = num_kernels
         assert kernel_size % 2 == 1, "Kernel size must be odd"
         assert stride < kernel_size, "Stride must be less than kernel size"
         assert 2 * padding < kernel_size, "Padding must be less than half the kernel size"

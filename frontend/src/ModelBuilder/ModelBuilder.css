@@ -289,6 +289,11 @@
   cursor: not-allowed;
 }
 
+.sendBackend:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
 .backend-results {
   width: 20%;
   margin: 1%; /* Center it horizontally */

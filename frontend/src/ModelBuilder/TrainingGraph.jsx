@@ -1,3 +1,4 @@
+// TrainingGraph.js
 import React from "react";
 import { Line } from "react-chartjs-2";
 import {
@@ -22,23 +23,15 @@ ChartJS.register(
   Legend
 );
 
-const TrainingGraph = ({ graphData }) => {
+const TrainingGraph = ({ graphData, title, yLabel, yMin, yMax, lineColor }) => {
   const data = {
     labels: graphData.epochs, // X-axis labels (epochs)
     datasets: [
       {
-        label: "Loss",
-        data: graphData.losses, // Y-axis values for Loss
-        borderColor: "rgba(255, 99, 132, 1)",
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderWidth: 2,
-        fill: true,
-      },
-      {
-        label: "Accuracy",
-        data: graphData.accuracies, // Y-axis values for Accuracy
-        borderColor: "rgba(54, 162, 235, 1)",
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
+        label: yLabel,
+        data: graphData.values, // Y-axis values (losses or accuracies)
+        borderColor: lineColor,
+        backgroundColor: `${lineColor}33`, // Add transparency to the background color
         borderWidth: 2,
         fill: true,
       },
@@ -53,7 +46,7 @@ const TrainingGraph = ({ graphData }) => {
       },
       title: {
         display: true,
-        text: "Training Progress",
+        text: title,
       },
     },
     scales: {
@@ -66,10 +59,10 @@ const TrainingGraph = ({ graphData }) => {
       y: {
         title: {
           display: true,
-          text: "Value",
+          text: yLabel,
         },
-        min: 0, // Set the minimum value for the y-axis
-        max: 1.5, // Adjust the maximum value as needed (e.g., 1.5 for metrics like accuracy or loss)
+        min: yMin,
+        max: yMax,
       },
     },
   };

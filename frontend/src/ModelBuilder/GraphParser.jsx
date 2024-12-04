@@ -1,3 +1,4 @@
+// GraphParser.js
 import React from "react";
 import TrainingGraph from "./TrainingGraph";
 
@@ -13,12 +14,10 @@ const GraphParser = ({ backendResults }) => {
     const lossString = backendResults.loss;
     const lossLines = lossString.trim().split("\n");
 
-    // Initialize arrays to hold epochs and losses
     const epochs = [];
     const losses = [];
 
     lossLines.forEach((line) => {
-      // Match "Epoch X/Y, Loss: Z"
       const lossMatch = line.match(/Epoch (\d+)\/\d+, Loss: ([\d.]+)/);
       if (lossMatch) {
         const epoch = parseInt(lossMatch[1], 10);
@@ -35,7 +34,6 @@ const GraphParser = ({ backendResults }) => {
     const accuracies = [];
 
     outputLines.forEach((line) => {
-      // Match "Epoch #X accuracy (%): Y"
       const accuracyMatch = line.match(/Epoch #(\d+) accuracy \(%\): ([\d.]+)/);
       if (accuracyMatch) {
         const accuracy = parseFloat(accuracyMatch[2]) / 100; // Convert percentage to decimal
@@ -51,9 +49,40 @@ const GraphParser = ({ backendResults }) => {
     };
   }
 
+  // Prepare data for the loss graph
+  const lossGraphData = {
+    epochs: graphData.epochs,
+    values: graphData.losses,
+  };
+
+  // Prepare data for the accuracy graph
+  const accuracyGraphData = {
+    epochs: graphData.epochs,
+    values: graphData.accuracies,
+  };
+
   return (
     <div>
-      {backendResults && <TrainingGraph graphData={graphData} />}
+      {backendResults && (
+        <div>
+          <TrainingGraph
+            graphData={lossGraphData}
+            title="Training Loss"
+            yLabel="Loss"
+            yMin={0}
+            yMax={Math.max(...graphData.losses) * 1.1} // Adjust y-axis max
+            lineColor="rgba(255, 99, 132, 1)" // Red color for loss
+          />
+          <TrainingGraph
+            graphData={accuracyGraphData}
+            title="Training Accuracy"
+            yLabel="Accuracy"
+            yMin={0}
+            yMax={1} // Since accuracy is between 0 and 1
+            lineColor="rgba(54, 162, 235, 1)" // Blue color for accuracy
+          />
+        </div>
+      )}
     </div>
   );
 };

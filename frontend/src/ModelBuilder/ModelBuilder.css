@@ -280,12 +280,6 @@
   cursor: not-allowed;
 }
 
-.backend-results {
-  width: 25%;
-  margin: 1%;
-  max-width: 25%;
-  max-height: 25%;
-}
 
 .backend-results h3 {
   font-size: 1.2rem;
@@ -552,3 +546,10 @@
   transition: border-color 0.2s;
   box-shadow: none 
 }
+.backend-results { 
+    max-height: 250px; 
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding: 10px; 
+    background-color: #f9f9f9;
+ }

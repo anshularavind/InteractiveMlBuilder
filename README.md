@@ -12,7 +12,7 @@ git clone https://github.com/anshularavind/InteractiveMlBuilder.git
 
 ```bash
 bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
-conda env create -f mlbuilder.yaml python=3.11.8  # Install Python dependencies
+conda env create -f mlbuilder.yaml  # Install Python dependencies
 conda activate mlbuilder  # Activate the conda environment
 cd frontend && npm install && cd ..  # Install Node.js dependencies
 brew install redis  # Install Redis

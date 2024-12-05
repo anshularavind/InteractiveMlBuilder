@@ -109,8 +109,8 @@ function DatasetLeaderboard() {
         activeDataset && activeDataset.models
             ? activeDataset.models.filter(
                   (model) =>
-                      model.user_uuid.toLowerCase().includes(searchTerm) ||
-                      model.model_uuid.toLowerCase().includes(searchTerm)
+                      model.username.toLowerCase().includes(searchTerm) ||
+                      String(model.model_uuid).toLowerCase().includes(searchTerm)
               )
             : [];
 
@@ -142,21 +142,23 @@ function DatasetLeaderboard() {
                     <table>
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>User UUID</th>
+                                <th>Rank</th>
+                                <th>Username</th>
                                 <th>Model UUID</th>
+                                <th>{activeDataset.metric}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredModels.map((model, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{model.user_uuid}</td>
+                                    <td>{model.username}</td>
                                     <td>
                                         <button onClick={() => visualizeModel(model.model_uuid)}>
                                             {model.model_uuid}
                                         </button>
                                     </td>
+                                    <td>{model.metric}</td>
                                 </tr>
                             ))}
                         </tbody>

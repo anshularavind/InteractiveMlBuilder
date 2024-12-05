@@ -270,16 +270,38 @@ def download_model():
 @main_routes.route("/api/datasets", methods=["GET"])
 @helper.token_required
 def get_datasets():
-    dataset_model_dict = []
+    def get_metric_from_model(user_uuid, model_uuid):
+        model_dir = db.get_model_dir(user_uuid, model_uuid)
+        if not model_dir:
+            return None
+        with open(os.path.join(model_dir, "output.logs"), "r") as f:
+            metric = f.read()
+
+        if metric is not '':
+            try:
+                # precision should be 4 decimal points
+                return round(float(metric.split()[-1]), 4)
+            except:
+                return None
+
+    dataset_model_list = []
     datasets = db.get_unique_datasets()
     for dataset in datasets:
-        dataset_model_dict.append({})
-        dataset_model_dict[-1]['name'] = dataset[0]
+        dataset_model_list.append({})
+        dataset_model_list[-1]['name'] = dataset[0]
+        dataset_model_list[-1]['metric'] = "Accuracy" if (dataset[0].lower() == "cifar10" or dataset[0].lower() == "mnist") else "Mean Squared Error"
         models = db.get_models_by_dataset(dataset[0])
-        dataset_model_dict[-1]['models'] = [{"user_uuid": model[0], "model_uuid": model[1]} for model in models]
+        # get username from uuid:
+        dataset_model_list[-1]['models'] = [{"user_uuid": model[0],
+                                             "model_uuid": model[1],
+                                             "username": db.get_user_name(model[0]),
+                                             "metric": get_metric_from_model(model[0], model[1])} for model in models]
 
-    print(dataset_model_dict)
-    return jsonify({"datasets": dataset_model_dict}), 200
+    print(dataset_model_list)
+    # sort dataset model list by metric, ascending if mean squared error, descending if accuracy
+    for dataset in dataset_model_list:
+        dataset['models'] = sorted(dataset['models'], key=lambda x: x['metric'] if x['metric'] is not None else -1, reverse=dataset['metric'] == "Accuracy")
+    return jsonify({"datasets": dataset_model_list}), 200
 
 # get all users
 @main_routes.route("/api/users", methods=["GET"])
@@ -293,6 +315,8 @@ def get_users():
         user_list[-1]['username'] = user[1]
         user_list[-1]['num_models'] = len(db.get_models(user[0]))
         user_list[-1]['num_datasets'] = len(db.get_datasets_by_user(user[0]))
+
+    user_list = sorted(user_list, key=lambda x: x['num_models'], reverse=True)
     return jsonify({"users": user_list}), 200
 
 #get model config using model_uuid and user_uuid

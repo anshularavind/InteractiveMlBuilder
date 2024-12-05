@@ -86,6 +86,17 @@ def train():
         model_config = data.get("model_config")
         model_uuid = db.get_model_uuid(user_uuid, model_config)
         username = helper.get_user_info()["nickname"]
+        task_id, kill_model_uuid = task_dict.get(username, (None, None))
+
+        # Kill any existing tasks
+        if task_id:
+            logger.info(f"Stopping existing task {task_id}")
+            model_dir = db.get_model_dir(user_uuid, kill_model_uuid)
+            stop_path = os.path.join(model_dir, "STOP")
+            open(stop_path, "w").close()
+            while os.path.exists(stop_path):
+                time.sleep(0.25)
+            logger.info(f"Task {task_id} terminated by user {username}")
 
         logger.info(f"Received training request - username: {username}, model_uuid: {model_uuid}")
 

@@ -230,8 +230,12 @@ function ConfigColumn({
     let newLayer;
 
     if (selectedLayer === "FcNN") {
-      const hiddenSizeScaled =
-        (Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      let hiddenSizeScaled;
+      if (blockInputs.numHiddenLayers === 0) {
+        hiddenSizeScaled = (inputSizeScaled + outputSizeScaled) / 2;
+      } else {
+        hiddenSizeScaled = (Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      }
       const numHiddenLayersScaled = blockInputs.numHiddenLayers * SCALING_CONSTANT;
       const trapHeight = SCALING_CONSTANT * 2;
 

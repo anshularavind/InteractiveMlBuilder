@@ -7,6 +7,7 @@ import About from "../About/About";
 import Profile from "../Profile/Profile";
 import Home from "../Home/Home";
 import Leaderboard from "../Leaderboard/Leaderboard";
+import Models from "../Models/Models";
 import './App.css';
 // App.js
 
@@ -84,10 +85,11 @@ function App() {
             <Routes>
               <Route path="/" element={<Navigate to="/home" />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/model-builder" element={<ModelBuilder getAccessTokenSilently={getAccessTokenSilently}/>} />
+              <Route path="/model-builder" element={<ModelBuilder/>} />
               <Route path="/about" element={<About />} />
               <Route path="/profile" element={<Profile user={user} />} />
               <Route path="/leaderboard" element={<Leaderboard />} />
+              <Route path="/models" element={<Models/>} />
             </Routes>
           </>
         )}

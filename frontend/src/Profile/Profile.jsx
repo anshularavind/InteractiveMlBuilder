@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Profile.css";
+import ModelsTable from "../Models/Models";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function Profile() {
@@ -82,12 +83,20 @@ function Profile() {
       <p className="profile-subtitle">Here are your ML Model Builder insights:</p>
 
       <div className="profile-insights">
-        {insights.map((insight, index) => (
+      {insights.map((insight, index) => (
+        insight.label === "Models Trained" ? (
           <div key={index} className="insight-card">
             <h2 className="insight-value">{insight.value}</h2>
             <p className="insight-label">{insight.label}</p>
           </div>
-        ))}
+        ) : (
+          <div key={index} className="insight-card">
+            <h2 className="insight-value">{insight.value}</h2>
+            <p className="insight-label">{insight.label}</p>
+          </div>
+        )
+      ))}
+      <ModelsTable />
       </div>
     </div>
   );

@@ -3,6 +3,13 @@
 
 ## Installation Instructions
 Make sure you have conda installed on your system. If not, you can install it from [here](https://docs.conda.io/projects/conda/en/latest/index.html). Make sure you also have brew as well.
+
+```bash
+# Clone the repository into your local by running:
+git clone https://github.com/anshularavind/InteractiveMlBuilder.git
+# Cd into that repository
+```
+
 ```bash
 bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
 conda env create -f mlbuilder.yaml python=3.11.8  # Install Python dependencies

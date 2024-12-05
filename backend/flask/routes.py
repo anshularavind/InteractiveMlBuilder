@@ -216,7 +216,17 @@ def stop_train():
         }), 500
 
 
-#list all models
+# #list all models
+# @main_routes.route("/api/models", methods=["GET"])
+# @helper.token_required
+# def get_models():
+#     user_uuid = helper.get_user_info()["sub"]
+#     if not user_uuid:
+#         return jsonify({"error": "User not found"}), 404
+
+#     models = db.get_models(user_uuid)
+#     return jsonify({"models": models}), 200
+
 @main_routes.route("/api/models", methods=["GET"])
 @helper.token_required
 def get_models():
@@ -225,7 +235,12 @@ def get_models():
         return jsonify({"error": "User not found"}), 404
 
     models = db.get_models(user_uuid)
-    return jsonify({"models": models}), 200
+    model_list = []
+    for model in models:
+        model_list.append({})
+        model_list[-1]['model_uuid'] = model[0]
+        model_list[-1]['model_config'] = json.load(open(os.path.join(model[2], "config.json")))
+    return jsonify({"models": model_list}), 200
 
 @main_routes.route("/api/download-model", methods=["POST"])
 @helper.token_required
@@ -292,7 +307,7 @@ def get_datasets():
         with open(os.path.join(model_dir, "output.logs"), "r") as f:
             metric = f.read()
 
-        if metric is not '':
+        if metric != '':
             try:
                 # precision should be 4 decimal points
                 return round(float(metric.split()[-1]), 8)

@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, Dataset
 import torch
 from torch import nn
 from backend.datasets.base_dataset import BaseDataset
+import sys
 
 class ETTh1Dataset(Dataset):
     def __init__(self, data, forecast_size, input_size):
@@ -46,7 +47,12 @@ class ETTh1(BaseDataset):
     @staticmethod
     def __get_etth1_data_loaders(batch_size=64):
         # Load the dataset
-        dataset_path = 'backend/datasets/local_data/ETTh1.csv'
+        sys_path = sys.path[0]
+        while 'backend' not in os.listdir(sys_path) and 'InteractiveMlBuilder' in sys_path:
+            if "InteractiveMlBuilder" not in sys_path:
+                raise FileNotFoundError("Not in InteractiveMlBuilder directory")
+            sys_path = os.path.dirname(sys_path)
+        dataset_path = os.path.join(sys_path, 'backend/datasets/local_data/etth1.csv')
         data = pd.read_csv(dataset_path)
 
         # Ensure the date column is properly formatted

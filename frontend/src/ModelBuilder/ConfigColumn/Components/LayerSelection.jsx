@@ -1,6 +1,18 @@
 import "../../ModelBuilder.css";
 
-function LayerSelection({ selectedItem, dropdownOpen, toggleDropdown, layerItems, handleItemClick }) {
+function LayerSelection({ selectedItem, dropdownOpen, toggleDropdown, handleItemClick, layers }) {
+  let layerItems;
+  if (layers.length > 0 && layers[layers.length - 1].type === "FcNN") {
+    layerItems = [
+      {value: "FcNN", label: "FcNN"},
+    ];
+  } else {
+    layerItems = [
+      {value: "FcNN", label: "FcNN"},
+      {value: "Conv", label: "Conv"},
+    ];
+  }
+
   return (
     <div>
       <div className="dropdown">

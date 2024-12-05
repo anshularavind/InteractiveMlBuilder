@@ -70,9 +70,12 @@
 
 .clearButton {
   position: absolute;
-  bottom: 10vh;
+  top: 160px;
   right: 20px;
-  padding: 10px 20px;
+  display: flex;
+
+  flex-direction: column;
+  padding: 10px 15px;
   font-size: 1rem;
   color: #fff;
   background: linear-gradient(135deg, #d9534f, #c9302c);

@@ -381,26 +381,23 @@ function ModelBuilder() {
         <Visualizer layers={layers} onLayerDragStop={onLayerDragStop} />
         <div className="buttons">
           <button
-            className="sendBackend"
-            onClick={handleSendJsonClick}
-            disabled={isTrainingDisabled()}
+              className="sendBackend"
+              onClick={handleSendJsonClick}
+              disabled={isTrainingDisabled()}
           >
             {isTraining ? "Training in Progress..." : "TRAIN"}
           </button>
           <button
-            className="stopTraining"
-            onClick={stopTraining}
-            disabled={!isTraining} //cant click unlesss traing is active
+              className="stopTraining"
+              onClick={stopTraining}
+              disabled={!isTraining} //cant click unlesss traing is active
           >
             Stop Training
           </button>
-          <button
-              className="downloadModels"
-              onClick={downloadModels}  // Remove the immediate invocation
-              disabled={isTraining}
-          >
-              Download Models
-               </button>
+          <button className="downloadModels" onClick={downloadModels} disabled={isTraining}>
+            Download Models
+          </button>
+          <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
         </div>
         <div>
           <div className="training-graphs">
@@ -421,9 +418,6 @@ function ModelBuilder() {
           )}
         </div>
       </div>
-        <div className="buttons">
-          <button className="clearButton" onClick={removeBlocks}>Clear Model</button>
-        </div>
     </div>
   );
 }

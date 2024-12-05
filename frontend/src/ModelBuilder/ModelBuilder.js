@@ -90,7 +90,7 @@ function ModelBuilder() {
     setModelConfig(newConfig);
     if (newConfig?.model_config?.blocks?.length > 0)
       sessionStorage.setItem("model_config", JSON.stringify(newConfig));
-  }, [layers]);
+  }, [layers, trainInputs]);
 
   const generateJson = (updatedLayers) => {
     let datasetInputSize = datasetSizesMap[selectedDataset]?.inputSize ?? 0;

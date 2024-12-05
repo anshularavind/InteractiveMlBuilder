@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useState, useEffect, useCallback} from 'react';
 import { data } from 'react-router-dom';
+import '../Leaderboard/Leaderboard.css';
 
 const ModelsTable = () => {
     const { getAccessTokenSilently } = useAuth0();
@@ -77,7 +78,7 @@ const ModelsTable = () => {
                     <tr key={model.model_uuid}>
                         <td>{model.model_uuid}</td>
                         <td>
-                            <button onClick={() => handleLookAtModel(model)}>Look at Model</button>
+                            <button className="UUID_button" onClick={() => handleLookAtModel(model)}>Look at Model</button>
                         </td>
                         <td>{ model.model_config.dataset }</td>
                     </tr>

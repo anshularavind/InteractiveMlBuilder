@@ -5,6 +5,7 @@ import torch
 from torch import nn
 from backend.datasets.base_dataset import BaseDataset
 import sys
+import os
 
 class ETTh1Dataset(Dataset):
     def __init__(self, data, forecast_size, input_size):
@@ -27,10 +28,19 @@ class ETTh1(BaseDataset):
     accuracy_descriptor = 'MSE'
     forecast_size = 3
     input_size = 9
+    dataset_path = None
 
     def __init__(self, batch_size=64):
         super().__init__(batch_size=batch_size)
         self.batch_size = batch_size
+        if ETTh1.dataset_path is None:
+            sys_path = sys.path[0]
+            while 'backend' not in os.listdir(sys_path) and 'InteractiveMlBuilder' in sys_path:
+                if "InteractiveMlBuilder" not in sys_path:
+                    raise FileNotFoundError("Not in InteractiveMlBuilder directory")
+                sys_path = os.path.dirname(sys_path)
+            ETTh1.dataset_path = os.path.join(sys_path, 'backend/datasets/local_data/etth1.csv')
+
         self.train_loader, self.test_loader = ETTh1.__get_etth1_data_loaders(batch_size=batch_size)
 
     def get_output_size(self):
@@ -47,13 +57,7 @@ class ETTh1(BaseDataset):
     @staticmethod
     def __get_etth1_data_loaders(batch_size=64):
         # Load the dataset
-        sys_path = sys.path[0]
-        while 'backend' not in os.listdir(sys_path) and 'InteractiveMlBuilder' in sys_path:
-            if "InteractiveMlBuilder" not in sys_path:
-                raise FileNotFoundError("Not in InteractiveMlBuilder directory")
-            sys_path = os.path.dirname(sys_path)
-        dataset_path = os.path.join(sys_path, 'backend/datasets/local_data/etth1.csv')
-        data = pd.read_csv(dataset_path)
+        data = pd.read_csv(ETTh1.dataset_path)
 
         # Ensure the date column is properly formatted
         data['date'] = pd.to_datetime(data['date'], errors='coerce')

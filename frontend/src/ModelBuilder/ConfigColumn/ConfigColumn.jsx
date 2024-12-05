@@ -336,9 +336,17 @@ function ConfigColumn({
           datasetItems={datasetItems}
           handleItemClick={handleDatasetClick}
         />
-        <h4>Input Size: {datasetSizes.inputSize}</h4>
-        <h4>Output Size: {datasetSizes.outputSize}</h4>
-      </div>
+         <div className="datasetInfo">
+    <div className="infoItem">
+      <span className="infoLabel">Input Size</span>
+      <span className="infoValue">{datasetSizes.inputSize}</span>
+    </div>
+    <div className="infoItem">
+      <span className="infoLabel">Output Size</span>
+      <span className="infoValue">{datasetSizes.outputSize}</span>
+    </div>
+  </div>
+</div>
       {selectedDataset && (
         <div className="inputBlockContent">
           <h2>Add Blocks</h2>

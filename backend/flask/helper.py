@@ -1,5 +1,7 @@
 from celery import shared_task, Celery
 from celery.signals import task_failure
+from celery.result import AsyncResult
+from celeryApp import celery
 from ml.block_builder import BuiltModel
 from ml.train import train_model
 from database import interface as database
@@ -33,6 +35,11 @@ logger.addHandler(handler)
 
 def useLogger(value):
     logger.info(value)
+
+
+def check_task_completed(task_id):
+    task_state = AsyncResult(task_id, app=celery).state
+    return task_state == 'SUCCESS' or task_state == 'FAILURE'
 
 
 def validate_token(token):

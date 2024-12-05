@@ -291,7 +291,7 @@ def get_datasets():
         if metric is not '':
             try:
                 # precision should be 4 decimal points
-                return round(float(metric.split()[-1]), 4)
+                return round(float(metric.split()[-1]), 8)
             except:
                 return None
 

@@ -95,7 +95,7 @@ def session_info():
     
 
 @app.route('/api/square', methods=['POST'])
-def test_celery():
+def xtest_celery():
     """
     Test route to square a number using Celery.
     Expects JSON input: {"number": <int>}
@@ -115,7 +115,6 @@ def test_celery():
 
 
 if __name__ == "__main__":
-    import os
     # Get the absolute path to the directory containing server.py
     base_dir = os.path.dirname(os.path.abspath(__file__))
     

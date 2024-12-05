@@ -193,3 +193,19 @@ table td {
 .leaderboard-content {
     margin-top: 1rem;
 }
+
+.UUID_button {
+  
+
+
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}

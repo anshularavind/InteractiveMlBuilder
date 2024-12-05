@@ -131,7 +131,7 @@ dependencies:
   - orc=2.0.1
   - packaging=24.1
   - pandas=2.2.3
-  - pillow=9.2.0
+  - pillow=10.4.0
   - pip=24.2
   - prompt-toolkit=3.0.48
   - prompt_toolkit=3.0.48

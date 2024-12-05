@@ -385,7 +385,7 @@ function ModelBuilder() {
               onClick={handleSendJsonClick}
               disabled={isTrainingDisabled()}
           >
-            {isTraining ? "Training in Progress..." : "TRAIN"}
+            {isTraining ? "Training in Progress..." : "Train"}
           </button>
           <button
               className="stopTraining"

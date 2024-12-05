@@ -14,12 +14,13 @@ def init_db():
 
 
 def test_mnist_nn_model():
-    mnist_nn_model = '''{
+    mnist_nn_model = {
         "input": 784,
         "output": 10,
         "dataset": "MNIST",
         "LR": "0.001",
         "batch_size": 2048,
+        "epochs": 2,
         "blocks": [
             {
                 "block": "FcNN",
@@ -46,20 +47,22 @@ def test_mnist_nn_model():
                 }
             }
         ]
-    }'''
+    }
 
     # training both models to test basic functionality
-    model = BuiltModel(mnist_nn_model, 'test_user', init_db(), '..')
-    result = train_model(model, 2)
+    model = BuiltModel(mnist_nn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)
     assert not math.isnan(result), 'Model training failed'
 
 
 def test_mnist_cnn_model():
-    mnist_cnn_model = '''{
+    mnist_cnn_model = {
         "input": 784,
         "output": 10,
         "dataset": "MNIST",
         "LR": "0.001",
+        "batch_size": 2048,
+        "epochs": 2,
         "blocks": [
             {
                 "block": "Conv",
@@ -108,7 +111,7 @@ def test_mnist_cnn_model():
                 }
             }
         ]
-    }'''
-    model = BuiltModel(mnist_cnn_model, 'test_user', init_db(), '..')
-    result = train_model(model, 2)
+    }
+    model = BuiltModel(mnist_cnn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)
     assert not math.isnan(result), 'Model training failed'

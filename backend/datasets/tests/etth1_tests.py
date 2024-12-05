@@ -1,24 +1,22 @@
-from backend.datasets.air_quality import AirQuality
 from backend.ml.block_builder import BuiltModel
 from backend.ml.train import train_model
 import math
-import json
+
+import os
+os.chdir('../../..')
 
 
 def init_db():
-    # user_db = UserDatabase()
-    # user_db.clear()
-    # user_db.delete()
-    # user_db = UserDatabase()
+    # Placeholder for a user database initialization, if needed
     user_db = None
     return user_db
 
 
-def test_air_quality_nn_model():
-    air_quality_nn_model = {
-        "input": 11,
-        "output": 2,
-        "dataset": "AirQuality",
+def test_etth1_nn_model():
+    etth1_nn_model = {
+        "input": 9,
+        "output": 3,
+        "dataset": "ETTh1",
         "LR": "0.001",
         "batch_size": 512,
         "epochs": 2,
@@ -42,7 +40,7 @@ def test_air_quality_nn_model():
             {
                 "block": "FcNN",
                 "params": {
-                    "output_size": 2,
+                    "output_size": 3,
                     "hidden_size": 64,
                     "num_hidden_layers": 1
                 }
@@ -50,7 +48,11 @@ def test_air_quality_nn_model():
         ]
     }
 
-    # training the model to test basic functionality
-    model = BuiltModel(air_quality_nn_model, 'test_user', 'test_model', init_db())
-    result = train_model(model)
+    # Train the model to test basic functionality
+    model = BuiltModel(etth1_nn_model, 'test_user', 'test_model', init_db())
+    result = train_model(model)  # Number of epochs set to 2 for testing
     assert not math.isnan(result), 'Model training failed'
+
+
+if __name__ == '__main__':
+    test_etth1_nn_model()

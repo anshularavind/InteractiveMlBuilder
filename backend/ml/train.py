@@ -1,16 +1,31 @@
 import torch
-import torch.nn as nn
 import time
+import os
 
 
-def train_model(model, epochs=10):
-    # Define the loss function and optimizer
+def check_stop_condition(model):
+    # Check if the model has been trained before
+    if model.user_db:
+        model_dir = model.user_db.get_model_dir(model.user_uuid, model.model_uuid)
+        stop_path = os.path.join(model_dir, 'STOP')
+        if os.path.exists(stop_path):
+            os.remove(stop_path)
+            print('Received signal to stop training...')
+            model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Received signal to stop training...', 'error')
+            return True
+    return False
+
+
+def train_model(model):
+    # Define the loss function and optimizer and epochs
+    epochs = model.epochs
     dataset = model.dataset
     criterion = dataset.criterion
     optimizer = torch.optim.Adam(model.parameters(), lr=model.lr)
 
     print('Training model...')
-    model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Training model...', 'output')
+    if model.user_db:
+        model.user_db.save_model_logs(model.user_uuid, model.model_uuid, 'Training model...', 'output')
 
     start = time.time()
 
@@ -21,6 +36,8 @@ def train_model(model, epochs=10):
     for epoch in range(epochs):
         epoch_loss = 0
         for i, (x, y) in enumerate(dataset.train_loader):
+            if check_stop_condition(model):
+                return -1
             # Forward pass
             outputs = model(x)
             loss = criterion(outputs, y)
@@ -37,7 +54,8 @@ def train_model(model, epochs=10):
                 print ('Epoch [{}/{}], Step [{}/{}], Loss: {:.4f}'
                        .format(epoch+1, epochs, i+1, len(dataset.train_loader), loss.item()))
         epoch_loss /= len(dataset.train_loader)
-        model.user_db.save_model_logs(model.user_uuid, model.model_uuid, f'Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss}', 'loss')
+        if model.user_db:
+            model.user_db.save_model_logs(model.user_uuid, model.model_uuid, f'Epoch {epoch + 1}/{epochs}, Loss: {epoch_loss}', 'loss')
 
         # Test
         model.eval()
@@ -45,6 +63,8 @@ def train_model(model, epochs=10):
             correct = 0
             total = 0
             for x, y in dataset.test_loader:
+                if check_stop_condition(model):
+                    return -1
                 outputs = model(x)
                 new_correct, new_total = dataset.get_eval_numbers(outputs, y)
                 correct += new_correct
@@ -59,10 +79,14 @@ def train_model(model, epochs=10):
             if epoch + 1 != epochs:
                 output_str = time_elapsed_str + f'\nEpoch #{epoch + 1} {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
-                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
+                if model.user_db:
+                    model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
             else:
                 output_str = time_elapsed_str + f'\nFinal {dataset.accuracy_descriptor}: {accuracy}'
                 print(output_str)
-                model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
+                if model.user_db:
+                    model.user_db.save_model_logs(model.user_uuid, model.model_uuid, output_str, 'output')
+
+        model.save_model()
 
     return accuracy

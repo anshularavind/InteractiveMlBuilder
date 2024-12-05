@@ -1,214 +1,554 @@
-.headerButton {
-    padding: 5px 15px;
-    font-size: 1rem;
-    color: #fff;
-    background-color: #357abd;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-.container {
-  display: flex;
-  height: 100vh;
-  font-family: 'Poppins', sans-serif;
-}
-
+/* General Container Styling */
 .inputBlock {
-  width: 20%;
-  padding: 20px;
-  background-color: #f0f8ff;
-  border-right: 2px solid #ddd;
   display: flex;
   flex-direction: column;
-  justify-content: center; 
-  height: 80vh; 
-  overflow-y: auto; 
+  padding-left: 20px;
+  padding-right: 20px;
+  background: linear-gradient(135deg, #f0f8ff, #eef2f9);
+  border-right: 2px solid #ddd;
+  margin-top: 0;
+  height: 100%;
+  width: 18%;
+ 
+ 
+
+  
 }
 
+/* Header Styling */
 .inputBlockHeader {
-  position: sticky;
+  /* position: sticky; */
   top: 0;
-  background-color: #f0f8ff; 
+  /* background-color: #eef2f9; */
   z-index: 10;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #ddd;
-  width: 100%; 
+  padding: 0; 
+  /* border-bottom: 1px solid #ddd; */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  /* margin-bottom: 3px; */
 }
 
+.inputBlockHeader h1 {
+  font-size: 1.6rem;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+
+/* Content Section Styling */
 .inputBlockContent {
   flex-grow: 1;
-  overflow-y: auto; 
-  margin-top: 10px;
-  background-color: #f0f8ff
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* Space between elements */
+  padding: 0;
+  border-radius: 0;
 }
 
-.module {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  width: 200px;
-  margin-bottom: 10px;
-  background-color: #fff;
-}
-
-.moduleHeader {
-  background-color: #e0e0e0;
-  padding: 5px;
-  font-size: 1.1rem;
-  cursor: pointer;
+/* Remove Block Button Styling */
+.removeBlock {
   text-align: center;
-  border-radius: 5px;
-  border: 1px solid #ddd;
+  margin-bottom: 0; /* No margin below */
 }
 
-.moduleContent {
-  padding: 5px;
-  background-color: #ffffff;
-  border-radius: 5px;
-  margin-top: 5px;
-}
 
-.addButton {
-  font-size: 1.5rem;
-  padding: 10px;
-  cursor: pointer;
-  background-color: #4a90e2;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-.addButton:hover {
-  background-color: #4a90e2;
-}
-
-.layersArea {
-  width: 75%;
-  position: relative;
-  background-color: #f9f9f9;
-  overflow: hidden;
-  padding: 10px;
-  direction: ltr;
-}
-
-.input {
+.deleteButton {
   width: 100%;
-  padding: 5px;
-  font-size: 1rem;
-  margin-top: 5px;
-  box-sizing: border-box;
-}
-
-.addButton {
+  max-width: 200px;
   padding: 10px 20px;
   font-size: 1rem;
   color: #fff;
-  background-color: #4a90e2;
+  background: linear-gradient(135deg, #d9534f, #c9302c);
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
-  margin-top: 10px;
+  transition: background 0.3s, transform 0.2s;
 }
 
-.layer {
-  width: 150px;
-  padding: 10px;
-  text-align: center;
-  background-color: #e3f2fd;
-  border: 1px solid #90caf9;
-  border-radius: 5px;
-  cursor: grab;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+
+.clearButton {
   position: absolute;
+  top: 160px;
+  right: 20px;
+  display: flex;
+
+  flex-direction: column;
+  padding: 10px 15px;
+  font-size: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, #d9534f, #c9302c);
+  border: none;
+  border-radius: 8px;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
 }
 
-.dropdown {
+.clearButton:hover {
+  background: linear-gradient(135deg, #c9302c, #a72822);
+  transform: scale(1.05);
+}
+
+/* Add Blocks Section Styling */
+.addBlocksSection {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+  width: 80%; /* Make this section wider */
+  margin: 0 auto; /* Center it */
+}
+
+.addBlocksSection h2 {
+  font-size: 1.2rem;
+  color: #333;
   margin-bottom: 15px;
-  position: relative;
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  width: 100%; 
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 
-.dropdownDatasets {
-  margin-bottom: 20px;
-  position: relative;
+/* Form Group Styling */
+.formGroup {
   display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  width: 100%; 
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  width: 100%; /* Allow inputs to stretch */
 }
 
+.formGroup label {
+  flex-basis: 40%; /* Adjust label width */
+  font-size: 1rem;
+  color: #333;
+  text-align: left;
+}
 
+.formGroup input {
+  flex-basis: 57%; /* Adjust input width */
+  padding: 5px;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.formGroup input:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.3);
+}
+
+/* Button Styling */
+.addButton {
+  margin-top: 15px;
+  padding: 12px 25px;
+  font-size: 1rem;
+  color: #fff;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.addButton:hover {
+  background: linear-gradient(135deg, #357abd, #2b5a8a);
+  transform: scale(1.05);
+}
+
+/* Dropdown Button Styling */
 .dropdownButton {
-  width: 100%; 
-  max-width: 150px; 
+  width: 100%;
+  max-width: 200px;
   padding: 10px;
   display: flex;
   align-items: center; 
   justify-content: center; 
-  background-color: #357abd;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
+  color: #fff;
+  font-size: 1rem; /* Larger font */
+  border: none;
+  border-radius: 8px; /* Rounded corners */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin: 0 auto;
+}
+
+
+
+/* Dropdown Content Styling */
+.dropdownContent {
+  position: absolute;
+  background: #ffffff; /* Clean white background */
+  border: 1px solid #ddd;
+  border-radius: 8px; /* Rounded corners */
+  margin-top: 5px;
+  z-index: 1000; /* Ensure it's on top */
+  padding: 10px 0; /* Add vertical padding */
+  width: 200px; /* Set consistent width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Drop shadow for depth */
+  animation: fadeIn 0.2s ease-in-out; /* Smooth fade-in effect */
+}
+
+/* Dropdown Item Styling */
+.dropdownItem {
+  padding: 10px 15px; /* Increase padding for better spacing */
+  font-size: 1rem;
+  color: #333; /* Neutral text color */
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+} 
+
+
+/* General Layer Selection and Train Section */
+.layerSelection,
+.trainSection {
+  margin-top: 20px;
+} 
+
+.stopTraining {
+  position: absolute;
+  top: 60px; 
+  right: 20px; 
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #e24a4a;
   color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  text-align: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.downloadModels {
+  position: absolute;
+  top: 110px; 
+  right: 20px; 
+  display: flex;
+  flex-direction: column;
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
+}
+
+.sendBackend {
+  position: absolute;
+  top: 10px; /* Adjust this value to position below the navigation bar */
+  right: 20px; /* Align to the right edge */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  padding: 10px 15px;
+  font-size: 1rem;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s;
 }
 
 
-.dropdownContent {
-  position: absolute;
-  background-color: #fff;
+.stopTraining:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.sendBackend:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+.backend-results {
+  width: 25%;
+  margin: 1%;
+  max-width: 25%;
+  max-height: 25%;
+}
+
+.backend-results h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.error-message {
+  width: 25%;
+  margin: 1%; /* Center it horizontally */
+  color: red;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+
+/*block param section*/
+.blockList {
+  margin-top: 20px;
+  padding: 15px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+}
+
+.blockList h2 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.blockList ul {
+  list-style: none;
+  padding: 0;
+}
+
+.blockList li {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 5px;
-  margin-top: 5px;
-  z-index: 100;
-  padding: 10px;
-  width: 125px;
-  cursor: pointer;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
 }
 
-
-.dropdownItem {
-  padding: 5px 10px;
-  font-size: 1rem;
-  color: #333;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-}
-
-
-.visual-flowchart {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.visual-layer {
-  width: 150px;
-  height: auto;
-  background-color: #4a90e2;
-  color: white;
-  text-align: center;
-  line-height: 1.5;
-  padding: 10px;
-  border-radius: 5px;
+.tooltip {
+  display: none;
   position: absolute;
-  cursor: grab;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  top: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
 }
 
-.visual-layer:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+.training-graphs {
+  padding-top: 500px;
 }
 
-.visual-layer:active {
-  cursor: grabbing;
-  transform: scale(0.95);
+.datasetInfo {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5fafd, #eef2f9); /* Subtle gradient for elegance */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Gentle shadow for depth */
+}
+
+.datasetInfo .infoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.datasetInfo .infoLabel {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.datasetInfo .infoValue {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #4a90e2;
+  margin-top: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow for emphasis */
+}
+
+/* Fully Connected Neural Network Config Styles */
+.fcnnConfig {
+  padding: 8px; /* Reduced padding */
+  margin: 10px 0; /* Compact margins */
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9); /* Soft gradient */
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Smaller corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.fcnnConfigHeader {
+  font-size: 1rem; /* Reduced font size */
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 8px; /* Minimized spacing */
+}
+
+.fcnnInputGroup {
+  margin-bottom: 8px; /* Reduced margin */
+}
+
+.fcnnInputGroup label {
+  display: block;
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px; /* Minimized spacing */
+}
+
+.fcnnInput {
+  width: 80%; /* Reduced width for a smaller box */
+  padding: 5px; /* Smaller padding */
+  font-size: 0.8rem; /* Smaller font size */
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Smaller corners */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.fcnnInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.4); /* Softer focus shadow */
+}
+
+.fcnnAddButton {
+  display: block;
+  width: 100%;
+  padding: 8px; /* Reduced padding */
+  font-size: 0.9rem; /* Smaller font size */
+  color: #fff;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
+  border: none;
+  border-radius: 5px; /* Smaller corners */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Convolutional Layer Config Styles */
+.convConfig {
+  padding: 8px;
+  margin: 10px 0;
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9); /* Soft gradient */
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.convConfigHeader {
+  font-size: 1rem; /* Compact header font size */
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 8px; /* Minimized spacing */
+}
+
+.convInputGroup {
+  margin-bottom: 8px; /* Compact spacing */
+}
+
+.convInputGroup label {
+  display: block;
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px; /* Tight spacing */
+}
+
+.convInput {
+  width: 80%; /* Reduced width */
+  padding: 5px; /* Compact padding */
+  font-size: 0.8rem; /* Smaller font size */
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Smaller corners */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.convInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.4); /* Softer focus shadow */
+}
+
+.convAddButton {
+  display: block;
+  width: 100%;
+  padding: 8px; /* Compact padding */
+  font-size: 0.9rem; /* Smaller font size */
+  color: #fff;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
+  border: none;
+  border-radius: 5px; /* Smaller corners */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.trainParams {
+  padding: 10px;
+  margin: 10px 0;
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  position: relative; /* Enables positioning within its container */
+  top: -20px; /* Moves the section upwards */
+  box-shadow: none 
+}
+
+
+.trainParamsHeader {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.trainInputGroup {
+  margin-bottom: 8px;
+}
+
+.trainInputGroup label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.trainInput {
+  width: 90%;
+  padding: 5px;
+  font-size: 0.8rem;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  box-shadow: none 
 }

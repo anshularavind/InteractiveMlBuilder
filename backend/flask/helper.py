@@ -1,34 +1,24 @@
 from celery import shared_task, Celery
 from celery.signals import task_failure
+from celery.result import AsyncResult
+from celeryApp import celery
 from ml.block_builder import BuiltModel
 from ml.train import train_model
 from database import interface as database
-from jwcrypto import jwe, jwk
-from os import environ as env
-import json
-from urllib.request import urlopen
-
-from authlib.oauth2.rfc7523 import JWTBearerTokenValidator
-from authlib.jose.rfc7517.jwk import JsonWebKey
-
 from functools import wraps
-from http import HTTPStatus
-from types import SimpleNamespace
-
 from flask import request, g, jsonify
-
 from jwtValidation import auth0_service, json_abort
-import requests
-from celeryApp import celery 
-
-
+from datetime import datetime
+from celeryApp import celery
 import logging
+import jwt
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 db = database.UserDatabase()
+
 # Create handlers
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
@@ -47,16 +37,38 @@ def useLogger(value):
     logger.info(value)
 
 
-def validate_token(token):
-    auth0_domain = env.get("AUTH0_DOMAIN")
-    """Validates the token by calling the Auth0 /userinfo endpoint."""
-    url = f"https://{auth0_domain}/userinfo"
-    headers = {"Authorization": f"Bearer {token}"}
+def check_task_completed(task_id):
+    task_state = AsyncResult(task_id, app=celery).state
+    return task_state == 'SUCCESS' or task_state == 'FAILURE'
 
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json()  # User info if the token is valid
-    return None
+
+def validate_token(token):
+    # Decode the JWT token
+    decoded_token = jwt.decode(
+        token,
+        options={"verify_signature": False},  # Skip signature verification
+        algorithms=['RS256']
+    )
+
+    logger.info(decoded_token)
+
+    logger.info(decoded_token.get('sub'))
+
+    # Format the user info in Auth0 structure
+    user_info = {
+        'sub': decoded_token.get('sub'),
+        'nickname': decoded_token.get('https://InteractiveMlApi/nickname'),
+        'given_name': decoded_token.get('https://InteractiveMlApi/name'),
+        'family_name': 'Unknown',
+        'name': 'Unknown',
+        'picture': '',
+        'updated_at': datetime.utcnow().isoformat() + 'Z',
+        'email': '',
+        'email_verified': False
+    }
+
+    return user_info
+
 
 def token_required(f):
     @wraps(f)
@@ -84,13 +96,12 @@ def token_required(f):
     return decorated
 
 
-
 # @shared_task(bind=True, 
 #             max_retries=3, 
 #             soft_time_limit=3300,
 #             time_limit=3600)
 @celery.task(bind=True)
-def train_model_task(self, model_config_str, user_uuid, model_uuid):
+def train_model_task(self, model_config, user_uuid, model_uuid):
     try:
         # Initialize progress tracking
         total_steps = 100
@@ -103,19 +114,24 @@ def train_model_task(self, model_config_str, user_uuid, model_uuid):
                          })
 
         # Build the model
-        model = BuiltModel(model_config_str, user_uuid, model_uuid, db)
+        #make model_config json
+        model = BuiltModel(model_config, user_uuid, model_uuid, db)
         logger.info(f"Model built successfully for user {user_uuid}")
         
         # Train the model
-        training_result = train_model(model, epochs=10)
+        training_result = train_model(model)
 
         # Save the model
         db.save_model_pt(user_uuid, model_uuid, model)
 
+        status = 'Training completed successfully!'
+        if training_result == -1:
+            status = 'Training stopped by user request.'
+
         return {
             'current': 100,
             'total': total_steps,
-            'status': 'Training completed successfully!',
+            'status': status,
             'result': training_result,
             'model_uuid': model_uuid
         }
@@ -164,4 +180,12 @@ def get_task_progress(task_id):
         }
     return response
 
+#use the token to get the user info
+def get_user_info():
+    token = request.headers.get('Authorization', None)
+    if not token:
+        return None
+    token = token.split()[1]
+    return validate_token(token)
 
+    

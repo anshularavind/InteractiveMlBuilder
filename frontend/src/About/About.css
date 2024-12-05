@@ -1,0 +1,65 @@
+.about-container {
+    font-family: 'Poppins', sans-serif;
+    padding: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+    color: #333;
+  }
+  
+  .about-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .back-button {
+    padding: 10px 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #357abd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .back-button:hover {
+    background-color: #285f8f;
+  }
+  
+  .about-content {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .about-introduction {
+    margin-bottom: 20px;
+  }
+  
+  .about-introduction h2 {
+    color: #357abd;
+    margin-bottom: 10px;
+  }
+  
+  .about-features {
+    margin-bottom: 20px;
+  }
+  
+  .about-features h2 {
+    color: #357abd;
+    margin-bottom: 10px;
+  }
+  
+  .about-features ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  .about-faq h2 {
+    color: #357abd;
+    margin-bottom: 10px;
+  }
+  

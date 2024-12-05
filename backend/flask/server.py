@@ -23,7 +23,7 @@ from helper import train_model_task  # Now this won't cause circular import
 
 app.register_blueprint(main_routes)
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
+base_dir = os.path.dirname(os.path.abspath(__file__))   
 
 ENV_FILE = find_dotenv()
 if ENV_FILE:
@@ -95,7 +95,7 @@ def session_info():
     
 
 @app.route('/api/square', methods=['POST'])
-def test_celery():
+def xtest_celery():
     """
     Test route to square a number using Celery.
     Expects JSON input: {"number": <int>}
@@ -115,19 +115,18 @@ def test_celery():
 
 
 if __name__ == "__main__":
-    import os
     # Get the absolute path to the directory containing server.py
     base_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Convert relative paths to absolute paths
-    cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
-    key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
+    # cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))
+    # key_path = os.path.join(base_dir, env.get("SSL_KEY_PATH"))
 
     app.run(
         host="0.0.0.0",
         port=int(env.get("PORT", 4000)),
-        ssl_context=(
-            cert_path,
-            key_path 
-        )
+        # ssl_context=(
+        #     cert_path,
+        #     key_path
+        # )
     )

@@ -16,19 +16,21 @@ sys.path.insert(0, sys_dir)
 from backend.datasets.mnist import Mnist
 from backend.datasets.air_quality import AirQuality
 from backend.datasets.cifar10 import Cifar10
+from backend.datasets.etth1 import ETTh1
 from backend.ml.basic_blocks import *
 from backend.ml.train import train_model
 from backend.database.interface import UserDatabase
 
 
 '''
-Model Builder Input/Output Json Format:
+Model Builder Input/Output Dict Format:
 {
     'input': <input_shape>,
     'output': <output_shape>,
     'dataset': <dataset_name>,
     'lr': <learning_rate>,
     'batch_size': <batch_size>,
+    'epochs': <epochs>,
     'blocks':
     [
         {'block': <block_name>, 'params': <block_params>},
@@ -40,7 +42,7 @@ Model Builder Input/Output Json Format:
 # Output Size Notes:
     # Needed for all blocks except Tokenizer & TokenEmbedding
     # Expected to be Channels x Height x Width for multi-channel & multi-dim data
-Block Params Json Format:
+Block Params Dict Format:
 {
     'param1': <value1>,
     'param2': <value2>,
@@ -55,22 +57,23 @@ channel_classes = {Conv, AdaptivePool}
 class BuiltModel(nn.Module):
     name_to_block = {'FcNN': FcNN, 'Conv': Conv, 'Pool': AdaptivePool, 'RnnLstm': BasicRnnLstm,
                      'Tokenizer': Tokenizer, 'TokenEmbedding': TokenEmbedding}
-    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality}
+    name_to_dataset = {'MNIST': Mnist, 'CIFAR10': Cifar10, 'AirQuality': AirQuality, 'ETTh1': ETTh1}
 
-    def __init__(self, model_json: str, user_uuid: str, model_uuid: str, user_db: UserDatabase):
+    def __init__(self, model_config: dict, user_uuid: str, model_uuid: str, user_db: UserDatabase):
         super(BuiltModel, self).__init__()
-        self.model_json = json.loads(model_json)
+        self.model_config = model_config
         self.user_uuid = user_uuid
         self.model_uuid = model_uuid
         self.user_db = user_db
 
-        self.batch_size = int(self.model_json.get('batch_size', 64))
-        self.dataset_name = self.model_json['dataset']
+        self.epochs = int(self.model_config.get('epochs', 10))
+        self.batch_size = int(self.model_config.get('batch_size', 64))
+        self.dataset_name = self.model_config['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
         self.is_2d = getattr(self.dataset, 'is_2d', False)
-        self.in_channels = getattr(self.dataset, 'num_channels', 1)
+        self.in_channels = getattr(self.dataset, 'num_kernels', 1)
         self.model_blocks = self.load_model_from_json()
-        self.lr = float(self.model_json['LR'])
+        self.lr = float(self.model_config.get('LR', 0.001))
 
     def forward(self, x):
         for block in self.model_blocks:
@@ -82,12 +85,12 @@ class BuiltModel(nn.Module):
     def load_model_from_json(self):
         model_blocks = nn.ModuleList()
 
-        input_size = self.model_json['input']
-        output_size = self.model_json['output']
+        input_size = self.model_config['input']
+        output_size = self.model_config['output']
         assert output_size == self.dataset.get_output_size(),\
             f'Output size, {output_size}, does not match dataset output size, {self.dataset.get_output_size()}'
 
-        blocks = self.model_json['blocks']
+        blocks = self.model_config['blocks']
         input_channels = self.in_channels
 
         for block in blocks:
@@ -105,11 +108,6 @@ class BuiltModel(nn.Module):
 
         return model_blocks
 
-
-if __name__ == '__main__':
-
-    # user_db = UserDatabase()
-    # user_db.clear()
-    # user_db.delete()
-    # user_db = UserDatabase()
-    user_db = None
+    def save_model(self):
+        if self.user_db:
+            self.user_db.save_model_pt(self.user_uuid, self.model_uuid, self)

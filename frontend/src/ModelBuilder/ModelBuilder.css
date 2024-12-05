@@ -296,6 +296,7 @@
   width: 25%;
   margin: 1%;
   max-width: 25%;
+  max-height: 25%;
 }
 
 .backend-results h3 {
@@ -365,9 +366,9 @@
 }
 
 .training-graphs {
-  padding-top: 50vh;
+  padding-top: 500px;
 }
-/* Dataset Info Section Styling */
+
 .datasetInfo {
   display: flex;
   justify-content: space-around;

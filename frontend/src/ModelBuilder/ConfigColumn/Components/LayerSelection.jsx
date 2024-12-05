@@ -14,28 +14,24 @@ function LayerSelection({ selectedItem, dropdownOpen, toggleDropdown, handleItem
   }
 
   return (
-    <div>
-      <div className="dropdown">
-        <button
-          className="dropdownButton"
-          onClick={toggleDropdown}
-        >
-          {selectedItem ? `Selected: ${selectedItem}` : "Select Model Type"}
-        </button>
-        {dropdownOpen && (
-          <div className="dropdownContent">
-            {layerItems.map((item) => (
-              <div
-                key={item.value}
-                className="dropdownItem"
-                onClick={() => handleItemClick(item)}
-              >
-                {item.label}
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="dropdown">
+      <button className="dropdownButton" onClick={toggleDropdown} aria-expanded={dropdownOpen}>
+        {selectedItem ? `Selected: ${selectedItem}` : "Select Model Type"}
+      </button>
+      {dropdownOpen && (
+        <div className="dropdownContent" role="menu">
+          {layerItems.map((item) => (
+            <div
+              key={item.value}
+              className="dropdownItem"
+              role="menuitem"
+              onClick={() => handleItemClick(item)}
+            >
+              {item.label}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

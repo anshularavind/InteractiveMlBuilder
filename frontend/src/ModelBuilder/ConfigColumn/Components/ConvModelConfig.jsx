@@ -1,41 +1,41 @@
+
+
 function ConvModelConfig({ blockInputs, handleInputChange, createLayers, selectedDataset }) {
     const is2D = selectedDataset === 'MNIST' || selectedDataset === 'CIFAR10';
 
     return (
-        <div>
-            <div>
-                <label>Kernel Size: </label>
-                <br/>
+        <div className="convConfig">
+            <div className="convInputGroup">
+                <label>Kernel Size:</label>
                 <input
-                    type='number'
-                    value={blockInputs.kernelsSize}
+                    type="number"
+                    value={blockInputs.kernelSize}
                     onChange={(e) => handleInputChange('kernelSize', e.target.value)}
-                    className='input'
+                    className="convInput"
                 />
             </div>
-            <div>
-                <label>Output Channels: </label>
-                <br/>
+            <div className="convInputGroup">
+                <label>Output Channels:</label>
                 <input
-                    type='number'
+                    type="number"
                     value={blockInputs.numKernels}
                     onChange={(e) => handleInputChange('numKernels', e.target.value)}
-                    className='input'
+                    className="convInput"
                 />
             </div>
-            <div>
-                <label>{is2D ? 'Pooling Output Side-Length' : 'Pooling Output Size'}: </label>
-                <br/>
+            <div className="convInputGroup">
+                <label>{is2D ? 'Pooling Output Side-Length' : 'Pooling Output Size'}:</label>
                 <input
-                    type='number'
+                    type="number"
                     value={blockInputs.outputSize}
                     onChange={(e) => handleInputChange('outputSize', e.target.value)}
-                    className='input'
+                    className="convInput"
                 />
             </div>
-            <button className='addButton' onClick={createLayers}>Add Block</button>
+            <button className="convAddButton" onClick={createLayers}>
+                Add Block
+            </button>
         </div>
-
     );
 }
 

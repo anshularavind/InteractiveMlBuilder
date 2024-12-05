@@ -9,10 +9,10 @@
   margin-top: 0;
   height: 100%;
   width: 18%;
-  /* height: 100vh;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  width: 20%; /* Increased width */
+ 
+ 
+
+  
 }
 
 /* Header Styling */
@@ -21,7 +21,7 @@
   top: 0;
   /* background-color: #eef2f9; */
   z-index: 10;
-  padding: 0;
+  padding: 0; 
   /* border-bottom: 1px solid #ddd; */
   /* border-radius: 8px; */
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
@@ -49,8 +49,9 @@
 /* Remove Block Button Styling */
 .removeBlock {
   text-align: center;
-  margin-bottom: 5px;
+  margin-bottom: 0; /* No margin below */
 }
+
 
 .deleteButton {
   padding: 10px 20px;
@@ -63,10 +64,7 @@
   transition: background 0.3s, transform 0.2s;
 }
 
-.deleteButton:hover {
-  background: linear-gradient(135deg, #c9302c, #a72822);
-  transform: scale(1.05);
-}
+
 
 .clearButton {
   position: absolute;
@@ -128,7 +126,7 @@
 }
 
 .formGroup input {
-  flex-basis: 55%; /* Adjust input width */
+  flex-basis: 57%; /* Adjust input width */
   padding: 5px;
   font-size: 0.85rem;
   border: 1px solid #ccc;
@@ -163,63 +161,50 @@
 }
 
 /* Dropdown Button Styling */
-/* Dropdown Container Styling */
-.dropdown {
-  margin-bottom: 0px;
-  position: relative;
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  width: 100%; 
-}
-
-.dropdownDatasets {
-  margin-bottom: 20px;
-  position: relative;
-  display: flex;
-  flex-direction: column; 
-  align-items: center; 
-  width: 100%; 
-}
-
-
 .dropdownButton {
   width: 100%; 
-  max-width: 170px; 
+  max-width: 200px; /* Increased width for better visibility */
   padding: 10px;
   display: flex;
   align-items: center; 
   justify-content: center; 
-  background-color: #357abd;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
   color: #fff;
+  font-size: 1rem; /* Larger font */
   border: none;
-  border-radius: 5px;
+  border-radius: 8px; /* Rounded corners */
   cursor: pointer;
   text-align: center;
-  font-size: 1rem; /* Increased font size */
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 
+
+/* Dropdown Content Styling */
 .dropdownContent {
   position: absolute;
-  background-color: #fff;
+  background: #ffffff; /* Clean white background */
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 8px; /* Rounded corners */
   margin-top: 5px;
-  z-index: 100;
-  padding: 10px;
-  width: 125px;
-  cursor: pointer;
+  z-index: 1000; /* Ensure it's on top */
+  padding: 10px 0; /* Add vertical padding */
+  width: 200px; /* Set consistent width */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Drop shadow for depth */
+  animation: fadeIn 0.2s ease-in-out; /* Smooth fade-in effect */
 }
 
-
+/* Dropdown Item Styling */
 .dropdownItem {
-  padding: 5px 10px;
+  padding: 10px 15px; /* Increase padding for better spacing */
   font-size: 1rem;
-  color: #333;
+  color: #333; /* Neutral text color */
   cursor: pointer;
-  border-bottom: 1px solid #ddd;
-}
+  transition: background 0.3s ease, color 0.3s ease;
+} 
+
+
 /* General Layer Selection and Train Section */
 .layerSelection,
 .trainSection {
@@ -398,4 +383,169 @@
   color: #4a90e2;
   margin-top: 5px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow for emphasis */
+}
+
+/* Fully Connected Neural Network Config Styles */
+.fcnnConfig {
+  padding: 8px; /* Reduced padding */
+  margin: 10px 0; /* Compact margins */
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9); /* Soft gradient */
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Smaller corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.fcnnConfigHeader {
+  font-size: 1rem; /* Reduced font size */
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 8px; /* Minimized spacing */
+}
+
+.fcnnInputGroup {
+  margin-bottom: 8px; /* Reduced margin */
+}
+
+.fcnnInputGroup label {
+  display: block;
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px; /* Minimized spacing */
+}
+
+.fcnnInput {
+  width: 80%; /* Reduced width for a smaller box */
+  padding: 5px; /* Smaller padding */
+  font-size: 0.8rem; /* Smaller font size */
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Smaller corners */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.fcnnInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.4); /* Softer focus shadow */
+}
+
+.fcnnAddButton {
+  display: block;
+  width: 100%;
+  padding: 8px; /* Reduced padding */
+  font-size: 0.9rem; /* Smaller font size */
+  color: #fff;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
+  border: none;
+  border-radius: 5px; /* Smaller corners */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+/* Convolutional Layer Config Styles */
+.convConfig {
+  padding: 8px;
+  margin: 10px 0;
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9); /* Soft gradient */
+  border: 1px solid #ddd;
+  border-radius: 6px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+.convConfigHeader {
+  font-size: 1rem; /* Compact header font size */
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 8px; /* Minimized spacing */
+}
+
+.convInputGroup {
+  margin-bottom: 8px; /* Compact spacing */
+}
+
+.convInputGroup label {
+  display: block;
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 4px; /* Tight spacing */
+}
+
+.convInput {
+  width: 80%; /* Reduced width */
+  padding: 5px; /* Compact padding */
+  font-size: 0.8rem; /* Smaller font size */
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px; /* Smaller corners */
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle inset shadow */
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.convInput:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 3px rgba(74, 144, 226, 0.4); /* Softer focus shadow */
+}
+
+.convAddButton {
+  display: block;
+  width: 100%;
+  padding: 8px; /* Compact padding */
+  font-size: 0.9rem; /* Smaller font size */
+  color: #fff;
+  background: linear-gradient(135deg, #4a90e2, #357abd); /* Smooth gradient */
+  border: none;
+  border-radius: 5px; /* Smaller corners */
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.trainParams {
+  padding: 10px;
+  margin: 10px 0;
+  background: linear-gradient(135deg, #f9f9ff, #eef2f9);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  position: relative; /* Enables positioning within its container */
+  top: -20px; /* Moves the section upwards */
+  box-shadow: none 
+}
+
+
+.trainParamsHeader {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #4a90e2;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.trainInputGroup {
+  margin-bottom: 8px;
+}
+
+.trainInputGroup label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.trainInput {
+  width: 90%;
+  padding: 5px;
+  font-size: 0.8rem;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+  box-shadow: none 
 }

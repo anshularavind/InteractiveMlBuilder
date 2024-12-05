@@ -2,39 +2,35 @@ import "../../ModelBuilder.css";
 
 function Train({ trainInputs, handleInputChange }) {
     return (
-        <div>
-            <h2>Training Params</h2>
-            <div>
-                <label>Learning Rate: </label>
-                <br/>
+        <div className="trainParams">
+            <h2 className="trainParamsHeader">Training Params</h2>
+            <div className="trainInputGroup">
+                <label>Learning Rate:</label>
                 <input
                     type="number"
                     value={trainInputs.lr}
                     onChange={(e) => handleInputChange("lr", e.target.value)}
-                    className="input"
+                    className="trainInput"
                 />
             </div>
-            <div>
-                <label>Batch Size: </label>
-                <br/>
+            <div className="trainInputGroup">
+                <label>Batch Size:</label>
                 <input
                     type="number"
                     value={trainInputs.batch_size}
                     onChange={(e) => handleInputChange("batch_size", e.target.value)}
-                    className="input"
+                    className="trainInput"
                 />
             </div>
-            <div>
-                <label>Epochs: </label>
-                <br/>
+            <div className="trainInputGroup">
+                <label>Epochs:</label>
                 <input
                     type="number"
                     value={trainInputs.epochs}
                     onChange={(e) => handleInputChange("epochs", e.target.value)}
-                    className="input"
+                    className="trainInput"
                 />
             </div>
-            <br/>
         </div>
     );
 }

@@ -37,3 +37,4 @@ npm start # Run the React server
 brew services stop redis # Stop the Redis server
 brew services stop postgresql # Stop the PostgreSQL server
 ```
+And cancel the Celery worker, Flask server, and npm processes in their respective terminals.

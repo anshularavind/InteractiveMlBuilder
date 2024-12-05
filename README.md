@@ -2,7 +2,7 @@
 [Fall 24 CS 35L Final Project] Interactive Machine Learning Model Builder | Anshul Aravind, Venkat Chitturi, Satyajit Kumar, Noah Cylich, Shreya Shirsathe, Riti Patel
 
 ## Installation Instructions
-Make sure you have conda installed on your system. If not, you can install it from [here](https://docs.conda.io/projects/conda/en/latest/index.html). Make sure you also have brew as well.
+Make sure you have conda installed on your system. If not, you can install it from [here](https://docs.conda.io/projects/conda/en/latest/index.html). Make sure you also have brew as well. Install node and npm from [here](https://nodejs.org/en/download/).
 
 ```bash
 # Clone the repository into your local by running:

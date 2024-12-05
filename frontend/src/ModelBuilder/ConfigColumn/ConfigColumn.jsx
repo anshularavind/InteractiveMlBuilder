@@ -16,7 +16,6 @@ function ConfigColumn({
   handleDatasetClick,
   blockCount,
   setBlockCount,
-  layerItems,
   createLayers,
   removeLastBlock,
   layers,
@@ -42,7 +41,6 @@ function ConfigColumn({
   }, [selectedDataset]);
 
   // Handle JSON configuration (if any)
-  // TODO: change as per new visParams
   const handleJsonConfig = (jsonConfig) => {
     setSelectedDataset(jsonConfig.dataset);
     setTrainInputs({
@@ -346,8 +344,8 @@ function ConfigColumn({
             selectedItem={selectedLayer}
             dropdownOpen={layerDropdownOpen}
             toggleDropdown={() => setLayerDropdownOpen(!layerDropdownOpen)}
-            layerItems={layerItems}
             handleItemClick={handleLayerClick}
+            layers={layers}
           />
           {selectedLayer === "FcNN" && (
             <FcNNModelConfig

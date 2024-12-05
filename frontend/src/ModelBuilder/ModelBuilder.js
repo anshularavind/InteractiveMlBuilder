@@ -53,11 +53,6 @@ function ModelBuilder() {
     "ETTh1": { inputSize: 9, outputSize: 3 }
   };
 
-  const layerItems = [
-    { value: "FcNN", label: "FcNN" },
-    { value: "Conv", label: "Conv" },
-  ];
-
   const handleDatasetClick = (item) => {
     setSelectedDataset(item.value);
     setDatasetDropdownOpen(false);
@@ -376,7 +371,6 @@ function ModelBuilder() {
           handleDatasetClick={handleDatasetClick}
           blockCount={blockCount}
           setBlockCount={setBlockCount}
-          layerItems={layerItems}
           createLayers={createLayers}
           removeLastBlock={removeLastBlock}
           layers={layers}

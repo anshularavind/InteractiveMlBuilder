@@ -35,11 +35,6 @@
   margin-bottom: 10px;
 }
 
-.datasetInfo h4 {
-  font-size: 1rem;
-  color: #555;
-  margin: 5px 0;
-}
 
 /* Content Section Styling */
 .inputBlockContent {
@@ -295,12 +290,22 @@
 }
 
 .backend-results {
-  width: 20%;
-  margin: 1%; /* Center it horizontally */
+  width: 25%;
+  margin: 1%;
+  max-width: 25%;
+}
+
+.backend-results h3 {
+  font-size: 1.2rem;
+  color: #333;
+  margin-bottom: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
 }
 
 .error-message {
-  width: 20%;
+  width: 25%;
   margin: 1%; /* Center it horizontally */
   color: red;
   font-size: 1rem;
@@ -354,4 +359,39 @@
   white-space: nowrap;
   pointer-events: none;
   z-index: 100;
+}
+
+.training-graphs {
+  padding-top: 50vh;
+}
+/* Dataset Info Section Styling */
+.datasetInfo {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+  padding: 15px;
+  background: linear-gradient(135deg, #f5fafd, #eef2f9); /* Subtle gradient for elegance */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* Gentle shadow for depth */
+}
+
+.datasetInfo .infoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.datasetInfo .infoLabel {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #555;
+}
+
+.datasetInfo .infoValue {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #4a90e2;
+  margin-top: 5px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow for emphasis */
 }

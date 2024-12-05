@@ -162,8 +162,7 @@
 
 /* Dropdown Button Styling */
 .dropdownButton {
-  width: 100%; 
-  max-width: 200px; /* Increased width for better visibility */
+  width: 100%;
   padding: 10px;
   display: flex;
   align-items: center; 

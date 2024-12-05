@@ -348,7 +348,8 @@
 }
 
 .training-graphs {
-  padding-top: 500px;
+  padding-top: 200px;
+  padding-bottom: 20px;
 }
 
 .datasetInfo {
@@ -550,6 +551,7 @@
     max-height: 250px; 
     overflow-y: auto; 
     overflow-x: hidden; 
-    padding: 10px; 
-    background-color: #f9f9f9;
+    padding: 10px;
+    background: #f0f8ff;
+    border: 1px solid #ccc; /* Add this line for a thin border */
  }

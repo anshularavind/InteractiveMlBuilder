@@ -8,6 +8,7 @@ bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary
 conda env create -f mlbuilder.yaml python=3.11.8  # Install Python dependencies
 conda activate mlbuilder  # Activate the conda environment
 cd frontend && npm install && cd ..  # Install Node.js dependencies
+brew install redis  # Install Redis
 ```
 ## Running the Application
 ```bash
@@ -22,4 +23,10 @@ celery -A server.celery worker --loglevel=info # Run the Celery worker
 # Open 1 more terminal in same, project dir, InteractiveMlBuilder
 cd frontend
 npm start # Run the React server
+```
+
+## Stopping the Application
+```bash
+brew services stop redis # Stop the Redis server
+brew services stop postgresql # Stop the PostgreSQL server
 ```

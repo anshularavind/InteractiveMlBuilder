@@ -8,7 +8,7 @@ function Train({ trainInputs, handleInputChange }) {
                 <label>Learning Rate:</label>
                 <input
                     type="number"
-                    value={trainInputs.lr}
+                    value={trainInputs.lr ?? 0.001}
                     onChange={(e) => handleInputChange("lr", e.target.value)}
                     className="trainInput"
                 />
@@ -17,7 +17,7 @@ function Train({ trainInputs, handleInputChange }) {
                 <label>Batch Size:</label>
                 <input
                     type="number"
-                    value={trainInputs.batch_size}
+                    value={trainInputs.batch_size ?? 64}
                     onChange={(e) => handleInputChange("batch_size", e.target.value)}
                     className="trainInput"
                 />
@@ -26,7 +26,7 @@ function Train({ trainInputs, handleInputChange }) {
                 <label>Epochs:</label>
                 <input
                     type="number"
-                    value={trainInputs.epochs}
+                    value={trainInputs.epochs ?? 10}
                     onChange={(e) => handleInputChange("epochs", e.target.value)}
                     className="trainInput"
                 />

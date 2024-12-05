@@ -44,7 +44,7 @@ function ConfigColumn({
   const handleJsonConfig = (jsonConfig) => {
     setSelectedDataset(jsonConfig.dataset);
     setTrainInputs({
-      lr: jsonConfig.lr,
+      lr: jsonConfig.LR,
       batch_size: jsonConfig.batch_size,
       epochs: jsonConfig.epochs,
     });
@@ -53,14 +53,10 @@ function ConfigColumn({
       inputSize: jsonConfig.input,
       outputSize: jsonConfig.output,
     });
-  
-    
 
     let layerConfig;
-  
     const processedLayers = [];
     let previousConvLayerIndex = null;
-
   
     jsonConfig.blocks.forEach((block, index) => {
       const inputSize = index === 0 

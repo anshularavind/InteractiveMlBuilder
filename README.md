@@ -2,9 +2,10 @@
 [Fall 24 CS 35L Final Project] Interactive Machine Learning Model Builder | Anshul Aravind, Venkat Chitturi, Satyajit Kumar, Noah Cylich, Shreya Shirsathe, Riti Patel
 
 ## Installation Instructions
+Make sure you have conda installed on your system. If not, you can install it from [here](https://docs.conda.io/projects/conda/en/latest/index.html).
 ```bash
 bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
-pip install -r requirements.txt  # Install Python dependencies
+conda env create -f mlbuilder.yaml python=3.11.8  # Install Python dependencies
 cd frontend && npm install && cd ..  # Install Node.js dependencies
 ```
 ## Running the Application

@@ -54,6 +54,8 @@
 
 
 .deleteButton {
+  width: 100%;
+  max-width: 200px;
   padding: 10px 20px;
   font-size: 1rem;
   color: #fff;
@@ -162,8 +164,8 @@
 
 /* Dropdown Button Styling */
 .dropdownButton {
-  width: 100%; 
-  max-width: 200px; /* Increased width for better visibility */
+  width: 100%;
+  max-width: 200px;
   padding: 10px;
   display: flex;
   align-items: center; 
@@ -177,6 +179,7 @@
   text-align: center;
   transition: background 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  margin: 0 auto;
 }
 
 

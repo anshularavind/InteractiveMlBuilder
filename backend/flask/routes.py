@@ -90,13 +90,15 @@ def train():
 
         # Kill any existing tasks
         if task_id:
-            logger.info(f"Stopping existing task {task_id}")
-            model_dir = db.get_model_dir(user_uuid, kill_model_uuid)
-            stop_path = os.path.join(model_dir, "STOP")
-            open(stop_path, "w").close()
-            while os.path.exists(stop_path):
-                time.sleep(0.25)
-            logger.info(f"Task {task_id} terminated by user {username}")
+            if not helper.check_task_completed(task_id):
+                logger.info(f"Stopping existing task {task_id}")
+                model_dir = db.get_model_dir(user_uuid, kill_model_uuid)
+                stop_path = os.path.join(model_dir, "STOP")
+                open(stop_path, "w").close()
+                while os.path.exists(stop_path):
+                    time.sleep(0.25)
+                logger.info(f"Task {task_id} terminated by user {username}")
+            del task_dict[username]
 
         logger.info(f"Received training request - username: {username}, model_uuid: {model_uuid}")
 
@@ -192,11 +194,13 @@ def stop_train():
             return jsonify({"error": "No active task found"}), 404
 
         # celery.control.revoke(task_id, terminate=True, signal='SIGKILL')  # First attempt to kill
-        model_dir = db.get_model_dir(helper.get_user_info()["sub"], model_uuid)
-        stop_path = os.path.join(model_dir, "STOP")
-        open(stop_path, "w").close()
-        while os.path.exists(stop_path):
-            time.sleep(0.25)
+        if not helper.check_task_completed(task_id):
+            model_dir = db.get_model_dir(helper.get_user_info()["sub"], model_uuid)
+            stop_path = os.path.join(model_dir, "STOP")
+            open(stop_path, "w").close()
+            while os.path.exists(stop_path):
+                time.sleep(0.25)
+        del task_dict[username]
 
         logger.info(f"Task {task_id} terminated by user {username}")
         return jsonify({

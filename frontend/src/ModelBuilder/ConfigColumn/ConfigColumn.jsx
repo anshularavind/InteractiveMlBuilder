@@ -224,7 +224,7 @@ function ConfigColumn({
     const inputSizeScaled =
       (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
     const outputSizeScaled =
-      (Math.log(((blockInputs.outputSize ** 2) + 1) || 1) * SCALING_CONSTANT) / log_base;
+      (Math.log(((blockInputs.outputSize) + 1) || 1) * SCALING_CONSTANT) / log_base;
 
     let newLayer;
 

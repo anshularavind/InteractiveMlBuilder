@@ -71,7 +71,7 @@ function ConfigColumn({
     const inputSizeScaled =
       (Math.log((newBlock.inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
     const outputSizeScaled =
-      (Math.log(((newBlock.outputSize ** 2) + 1) || 1) * SCALING_CONSTANT) / log_base;
+      (Math.log((newBlock.outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
 
     let newLayer;
     if (newBlock.chosenLayer === "Conv") {

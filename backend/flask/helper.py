@@ -222,11 +222,12 @@ def get_dataset_model_list():
         models = db.get_models_by_dataset(dataset[0])
         # get username from uuid:
         dataset_model_list[-1]['models'] = [{
-            "user_uuid": model[0],     
-                                            "model_config": get_model_config(model[0], model[1]),
-                                             "model_uuid": model[1],
-                                             "username": db.get_user_name(model[0]),
-                                             "metric": get_metric_from_model(model[0], model[1])} for model in models]
+            "user_uuid": model[0],
+            "model_config": get_model_config(model[0], model[1]),
+            "model_uuid": model[1],
+            "username": db.get_user_name(model[0]),
+            "metric": get_metric_from_model(model[0], model[1])
+        } for model in models if get_metric_from_model(model[0], model[1]) is not None]
 
     print(dataset_model_list)
     # sort dataset model list by metric, ascending if mean squared error, descending if accuracy

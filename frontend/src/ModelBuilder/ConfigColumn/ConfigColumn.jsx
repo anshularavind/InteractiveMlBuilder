@@ -259,8 +259,8 @@ function ConfigColumn({
         },
       };
     } else if (selectedLayer === "Conv") {
-      const outputSize = blockInputs.outputSize;
-      const poolSize = Math.sqrt(blockInputs.outputSize);
+      const outputSize = blockInputs.outputSize ** 2;
+      const poolSize = Math.sqrt(outputSize);
       const outputSizeScaled =
         (Math.log((outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
       const poolSizeScaled =
@@ -286,7 +286,7 @@ function ConfigColumn({
         type: "Conv",
         params: {
           input_size: inputSize,
-          output_size: blockInputs.outputSize ** 2,
+          output_size: outputSize,
           kernel_size: kernelSize,
           num_kernels: numKernels,
           stride: 1,

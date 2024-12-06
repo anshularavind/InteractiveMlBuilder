@@ -195,4 +195,54 @@ def get_user_info():
     token = token.split()[1]
     return validate_token(token)
 
-    
+# get datasets info
+def get_metric_from_model(user_uuid, model_uuid):
+    model_dir = db.get_model_dir(user_uuid, model_uuid)
+    if not model_dir:
+        return None
+    with open(os.path.join(model_dir, "output.logs"), "r") as f:
+        metric = f.read()
+
+    if metric != '':
+        try:
+            # precision should be 4 decimal points
+            return round(float(metric.split()[-1]), 8)
+        except:
+            return None
+
+def get_dataset_model_list():
+    dataset_model_list = []
+    datasets = db.get_unique_datasets()
+    for dataset in datasets:
+        dataset_model_list.append({})
+        dataset_model_list[-1]['name'] = dataset[0]
+        dataset_model_list[-1]['metric'] = "Accuracy" if (
+                    dataset[0].lower() == "cifar10" or dataset[0].lower() == "mnist") else "Mean Squared Error"
+        models = db.get_models_by_dataset(dataset[0])
+        # get username from uuid:
+        dataset_model_list[-1]['models'] = [{"user_uuid": model[0],
+                                             "model_uuid": model[1],
+                                             "username": db.get_user_name(model[0]),
+                                             "metric": get_metric_from_model(model[0], model[1])} for model in models]
+
+    print(dataset_model_list)
+    # sort dataset model list by metric, ascending if mean squared error, descending if accuracy
+    for dataset in dataset_model_list:
+        dataset['models'] = sorted(dataset['models'], key=lambda x: x['metric'] if x['metric'] is not None else -1,
+                                   reverse=dataset['metric'] == "Accuracy")
+    return dataset_model_list
+
+def get_highest_rank(user_uuid):
+    dataset_model_list = get_dataset_model_list()
+    user_rank = None
+    for dataset in dataset_model_list:
+        for i, model in enumerate(dataset["models"]):
+            if model["user_uuid"] == user_uuid:
+                if user_rank is None:
+                    user_rank = i + 1
+                else:
+                    user_rank = min(user_rank, i + 1)
+    if user_rank is None:
+        user_rank = "Unranked"
+
+    return user_rank

@@ -21,7 +21,6 @@ function ModelBuilder() {
   const [layerDropdownOpen, setLayerDropdownOpen] = useState(false);
   const [layers, setLayers] = useState([]);
   const [modelConfig, setModelConfig] = useState(null);
-  const [blockCount, setBlockCount] = useState(0);
   const [backendResults, setBackendResults] = useState(null);
   const [isTraining, setIsTraining] = useState(false); // New state to track training status
   const intervalIdRef = useRef(null);
@@ -97,17 +96,13 @@ function ModelBuilder() {
     let datasetOutputSize = datasetSizesMap[selectedDataset]?.outputSize ?? 0;
     console.log(updatedLayers);
 
+    let channels = selectedDataset === "CIFAR10" ? 3 : 1;
     let blocks = updatedLayers.map((layer) => {
-      if (layer.type === 'FcNN' || !layer.type) {
-        return [{
-          block: 'FcNN',
-          params: {
-            output_size: layer.params.output_size,
-            hidden_size: layer.params.hidden_size,
-            num_hidden_layers: layer.params.num_hidden_layers,
-          },
-        }];
-      } else if (layer.type === 'Conv') {
+      if (layer.type === 'Conv') {
+        channels = layer.params.num_kernels;
+        const outputSize = selectedDataset === "MNIST" || selectedDataset === "CIFAR10"
+            ? (layer.params.output_size ** 2) * channels
+            : layer.params.output_size * channels;
         return [
           {
             block: 'Conv',
@@ -116,16 +111,25 @@ function ModelBuilder() {
               kernel_size: layer.params.kernel_size,
               stride: layer.params.stride,
               padding: layer.params.padding,
-              output_size: layer.params.output_size,
+              output_size: outputSize,
             },
           },
           {
             block: 'Pool',
             params: {
-              output_size: layer.params.output_size,
+              output_size: outputSize,
             }
           },
         ];
+      } else if (layer.type === 'FcNN' || !layer.type) {
+        return [{
+          block: 'FcNN',
+          params: {
+            output_size: layer.params.output_size,
+            hidden_size: layer.params.hidden_size,
+            num_hidden_layers: layer.params.num_hidden_layers,
+          },
+        }];
       }
     });
 
@@ -306,14 +310,11 @@ function ModelBuilder() {
       if (prevLayers.length === 0) return prevLayers;
       return prevLayers.slice(0, -1);
     });
-
-    setBlockCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
     sessionStorage.setItem("model_config", "{}");
   };
 
   const removeBlocks = () => {
     setLayers([]);
-    setBlockCount(0);
     sessionStorage.setItem("model_config", "{}");
   };
 
@@ -369,8 +370,6 @@ function ModelBuilder() {
           toggleDatasetDropdown={toggleDatasetDropdown}
           datasetItems={datasetItems}
           handleDatasetClick={handleDatasetClick}
-          blockCount={blockCount}
-          setBlockCount={setBlockCount}
           createLayers={createLayers}
           removeLastBlock={removeLastBlock}
           layers={layers}

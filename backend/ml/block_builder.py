@@ -71,7 +71,7 @@ class BuiltModel(nn.Module):
         self.dataset_name = self.model_config['dataset']
         self.dataset = BuiltModel.name_to_dataset[self.dataset_name](batch_size=self.batch_size)
         self.is_2d = getattr(self.dataset, 'is_2d', False)
-        self.in_channels = getattr(self.dataset, 'num_kernels', 1)
+        self.in_channels = getattr(self.dataset, 'num_channels', 1)
         self.model_blocks = self.load_model_from_json()
         self.lr = float(self.model_config.get('LR', 0.001))
 
@@ -101,7 +101,7 @@ class BuiltModel(nn.Module):
                 block_params['is_2d'] = self.is_2d
             block = block_class(input_size=input_size, **block_params)
             input_size = block.get_output_size()
-            input_channels = block_params.get('out_channels', input_channels)  # Safely get out_channels if it exists
+            input_channels = block_params.get('num_kernels', input_channels)  # Safely get out_channels if it exists
             model_blocks.append(block)
 
         assert input_size == output_size, 'Output size of last block does not match model output size'

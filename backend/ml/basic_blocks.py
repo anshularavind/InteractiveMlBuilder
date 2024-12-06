@@ -57,7 +57,7 @@ class Conv(nn.Module):
             assert x.size(-1) % self.in_channels == 0, "Input size must be divisible by number of channels"
             side_squared = x.size(-1) // self.in_channels
             side = math.floor(math.sqrt(side_squared))
-            assert side * side == side_squared, "Image must be square"
+            assert side * side == side_squared, f"CNN input must be a square: {x.size(-1)}, in_channels: {self.in_channels}"
             x = x.reshape(-1, self.in_channels, side, side)
         else:
             x = x.reshape(-1, self.in_channels, self.input_size)
@@ -92,8 +92,8 @@ class AdaptivePool(nn.Module):
         self.in_channels = in_channels
         self.is_2d = is_2d
         if is_2d:
-            output_size_sqrt = math.floor(math.sqrt(output_size))
-            assert output_size_sqrt * output_size_sqrt == output_size, "Output size must be square"
+            output_size_sqrt = math.floor(math.sqrt(output_size // in_channels))
+            assert output_size_sqrt * output_size_sqrt * in_channels == output_size, f"Output size must be the product of a square times channels,\ngot size={output_size}, channels={in_channels}"
 
             self.output_size = output_size_sqrt
             self.pool = nn.AdaptiveMaxPool2d(output_size=self.output_size)

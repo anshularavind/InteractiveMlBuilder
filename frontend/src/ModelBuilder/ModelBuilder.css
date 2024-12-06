@@ -291,7 +291,6 @@
 }
 
 .error-message {
-  width: 25%;
   margin: 1%; /* Center it horizontally */
   color: red;
   font-size: 1rem;

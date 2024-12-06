@@ -14,8 +14,6 @@ function ConfigColumn({
   toggleDatasetDropdown,
   datasetItems,
   handleDatasetClick,
-  blockCount,
-  setBlockCount,
   createLayers,
   removeLastBlock,
   layers,
@@ -39,6 +37,124 @@ function ConfigColumn({
   useEffect(() => {
     setDatasetSizes(datasetSizesMap[selectedDataset] ?? { inputSize: 0, outputSize: 0 });
   }, [selectedDataset]);
+  let newBlock = null;
+  const addBlock = () => {
+    const SCALING_CONSTANT = 25;
+    const log_base = Math.log(1.5);
+    const log_base_pool = Math.log(3);
+
+    if (newBlock === null) {
+      let inputSize = datasetSizes.inputSize;
+      if (layers.length > 0) {
+        if (layers[layers.length - 1].type === "Conv" && selectedLayer === "FcNN") {
+          inputSize = layers[layers.length - 1].params.output_size ** 2 * layers[layers.length - 1].params.num_kernels;
+        } else {
+            inputSize = layers[layers.length - 1].params.output_size;
+        }
+      }
+
+      newBlock = {
+        id: layers.length,
+        chosenLayer: selectedLayer,
+        datasetInputSize: datasetSizes.inputSize,
+        prevOutputDim: layers.length > 0 ? layers[layers.length - 1].params.output_size : datasetSizes.inputSize,
+        inputSize: inputSize,
+        outputSize: blockInputs.outputSize,
+        numHiddenLayers: blockInputs.numHiddenLayers,
+        hiddenSize: blockInputs.hiddenSize,
+        layersLength: layers.length,
+        kernelSize: blockInputs.kernelSize,
+        numKernels: blockInputs.numKernels,
+      };
+    }
+
+    const inputSizeScaled =
+      (Math.log((newBlock.inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+    const outputSizeScaled =
+      (Math.log(((newBlock.outputSize ** 2) + 1) || 1) * SCALING_CONSTANT) / log_base;
+
+    let newLayer;
+    if (newBlock.chosenLayer === "Conv") {
+      let previousOutputDim;
+      if (newBlock.layersLength === 0) {
+        previousOutputDim = newBlock.datasetInputSize;
+        if (selectedDataset === "MNIST" || selectedDataset === "CIFAR10") {
+          previousOutputDim = Math.sqrt(previousOutputDim);
+        }
+      } else {
+        previousOutputDim = newBlock.prevOutputDim;
+      }
+
+      const outputSize= newBlock.outputSize;
+      const poolSize = newBlock.outputSize;
+      const poolSizeScaled = (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
+      const kernelSize = newBlock.kernelSize;
+      const kernelSizeScaled = (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      const numKernels = newBlock.numKernels;
+      const outputLengthScaled = (Math.log((previousOutputDim + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
+
+      newLayer = {
+        id: `block-${newBlock.id}`,
+        name: `${newBlock.id + 1}`,
+        type: "Conv",
+        params: {
+          input_size: newBlock.inputSize,
+          output_size: outputSize,
+          kernel_size: kernelSize,
+          num_kernels: numKernels,
+          stride: 1,
+          padding: Math.floor(kernelSize / 2),
+        },
+        visParams: {
+          kernel_size: kernelSizeScaled,
+          poolingBlock: { smallBlock: poolSizeScaled, largeBlock: outputLengthScaled },
+          width: kernelSizeScaled + numKernels * 5 + outputLengthScaled + 10,
+        },
+      };
+    } else if (newBlock.chosenLayer === "FcNN") {
+      let hiddenSizeScaled;
+      if (newBlock.numHiddenLayers === 0) {
+        hiddenSizeScaled = (inputSizeScaled + outputSizeScaled) / 2;
+      } else {
+        hiddenSizeScaled = (Math.log((newBlock.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
+      }
+      const numHiddenLayersScaled = newBlock.numHiddenLayers * SCALING_CONSTANT;
+      const trapHeight = SCALING_CONSTANT * 2;
+
+      newLayer = {
+        id: `block-${newBlock.id}`,
+        name: `${newBlock.id + 1}`,
+        type: "FcNN",
+        params: {
+          input_size: newBlock.inputSize,
+          output_size: newBlock.outputSize,
+          hidden_size: newBlock.hiddenSize,
+          num_hidden_layers: newBlock.numHiddenLayers,
+        },
+        visParams: {
+          leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
+          rightTrapezoid: { base: outputSizeScaled, height: trapHeight },
+          middleRectangle: {
+            width: numHiddenLayersScaled,
+            height: hiddenSizeScaled,
+          },
+          width: trapHeight + numHiddenLayersScaled + trapHeight,
+        },
+      };
+    }
+
+    createLayers([newLayer]);
+
+    setBlockInputs({
+      outputSize: 0,
+      hiddenSize: 0,
+      numHiddenLayers: 0,
+      kernelSize: 3,
+      numKernels: 1,
+    });
+    setSelectedLayer(null);
+    newBlock = null;
+  };
 
   // Handle JSON configuration (if any)
   const handleJsonConfig = (jsonConfig) => {
@@ -48,116 +164,60 @@ function ConfigColumn({
       batch_size: jsonConfig.batch_size,
       epochs: jsonConfig.epochs,
     });
-  
+
     setDatasetSizes({
       inputSize: jsonConfig.input,
       outputSize: jsonConfig.output,
     });
 
-    let layerConfig;
-    const processedLayers = [];
-    let previousConvLayerIndex = null;
-  
-    jsonConfig.blocks.forEach((block, index) => {
-      const inputSize = index === 0 
-        ? jsonConfig.input 
-        : processedLayers[processedLayers.length - 1]?.params?.output_size || jsonConfig.input;
-      
-        const SCALING_CONSTANT = 25;
-        const log_base = Math.log(1.5);
-        const log_base_pool = Math.log(3);
-        const inputSizeScaled =
-          (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-        const outputSizeScaled =
-          (Math.log((block.params.output_size + 1) || 1) * SCALING_CONSTANT) / log_base;
-
-        console.log("outputSizeScaled", outputSizeScaled)
-      
-      if (block.block === "FcNN") {
-        let hiddenSizeScaled;
-        if (block.params.num_hidden_layers === 0) {
-          hiddenSizeScaled = (inputSizeScaled + outputSizeScaled) / 2;
-        } else {
-          hiddenSizeScaled = (Math.log((block.params.hidden_size + 1) || 1) * SCALING_CONSTANT) / log_base;
-        }
-        const numHiddenLayersScaled = block.params.num_hidden_layers * SCALING_CONSTANT;
-        const trapHeight = SCALING_CONSTANT * 2;
-        
-        layerConfig = {
-          id: `block-${processedLayers.length}`,
-          name: `${processedLayers.length + 1}`,
-          type: "FcNN",
-          params: {
-            input_size: inputSize,
-            ...block.params
-          },
-          visParams: {
-            leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
-            rightTrapezoid: { base: outputSizeScaled, height: trapHeight },
-            middleRectangle: {
-              width: numHiddenLayersScaled,
-              height: hiddenSizeScaled,
-            },
-            width: trapHeight + numHiddenLayersScaled + trapHeight,
-          },
-        };
-        
-        processedLayers.push(layerConfig);
-        previousConvLayerIndex = null;
-        
-      } else if (block.block === "Conv") {
-        console.log("block", block)
-
-        const outputSize = block.params.output_size;
-        const outputSizeScaled =
-          (Math.log((outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-        const poolSize = Math.sqrt(block.params.output_size);
-        const poolSizeScaled =
-          (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-        const kernelSize = block.params.kernel_size;
-        const kernelSizeScaled =
-          (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-        const numKernels = block.params.num_kernels;
-
-        let outputLength;
-
-        if (jsonConfig.input === 784) {
-          outputLength = Math.floor(28 - kernelSize) + 1;
-        } else if (jsonConfig.input === 3072) {
-          outputLength = Math.floor(32 - kernelSize) + 1;
-        }
-
-        const outputLengthScaled = 
-        (Math.log((outputLength + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-
-        console.log("outputLength", outputLength)
-        
-        layerConfig = {
-          id: `block-${processedLayers.length}`,
-          name: `${processedLayers.length + 1}`,
-          type: "Conv",
-          params: {
-            input_size: inputSize,
-            output_size: outputSize,
-            kernel_size: kernelSize,
-            num_kernels: numKernels,
-            stride: block.params.stride || 1,
-            padding: block.params.padding || Math.floor(kernelSize / 2),
-          },
-          visParams: {
-            kernel_size: kernelSizeScaled,
-            poolingBlock: { smallBlock: poolSizeScaled, largeBlock: outputLengthScaled },
-            width: kernelSizeScaled + numKernels * 5 + outputLengthScaled + 10,
-          },
-        };
-        
-        processedLayers.push(layerConfig);
-        previousConvLayerIndex = processedLayers.length - 1;
+    let previousOutputDim = jsonConfig.input;
+    switch (jsonConfig.dataset) {
+        case "CIFAR10":
+          previousOutputDim /= 3;
+        case "MNIST":
+          previousOutputDim = Math.sqrt(previousOutputDim);
+          break;
+    }
+    let index = 0
+    let previousNumKernels = -1;
+    jsonConfig.blocks.forEach((block) => {
+      if (block.block === "Pool")
+        return;
+      let outputSize = block.params.output_size;
+      if (block.block === "Conv") {
+        outputSize = jsonConfig.dataset === "MNIST" || jsonConfig.dataset === "CIFAR10"
+          ? Math.sqrt(block.params.output_size / block.params.num_kernels)
+          : block.params.output_size / block.params.num_kernels;
+        previousNumKernels = block.params.num_kernels;
       }
+      let inputSize = previousOutputDim;
+      if (block.block === "FcNN" && previousNumKernels !== -1) {
+        inputSize = jsonConfig.dataset === "MNIST" || jsonConfig.dataset === "CIFAR10"
+            ? previousOutputDim ** 2
+            : previousOutputDim;
+        inputSize = inputSize * previousNumKernels;
+        previousNumKernels = -1;
+      }
+
+      newBlock = {
+        id: index,
+        chosenLayer: block.block,
+        datasetInputSize: jsonConfig.input,
+        prevOutputDim: jsonConfig.dataset === "MNIST" || jsonConfig.dataset === "CIFAR10"
+            ? previousOutputDim ** 2
+            : previousOutputDim,
+        inputSize: inputSize,
+        outputSize: outputSize,
+        numHiddenLayers: block.params.num_hidden_layers,
+        hiddenSize: block.params.hidden_size,
+        layersLength: -1,
+        kernelSize: block.params.kernel_size,
+        numKernels: block.params.num_kernels,
+      };
+      addBlock();
+      previousOutputDim = outputSize;
+      index++;
     });
-  
-    createLayers(processedLayers);
-    setBlockCount(processedLayers.length);
   };
 
   const handleBlockInputChange = (field, value) => {
@@ -205,111 +265,6 @@ function ConfigColumn({
   const handleLayerClick = (item) => {
     setSelectedLayer(item.value);
     setLayerDropdownOpen(false);
-  };
-
-  const addBlock = () => {
-    const newBlockId = blockCount;
-    setBlockCount((prevCount) => prevCount + 1);
-
-    let inputSize;
-    if (layers && layers.length > 0) {
-      inputSize = layers[layers.length - 1].params.output_size;
-    } else {
-      inputSize = datasetSizes.inputSize;
-    }
-
-    const SCALING_CONSTANT = 25;
-    const log_base = Math.log(1.5);
-    const log_base_pool = Math.log(3);
-    const inputSizeScaled =
-      (Math.log((inputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-    const outputSizeScaled =
-      (Math.log(((blockInputs.outputSize) + 1) || 1) * SCALING_CONSTANT) / log_base;
-
-    let newLayer;
-
-    if (selectedLayer === "FcNN") {
-      let hiddenSizeScaled;
-      if (blockInputs.numHiddenLayers === 0) {
-        hiddenSizeScaled = (inputSizeScaled + outputSizeScaled) / 2;
-      } else {
-        hiddenSizeScaled = (Math.log((blockInputs.hiddenSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-      }
-      const numHiddenLayersScaled = blockInputs.numHiddenLayers * SCALING_CONSTANT;
-      const trapHeight = SCALING_CONSTANT * 2;
-
-      newLayer = {
-        id: `block-${newBlockId}`,
-        name: `${newBlockId + 1}`,
-        type: "FcNN",
-        params: {
-          input_size: inputSize,
-          output_size: blockInputs.outputSize,
-          hidden_size: blockInputs.hiddenSize,
-          num_hidden_layers: blockInputs.numHiddenLayers,
-        },
-        visParams: {
-          leftTrapezoid: { base: inputSizeScaled, height: trapHeight },
-          rightTrapezoid: { base: outputSizeScaled, height: trapHeight },
-          middleRectangle: {
-            width: numHiddenLayersScaled,
-            height: hiddenSizeScaled,
-          },
-          width: trapHeight + numHiddenLayersScaled + trapHeight,
-        },
-      };
-    } else if (selectedLayer === "Conv") {
-      const outputSize = blockInputs.outputSize ** 2;
-      const poolSize = Math.sqrt(outputSize);
-      const outputSizeScaled =
-        (Math.log((outputSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-      const poolSizeScaled =
-        (Math.log((poolSize + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-      const kernelSize = blockInputs.kernelSize;
-      const kernelSizeScaled =
-        (Math.log((kernelSize + 1) || 1) * SCALING_CONSTANT) / log_base;
-      const numKernels = blockInputs.numKernels;
-      let outputLength;
-
-      if (datasetSizes.inputSize === 784) {
-        outputLength = Math.floor(28 - blockInputs.kernelSize) + 1;
-      } else if (datasetSizes.inputSize === 3072) {
-        outputLength = Math.floor(32 - blockInputs.kernelSize) + 1;
-      }
-
-      const outputLengthScaled =
-        (Math.log((outputLength + 1) || 1) * SCALING_CONSTANT) / log_base_pool;
-
-      newLayer = {
-        id: `block-${newBlockId}`,
-        name: `${newBlockId + 1}`,
-        type: "Conv",
-        params: {
-          input_size: inputSize,
-          output_size: outputSize,
-          kernel_size: kernelSize,
-          num_kernels: numKernels,
-          stride: 1,
-          padding: Math.floor(kernelSize / 2),
-        },
-        visParams: {
-          kernel_size: kernelSizeScaled,
-          poolingBlock: { smallBlock: poolSizeScaled, largeBlock: outputLengthScaled },
-          width: kernelSizeScaled + numKernels * 5 + outputLengthScaled + 10,
-        },
-      };
-    }
-
-    createLayers([newLayer]);
-
-    setBlockInputs({
-      outputSize: 0,
-      hiddenSize: 0,
-      numHiddenLayers: 0,
-      kernelSize: 3,
-      numKernels: 1,
-    });
-    setSelectedLayer(null);
   };
 
   useEffect(() => {

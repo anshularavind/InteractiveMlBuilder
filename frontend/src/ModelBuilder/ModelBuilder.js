@@ -401,7 +401,7 @@ function ModelBuilder() {
         </div>
         <div>
           <div className="training-graphs">
-            <GraphParser backendResults={backendResults}/>
+            <GraphParser backendResults={backendResults} selectedDataset={selectedDataset}/>
           </div>
           {backendResults && (
             <div className="backend-results">

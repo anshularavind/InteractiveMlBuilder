@@ -87,6 +87,8 @@ function UserLeaderboard() {
             <th>Rank</th>
             <th>Username</th>
             <th>Models</th>
+            <th>Datasets</th>
+            <th>Highest Rank</th>
           </tr>
         </thead>
         <tbody>
@@ -95,6 +97,8 @@ function UserLeaderboard() {
               <td>{index + 1}</td>
               <td>{user.username}</td>
               <td>{user.num_models}</td>
+              <td>{user.num_datasets}</td>
+              <td>{user.highest_rank}</td>
             </tr>
           ))}
         </tbody>

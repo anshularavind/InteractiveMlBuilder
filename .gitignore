@@ -168,3 +168,4 @@ test.py
 
 backend/database/user_data/
 replacements.txt
+backend/flask/.env

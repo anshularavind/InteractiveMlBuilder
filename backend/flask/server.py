@@ -31,16 +31,6 @@ if ENV_FILE:
 
 logger.info(celery.tasks.keys())
 
-
-@celery.task()
-def square_number(number):
-    time.sleep(5)  # Simulate a long-running task
-    return number ** 2
-# ... (rest of your existing server.py code)
-
-
-app.secret_key = env.get("APP_SECRET_KEY")
-
 oauth = OAuth(app)
 
 auth0_service.initialize(
@@ -94,24 +84,29 @@ def session_info():
 #         return jsonify({"error": str(e)}), 401
     
 
-@app.route('/api/square', methods=['POST'])
-def xtest_celery():
-    """
-    Test route to square a number using Celery.
-    Expects JSON input: {"number": <int>}
-    """
-    data = request.get_json()
-
-    # Get the number from the request
-    number = data.get('number', None)
-    if number is None:
-        return jsonify({'error': 'Please provide a number!'}), 400
-
-    # Call the Celery task
-    task = square_number.delay(number)
-
-    # Return the task ID for tracking
-    return jsonify({'task_id': task.id}), 202
+# @celery.task()
+# def square_number(number):
+#     time.sleep(5)  # Simulate a long-running task
+#     return number ** 2
+#
+# @app.route('/api/square', methods=['POST'])
+# def test_celery():
+#     """
+#     Test route to square a number using Celery.
+#     Expects JSON input: {"number": <int>}
+#     """
+#     data = request.get_json()
+#
+#     # Get the number from the request
+#     number = data.get('number', None)
+#     if number is None:
+#         return jsonify({'error': 'Please provide a number!'}), 400
+#
+#     # Call the Celery task
+#     task = square_number.delay(number)
+#
+#     # Return the task ID for tracking
+#     return jsonify({'task_id': task.id}), 202
 
 
 if __name__ == "__main__":

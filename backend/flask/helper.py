@@ -112,7 +112,6 @@ def train_model_task(self, model_config, user_uuid, model_uuid):
     try:
         # Initialize progress tracking
         total_steps = 100
-        logger.info(f"Model built successfully for user {user_uuid}")
         self.update_state(state='PROGRESS', 
                          meta={
                              'current': 0,
@@ -144,7 +143,7 @@ def train_model_task(self, model_config, user_uuid, model_uuid):
         }
 
     except Exception as e:
-        raise self.retry(exc=e, countdown=60)
+        db.save_model_logs(user_uuid, model_uuid, str(e), 'error')
 
 @task_failure.connect
 def handle_task_failure(task_id=None, exception=None, **kwargs):

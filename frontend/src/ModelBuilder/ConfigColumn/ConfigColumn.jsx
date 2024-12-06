@@ -22,7 +22,7 @@ function ConfigColumn({
   loadModelConfig,
 }) {
   const [blockInputs, setBlockInputs] = useState({
-    outputSize: 0,
+    outputSize: 1,
     hiddenSize: 0,
     numHiddenLayers: 0,
     kernelSize: 3,
@@ -146,7 +146,7 @@ function ConfigColumn({
     createLayers([newLayer]);
 
     setBlockInputs({
-      outputSize: 0,
+      outputSize: 1,
       hiddenSize: 0,
       numHiddenLayers: 0,
       kernelSize: 3,
@@ -179,7 +179,7 @@ function ConfigColumn({
           break;
     }
     let index = 0
-    let previousNumKernels = -1;
+    let previousNumKernels = jsonConfig.dataset === "CIFAR10" ? 3 : 1;
     jsonConfig.blocks.forEach((block) => {
       if (block.block === "Pool")
         return;
@@ -203,9 +203,7 @@ function ConfigColumn({
         id: index,
         chosenLayer: block.block,
         datasetInputSize: jsonConfig.input,
-        prevOutputDim: jsonConfig.dataset === "MNIST" || jsonConfig.dataset === "CIFAR10"
-            ? previousOutputDim ** 2
-            : previousOutputDim,
+        prevOutputDim: previousOutputDim,
         inputSize: inputSize,
         outputSize: outputSize,
         numHiddenLayers: block.params.num_hidden_layers,
@@ -228,7 +226,6 @@ function ConfigColumn({
       } else {
         newValue = Math.max(1, parseInt(value) || 0);
       }
-
       return {
         ...prevInputs,
         [field]: newValue,

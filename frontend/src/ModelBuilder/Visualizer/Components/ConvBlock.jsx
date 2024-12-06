@@ -29,7 +29,7 @@ function ConvBlock({ layer }) {
   }
 
   const poolX = -width + params.num_kernels * 5 + convWidth + poolOffset;
-  const poolY = -height + params.num_kernels * 5;
+  const poolY = -height;
 
   const smallPoolX = poolX + poolingBlock.largeBlock / 2 - poolingBlock.smallBlock / 2;
   const smallPoolY = poolY + poolingBlock.largeBlock - poolingBlock.smallBlock / 2

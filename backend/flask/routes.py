@@ -303,6 +303,10 @@ def download_model():
 @helper.token_required
 def get_datasets():
     dataset_model_list = helper.get_dataset_model_list()
+    #drop the user_uuid from the response
+    for dataset in dataset_model_list:
+        for model in dataset['models']:
+            model.pop('user_uuid')
     return jsonify({"datasets": dataset_model_list}), 200
 
 # get all users
@@ -313,7 +317,7 @@ def get_users():
     users = db.get_users()
     for user in users:
         user_list.append({})
-        user_list[-1]['user_uuid'] = user[0]
+        # user_list[-1]['user_uuid'] = user[0]
         user_list[-1]['username'] = user[1]
         user_list[-1]['num_models'] = len(db.get_models(user[0]))
         user_list[-1]['num_datasets'] = len(db.get_datasets_by_user(user[0]))
@@ -326,28 +330,13 @@ def get_users():
 @helper.token_required
 def get_user_info():
     user_uuid = helper.get_user_info()["sub"]
+    if not user_uuid:
+        return jsonify({"error": "User not found"}), 404
     user_info = {}
-    user_info['user_uuid'] = user_uuid
+    #user_info['user_uuid'] = user_uuid
     user_info['username'] = db.get_user_name(user_uuid)
     user_info['num_models'] = len(db.get_models(user_uuid))
     user_info['num_datasets'] = len(db.get_datasets_by_user(user_uuid))
     user_info['highest_rank'] = helper.get_highest_rank(user_uuid)
     return jsonify({"user_info": user_info}), 200
-
-#get model config using model_uuid and user_uuid
-@main_routes.route("/api/model-config", methods=["POST"])
-@helper.token_required
-def get_model_config():
-    user_uuid = helper.get_user_info()["sub"]
-    model_uuid = request.json.get("model_uuid")
-    logger.info(f"Received model config request - user_uuid: {user_uuid}, model_uuid: {model_uuid}")
-    model_dir = db.get_model_dir(user_uuid, model_uuid)
-    if not model_dir:
-        return jsonify({"error": "Model not found"}), 404
-    if not os.path.exists(os.path.join(model_dir, "config.json")):
-        return jsonify({"error": "Config not found"}), 404
-    with open(os.path.join(model_dir, "config.json"), "r") as f:
-        model_config = json.load(f)
-    return jsonify({"model_config": model_config}), 200
-
 

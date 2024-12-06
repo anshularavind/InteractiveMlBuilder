@@ -27,6 +27,7 @@ function DatasetLeaderboard() {
                 throw new Error("Error fetching datasets");
             }
             const data = await response.json();
+            console.log('Data:', data);
             if (data.datasets && Array.isArray(data.datasets)) {
                 console.log('Datasets received:', data.datasets);
                 return data.datasets;
@@ -58,39 +59,15 @@ function DatasetLeaderboard() {
     // Filter models by search term
     const visualizeModel = async (model_uuid) => {
         // use get model_config route to get model config and then visualize
-        let model_config = null;
-        try {
-            const token = await getAccessTokenSilently();
-            const response = await fetch(`http://localhost:4000/api/model-config`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json",
-                },
-                credentials: "include",
-                mode: "cors",
-                body: JSON.stringify({
-                    model_uuid: model_uuid
-                }),
-            });
+        let model_config = {};
 
-            if (!response.ok) {
-                throw new Error("Error fetching model config");
+        for (let i = 0; i < datasets.length; i++) {
+            for (let j = 0; j < datasets[i].models.length; j++) {
+                if (datasets[i].models[j].model_uuid === model_uuid) {
+                    model_config = datasets[i].models[j];
+                    break;
+                }
             }
-            const data = await response.json();
-            if (data.model_config) {
-                console.log('Model config received:', data.model_config);
-                // Visualize model
-            } else {
-                throw new Error('Invalid data format for model config.');
-            }
-            model_config = data;
-
-        }
-
-        catch (error) {
-            console.error(error);
         }
 
         console.log('Model config:', JSON.stringify(model_config));

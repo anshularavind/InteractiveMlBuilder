@@ -14,6 +14,7 @@ from datetime import datetime
 from celeryApp import celery
 import logging
 import jwt
+import json
 import os
 
 # Create a custom logger
@@ -212,6 +213,7 @@ def get_metric_from_model(user_uuid, model_uuid):
 def get_dataset_model_list():
     dataset_model_list = []
     datasets = db.get_unique_datasets()
+    
     for dataset in datasets:
         dataset_model_list.append({})
         dataset_model_list[-1]['name'] = dataset[0]
@@ -219,7 +221,9 @@ def get_dataset_model_list():
                     dataset[0].lower() == "cifar10" or dataset[0].lower() == "mnist") else "Mean Squared Error"
         models = db.get_models_by_dataset(dataset[0])
         # get username from uuid:
-        dataset_model_list[-1]['models'] = [{"user_uuid": model[0],
+        dataset_model_list[-1]['models'] = [{
+            "user_uuid": model[0],     
+                                            "model_config": get_model_config(model[0], model[1]),
                                              "model_uuid": model[1],
                                              "username": db.get_user_name(model[0]),
                                              "metric": get_metric_from_model(model[0], model[1])} for model in models]
@@ -230,6 +234,19 @@ def get_dataset_model_list():
         dataset['models'] = sorted(dataset['models'], key=lambda x: x['metric'] if x['metric'] is not None else -1,
                                    reverse=dataset['metric'] == "Accuracy")
     return dataset_model_list
+
+#get model config using model_uuid and user_uuid
+def get_model_config(user_uuid, model_uuid):
+    logger.info(f"Received model config request - user_uuid: {user_uuid}, model_uuid: {model_uuid}")
+    model_dir = db.get_model_dir(user_uuid, model_uuid)
+    if not model_dir:
+        return jsonify({"error": "Model not found"}), 404
+    if not os.path.exists(os.path.join(model_dir, "config.json")):
+        return jsonify({"error": "Config not found"}), 404
+    with open(os.path.join(model_dir, "config.json"), "r") as f:
+        model_config = json.load(f)
+    return model_config
+
 
 def get_highest_rank(user_uuid):
     dataset_model_list = get_dataset_model_list()

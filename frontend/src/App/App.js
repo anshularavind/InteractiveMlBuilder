@@ -43,6 +43,12 @@ function App() {
     return <div className="container">Loading...</div>;
   }
 
+  // define a function to clear the local storage and log out the user
+  const handleLogout = () => {
+    sessionStorage.clear();
+    logout({ returnTo: window.location.origin });
+  };
+
   return (
 
     <Router>
@@ -76,7 +82,7 @@ function App() {
                 </Link>
                 <button
                   className="logoutButton"
-                  onClick={() => logout({ returnTo: window.location.origin })}
+                  onClick={() => handleLogout()}
                 >
                   Logout
                 </button>

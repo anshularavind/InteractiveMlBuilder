@@ -8,10 +8,13 @@ from database import interface as database
 from functools import wraps
 from flask import request, g, jsonify
 from jwtValidation import auth0_service, json_abort
+from dotenv import find_dotenv, load_dotenv
+from os import environ as env
 from datetime import datetime
 from celeryApp import celery
 import logging
 import jwt
+import os
 
 # Create a custom logger
 logger = logging.getLogger(__name__)
@@ -30,7 +33,12 @@ handler.setFormatter(formatter)
 # Add handlers to the logger
 logger.addHandler(handler)
 
-# Pass in celery object from server.py
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
+AUTH0_AUDIENCE = env.get("AUTH0_AUDIENCE")
 
 
 def useLogger(value):
@@ -51,14 +59,13 @@ def validate_token(token):
     )
 
     logger.info(decoded_token)
-
     logger.info(decoded_token.get('sub'))
 
     # Format the user info in Auth0 structure
     user_info = {
         'sub': decoded_token.get('sub'),
-        'nickname': decoded_token.get('https://InteractiveMlApi/nickname'),
-        'given_name': decoded_token.get('https://InteractiveMlApi/name'),
+        'nickname': decoded_token.get(f'{AUTH0_AUDIENCE}/nickname'),
+        'given_name': decoded_token.get(f'{AUTH0_AUDIENCE}/name'),
         'family_name': 'Unknown',
         'name': 'Unknown',
         'picture': '',

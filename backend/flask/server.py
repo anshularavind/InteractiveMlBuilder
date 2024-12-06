@@ -44,8 +44,8 @@ app.secret_key = env.get("APP_SECRET_KEY")
 oauth = OAuth(app)
 
 auth0_service.initialize(
-    auth0_domain="dev-yaqhhig1025kpyz0.us.auth0.com",
-    auth0_audience="https://InteractiveMlApi"
+    auth0_domain = env.get("AUTH0_DOMAIN"),
+    auth0_audience = env.get("AUTH0_AUDIENCE")
 )
 
 cert_path = os.path.join(base_dir, env.get("SSL_CERT_PATH"))

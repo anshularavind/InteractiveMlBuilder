@@ -51,7 +51,7 @@ You'll need to replace all the Auth0 variables with your own setup's. Make sure 
 - Basic Auth0 Application with Credentials Application Authentication set to none.
 - Allowed Callback URLs, Allowed Logout Urls, & Allowed Web Origins set to http://localhost:3000/callback
 - Also make sure you have an Auth0 API setup, this is your Auth0_AUDIENCE variable.
-- This API must have jsonwebtoken as a scope
+- This API must have jsonwebtoken as a scope and relevant permissions.
 - Go to triggers and modify post-login to include this intermediate code (with your own namespace):
 ```javascript
 exports.onExecutePostLogin = async (event, api) => {

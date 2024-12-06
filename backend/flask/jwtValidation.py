@@ -1,6 +1,13 @@
 from http import HTTPStatus
 from flask import jsonify, abort
 import jwt
+from dotenv import find_dotenv, load_dotenv
+from os import environ as env
+
+
+ENV_FILE = find_dotenv()
+if ENV_FILE:
+    load_dotenv(ENV_FILE)
 
 
 def json_abort(status_code, data=None):
@@ -12,8 +19,8 @@ class Auth0Service:
     """Perform JSON Web Token (JWT) validation using PyJWT"""
 
     def __init__(self):
-        self.issuer_url = 'https://dev-yaqhhig1025kpyz0.us.auth0.com'
-        self.audience = 'https://InteractiveMlApi'
+        self.issuer_url = env.get("AUTH0_DOMAIN")
+        self.audience = env.get("AUTH0_AUDIENCE")
         self.algorithm = 'dir'
         self.jwks_uri = None
 

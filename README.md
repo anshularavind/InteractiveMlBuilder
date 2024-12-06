@@ -9,12 +9,6 @@ Make sure you have conda installed on your system. If not, you can install it fr
 git clone https://github.com/anshularavind/InteractiveMlBuilder.git
 cd InteractiveMlBuilder
 ```
-In `backend/flask/.env`, replace Auth0 vars with your own setup's.<br>
-If you're our TA:<br>
-> replace `<Auth0 Client Secret\>`<br>
-> in the first line of the file, `AUTH0_CLIENT_SECRET=<Auth0 Client Secret\>`,<br>
-> with the supplied Auth0 Client Secret (without quotes).<br>
-> For everyone else, scroll to the bottom section, Custom Auth0.<br>
 
 ```bash
 bash backend/database/setup_postgres.sh  # Install PostgreSQL with the necessary user information
@@ -44,19 +38,3 @@ brew services stop redis # Stop the Redis server
 brew services stop postgresql # Stop the PostgreSQL server
 ```
 And cancel the Celery worker, Flask server, and npm processes in their respective terminals.
-
-
-### Custom Auth0
-You'll need to replace all the Auth0 variables with your own setup's. Make sure your Auth0 setup has the following:
-- Basic Auth0 Application with Credentials Application Authentication set to none.
-- Allowed Callback URLs, Allowed Logout Urls, & Allowed Web Origins set to http://localhost:3000/callback
-- Also make sure you have an Auth0 API setup, this is your Auth0_AUDIENCE variable.
-- This API must have jsonwebtoken as a scope and relevant permissions.
-- Go to triggers and modify post-login to include this intermediate code (with your own namespace):
-```javascript
-exports.onExecutePostLogin = async (event, api) => {
-    const namespace = 'https://InteractiveMlApi/';
-    api.accessToken.setCustomClaim(`${namespace}email`, event.user.email);
-    api.accessToken.setCustomClaim(`${namespace}name`, event.user.name);
-};
-```

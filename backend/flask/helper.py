@@ -231,7 +231,7 @@ def get_dataset_model_list():
     print(dataset_model_list)
     # sort dataset model list by metric, ascending if mean squared error, descending if accuracy
     for dataset in dataset_model_list:
-        dataset['models'] = sorted(dataset['models'], key=lambda x: x['metric'] if x['metric'] is not None else -1,
+        dataset['models'] = sorted(dataset['models'], key=lambda x: (x['metric'] is None, x['metric'] if x['metric'] is not None else float('inf')),
                                    reverse=dataset['metric'] == "Accuracy")
     return dataset_model_list
 

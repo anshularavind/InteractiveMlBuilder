@@ -80,6 +80,13 @@ const GraphParser = ({ backendResults, selectedDataset }) => {
     values: graphData.accuracies,
   };
 
+  const lossDelta = lossMax - lossMin;
+  const lossYMin = Math.max(0, lossMin - 0.1 * lossDelta);
+  const lossYMax = lossMax + 0.1 * lossDelta;
+  const accuracyDelta = accuracyMax - accuracyMin;
+  const accuracyYMin = Math.max(0, accuracyMin - 0.1 * accuracyDelta);
+  const accuracyYMax = Math.min(100, accuracyMax + 0.1 * accuracyDelta);
+
   return (
     <div>
       {backendResults && (
@@ -88,16 +95,16 @@ const GraphParser = ({ backendResults, selectedDataset }) => {
             graphData={lossGraphData}
             title="Training Loss"
             yLabel="Loss"
-            yMin={lossMin / 1.1}
-            yMax={lossMax * 1.1} // Adjust y-axis max
+            yMin={lossYMin}
+            yMax={lossYMax} // Adjust y-axis max
             lineColor="rgba(255, 99, 132, 1)" // Red color for loss
           />
           <TrainingGraph
             graphData={accuracyGraphData}
             title={isClassification ? "Training Accuracy" : "Training MSE"}
             yLabel={isClassification ? "Accuracy %" : "MSE"}
-            yMin={accuracyMin / 1.1}
-            yMax={accuracyMax} // Since accuracy is between 0 and 1
+            yMin={accuracyYMin}
+            yMax={accuracyYMax} // Since accuracy is between 0 and 1
             lineColor="rgba(54, 162, 235, 1)" // Blue color for accuracy
           />
         </div>

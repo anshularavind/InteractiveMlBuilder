@@ -13,7 +13,7 @@ const GraphParser = ({ backendResults, selectedDataset }) => {
   let lossMin = 0;
   let lossMax = 1 / 1.1;
 
-  let isClassification = selectedDataset === "MNIST" || selectedDataset === "CIFAR10";
+  let isClassification = (selectedDataset === "MNIST" || selectedDataset === "CIFAR10");
 
   if (backendResults) {
     // Parse the loss string
@@ -42,13 +42,14 @@ const GraphParser = ({ backendResults, selectedDataset }) => {
     const accuracies = [];
     outputLines.forEach((line) => {
       let accuracyMatch;
-      if (isClassification) {
-        accuracyMatch = line.match(/(Epoch #(\d+)|Final) accuracy(.*): ([\d.]+)/);
-        isClassification = true;
-      }
-      if (!accuracyMatch) {
+
+      accuracyMatch = line.match(/(Epoch #(\d+)|Final) accuracy(.*): ([\d.]+)/);
+      if (accuracyMatch) {
+          isClassification = true;
+      } else {
         accuracyMatch = line.match(/(Epoch #(\d+)|Final) MSE(.*): ([\d.]+)/);
-        isClassification = false;
+        if (accuracyMatch)
+          isClassification = false;
       }
       if (accuracyMatch) {
         const accuracy = parseFloat(accuracyMatch[accuracyMatch.length - 1]);
